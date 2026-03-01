@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IntegrationAPI.Migrations
 {
     [DbContext(typeof(IntegrationDbContext))]
-    [Migration("20260301034510_Initial")]
+    [Migration("20260301155118_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -26,6 +26,9 @@ namespace IntegrationAPI.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("CargoTypeId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("DangerLevel")
                         .HasColumnType("INTEGER");
@@ -48,9 +51,6 @@ namespace IntegrationAPI.Migrations
                     b.Property<int>("ShippingOrderId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("TypeId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<double>("Weight")
                         .HasColumnType("REAL");
 
@@ -70,13 +70,29 @@ namespace IntegrationAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CargoTypeId");
+
                     b.HasIndex("ShippingId");
 
                     b.HasIndex("ShippingOrderId");
 
-                    b.HasIndex("TypeId");
-
                     b.ToTable("Cargos");
+                });
+
+            modelBuilder.Entity("Models.Model.CargoType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CargoTypes");
                 });
 
             modelBuilder.Entity("Models.Model.Chat", b =>
@@ -203,22 +219,6 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("ShippingOrders");
                 });
 
-            modelBuilder.Entity("Models.Model.Type", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Types");
-                });
-
             modelBuilder.Entity("Models.Model.User", b =>
                 {
                     b.Property<int>("Id")
@@ -227,14 +227,27 @@ namespace IntegrationAPI.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PassHash")
+                        .IsRequired()
+                        .HasMaxLength(512)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Phone")
                         .IsRequired()
+                        .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -244,6 +257,12 @@ namespace IntegrationAPI.Migrations
 
             modelBuilder.Entity("Models.Model.Cargo", b =>
                 {
+                    b.HasOne("Models.Model.CargoType", "CargoType")
+                        .WithMany()
+                        .HasForeignKey("CargoTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Models.Model.Shipping", "Shipping")
                         .WithMany("Cargos")
                         .HasForeignKey("ShippingId");
@@ -254,17 +273,11 @@ namespace IntegrationAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Model.Type", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("CargoType");
 
                     b.Navigation("Shipping");
 
                     b.Navigation("ShippingOrder");
-
-                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("Models.Model.Chat", b =>

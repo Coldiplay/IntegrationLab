@@ -2,7 +2,37 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:IntegrationLab.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntegrationLab.Views.ChatView">
-    Welcome to Avalonia!
+             x:Class="IntegrationLab.Views.ChatView"
+             x:DataType="vm:ChatViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:ChatListViewModel />
+    </Design.DataContext>
+    
+    <Grid RowDefinitions="* Auto">
+        <ListBox ItemsSource="{Binding Messages}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border 
+                        BorderBrush="Black" 
+                        BorderThickness="0.5" 
+                        CornerRadius="10">
+                        <StackPanel HorizontalAlignment="Right">
+                            <TextBlock Text="{Binding Content}"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBox Text="{Binding MessageText}" MaxLength="300"/>
+            <Button Content="Send" 
+                    Command="{Binding SendMessageCommand}"
+                    CommandParameter="{Binding MessageText}"/>
+        </StackPanel>
+    </Grid>
 </UserControl>

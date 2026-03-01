@@ -1,6 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
@@ -13,12 +15,36 @@ namespace IntegrationLab.ViewModels;
 
 public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
 {
-    public ChatListViewModel()
+    public override void OnCreating()
     {
-        View.GotFocus += (sender, args) =>
+        TestData();
+        // View.GotFocus += (sender, args) =>
+        // {
+        //     ConnectHub();
+        // };
+    }
+
+    private void TestData()
+    {
+        _hubData = new HubData();
+        var sender = new User()
         {
-            ConnectHub();
+            Id = 95,
+            Login = "CoolSkeleton95",
+            Name = "Test",
+            LastName = "Test",
         };
+        _hubData.Chats = [
+            new Chat()
+            {
+                Id = 1,
+                Receiver = App.CurrentDriver.User,
+                ReceiverId = App.CurrentDriver.UserId,
+                Sender = sender,
+                SenderId = sender.Id
+            }
+        ];
+        OnPropertyChanged(nameof(Chats));
     }
 
     private HubConnection? _hub;
@@ -64,11 +90,19 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
         _hub.StartAsync();
     }
     
+    public void OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is not StackPanel stackPanel) return;
+
+        var chat = ((stackPanel.Parent as ListBoxItem)!.Content as Chat)!;
+        OpenChatCommand.Execute(chat);
+    }
+    
     [RelayCommand]
     private static void OpenChat(Chat chat)
     {
         var chatView = App.Services.GetRequiredService<ChatView>();
         (chatView.DataContext as ChatViewModel)!.Chat = chat;
-        App.CurrentView = chatView;
+        ((App.MainWindowViewModel.CurrentView as MainView)!.DataContext as MainViewModel)!.CurrentView = chatView;
     }
 }

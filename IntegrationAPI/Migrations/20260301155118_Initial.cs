@@ -12,6 +12,19 @@ namespace IntegrationAPI.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "CargoTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 60, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CargoTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ShippingOrders",
                 columns: table => new
                 {
@@ -47,27 +60,16 @@ namespace IntegrationAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CargoTypes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 60, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Types", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    LastName = table.Column<string>(type: "TEXT", nullable: false),
-                    Phone = table.Column<string>(type: "TEXT", nullable: false)
+                    Login = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    Phone = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
+                    PassHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,7 +88,7 @@ namespace IntegrationAPI.Migrations
                     DateAdded = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Weight = table.Column<double>(type: "REAL", nullable: false),
                     DangerLevel = table.Column<int>(type: "INTEGER", nullable: false),
-                    TypeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CargoTypeId = table.Column<int>(type: "INTEGER", nullable: false),
                     Dimensions_Height = table.Column<double>(type: "REAL", nullable: false),
                     Dimensions_Length = table.Column<double>(type: "REAL", nullable: false),
                     Dimensions_Width = table.Column<double>(type: "REAL", nullable: false)
@@ -94,6 +96,12 @@ namespace IntegrationAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cargos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cargos_CargoTypes_CargoTypeId",
+                        column: x => x.CargoTypeId,
+                        principalTable: "CargoTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Cargos_ShippingOrders_ShippingOrderId",
                         column: x => x.ShippingOrderId,
@@ -105,12 +113,6 @@ namespace IntegrationAPI.Migrations
                         column: x => x.ShippingId,
                         principalTable: "Shippings",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Cargos_Types_TypeId",
-                        column: x => x.TypeId,
-                        principalTable: "CargoTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -184,6 +186,11 @@ namespace IntegrationAPI.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Cargos_CargoTypeId",
+                table: "Cargos",
+                column: "CargoTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Cargos_ShippingId",
                 table: "Cargos",
                 column: "ShippingId");
@@ -192,11 +199,6 @@ namespace IntegrationAPI.Migrations
                 name: "IX_Cargos_ShippingOrderId",
                 table: "Cargos",
                 column: "ShippingOrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Cargos_TypeId",
-                table: "Cargos",
-                column: "TypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chats_ReceiverId",
@@ -238,13 +240,13 @@ namespace IntegrationAPI.Migrations
                 name: "Messages");
 
             migrationBuilder.DropTable(
+                name: "CargoTypes");
+
+            migrationBuilder.DropTable(
                 name: "ShippingOrders");
 
             migrationBuilder.DropTable(
                 name: "Shippings");
-
-            migrationBuilder.DropTable(
-                name: "CargoTypes");
 
             migrationBuilder.DropTable(
                 name: "Chats");

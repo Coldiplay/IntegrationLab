@@ -12,5 +12,20 @@
     <vm:MainViewModel />
   </Design.DataContext>
 
-  <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+  <!-- <TextBlock  -->
+  <!--     Text="{Binding Greeting}"  -->
+  <!--     HorizontalAlignment="Center"  -->
+  <!--     VerticalAlignment="Center"/> -->
+  
+  <Grid RowDefinitions="* Auto">
+      
+      <ContentControl Content="{Binding CurrentView}"/>
+      
+      <StackPanel Grid.Row="1" Orientation="Horizontal">
+          <Button Content="Рейсы"
+                  Command="{Binding OpenShippingsViewCommand}"/>
+          <Button Content="Чаты"
+                  Command="{Binding OpenChatListViewCommand}"/>
+      </StackPanel>
+  </Grid>
 </UserControl>
