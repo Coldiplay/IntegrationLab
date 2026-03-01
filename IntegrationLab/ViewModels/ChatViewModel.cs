@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Avalonia.Layout;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
@@ -24,9 +25,28 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
     private HubConnection _hub;
     private HttpClient _httpClient;
 
-    public ChatViewModel()
+    [ObservableProperty] 
+    private string _messageText = string.Empty;
+
+    
+    private HorizontalAlignment GetAlignmentForMessage(Message message)
+        => message.SenderId == App.CurrentDriver.UserId
+        ? HorizontalAlignment.Right
+        : HorizontalAlignment.Left;
+
+    private void TestData(object? sender, EventArgs e)
     {
-        View.Initialized += LoadMessages;
+        Messages.Add(new Message()
+        {
+            Chat = this.Chat,
+            ChatId = this.Chat.Id,
+            Content = "Ты опять выходишь на связь, а?",
+            Date = DateTime.Now.AddSeconds(-20),
+            Id = Guid.NewGuid(),
+            Sender = this.Chat.Sender,
+            SenderId = this.Chat.SenderId
+        });
+        OnPropertyChanged(nameof(Messages));
     }
 
     private async void LoadMessages(object? sender, EventArgs e)
@@ -39,6 +59,28 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
     [RelayCommand]
     private async Task SendMessage(string message)
     {
-        await _hub.SendAsync("SendMessage", message);
+        //Вообще другая проверка нужна, но и так сойдёт :)
+        if (string.IsNullOrWhiteSpace(message)) return;
+        
+        //TODO: Потом добавить обратно
+        //await _hub.SendAsync("SendMessage", message);
+
+        Messages.Add(new Message()
+        {
+            Sender = App.CurrentDriver.User,
+            Chat = this.Chat,
+            ChatId = this.Chat.Id,
+            Content = message,
+            Date = DateTime.Now,
+            Id = Guid.NewGuid(),
+            SenderId = App.CurrentDriver.User.Id
+        });
+        MessageText = string.Empty;
+    }
+
+    public override void OnCreating()
+    {
+        //View.Initialized += LoadMessages;
+        View.Initialized += TestData;
     }
 }

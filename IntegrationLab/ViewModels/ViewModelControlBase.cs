@@ -2,7 +2,7 @@ using Avalonia.Controls;
 
 namespace IntegrationLab.ViewModels;
 
-public class ViewModelControlBase<TControl> : ViewModelBase
+public abstract class ViewModelControlBase<TControl> : ViewModelBase
 where TControl : Control
 {
     public ViewModelControlBase() {}
@@ -11,6 +11,8 @@ where TControl : Control
     {
         View = view;
     }
+
+    public abstract void OnCreating();
     
     
     public TControl View;

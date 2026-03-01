@@ -26,6 +26,14 @@ public partial class ShippingOrder : ObservableValidator
         Cargos.Add(cargo);
         cargo.ShippingOrder = this;
     }
+    public void AddRangeCargo(List<Cargo> cargos)
+    {
+        Cargos.AddRange(cargos);
+        foreach (var cargo in cargos)
+        {
+            cargo.ShippingOrder = this;
+        }
+    }
     public void RemoveCargo(Cargo cargo)
     {
         cargo.ShippingOrder = null;

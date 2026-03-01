@@ -3,11 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace Models.Tools;
 
-public static class GlobalJsonOpts
+public static class GlobalOptions
 {
+    public const string API_URI = "https://localhost:7106/";
     public static JsonSerializerOptions JsonSerializerOptions { get; }
 
-    static GlobalJsonOpts()
+    static GlobalOptions()
     {
         JsonSerializerOptions = new JsonSerializerOptions
         {

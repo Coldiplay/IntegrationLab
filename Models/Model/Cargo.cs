@@ -17,7 +17,7 @@ public partial class Cargo : ObservableValidator
     [ObservableProperty]
     private string? _description;
     [ObservableProperty]
-    private DateTime _dateAdded;
+    private DateTime _dateAdded = DateTime.Now;
     [ObservableProperty]
     private double _weight;
     [ObservableProperty]

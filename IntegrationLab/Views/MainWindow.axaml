@@ -6,7 +6,9 @@
         xmlns:views="using:IntegrationLab.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="IntegrationLab.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="IntegrationLab">
-        <views:MainView />
+        <!-- <views:MainView /> -->
+        <ContentControl Content="{Binding CurrentView}"/>
 </Window>

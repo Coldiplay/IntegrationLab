@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -11,6 +13,7 @@ using IntegrationLab.Views;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Model;
+using Models.Tools;
 
 namespace IntegrationLab;
 
@@ -57,20 +60,55 @@ public partial class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
+
+    private static void TestData()
+    {
+        var user = new User()
+        {
+            Id = 1,
+            Name = "John",
+            LastName = "Doe",
+            Phone = "+0123456789"
+        };
+
+        CurrentDriver = new Driver()
+        {
+            UserId = user.Id,
+            User = user,
+            Rights = Rights.A | Rights.B
+        };
+    }
     
     private static void BuildServices()
     {
         var services = new ServiceCollection();
         //Добавляем сервисы
-            
+        services.AddSingleton(_ =>
+        {
+            var client = new HttpClient();
+            client.BaseAddress = new Uri(GlobalOptions.API_URI);
+            return client;
+        });
+        
         //singleton т.к. будем всегда возвращаться на этот control
         services.AddSingleton<MainView>(_ => 
             Tools.Helper.InitializeView<MainView, MainViewModel>());
 
+        services.AddSingleton<ShippingsView>(_ =>
+            Tools.Helper.InitializeView<ShippingsView, ShippingsViewModel>());
+        
+        services.AddSingleton<ChatListView>(_ =>
+            Tools.Helper.InitializeView<ChatListView, ChatListViewModel>());
+
+        services.AddTransient<ChatView>(_ =>
+            Tools.Helper.InitializeView<ChatView, ChatViewModel>());
+        
         services.AddSingleton<HubData>();
                                                         
         Services = services.BuildServiceProvider();
      
+        TestData();
+        
         MainWindow = new MainWindow();
         var mainWindowViewModel = new MainWindowViewModel(MainWindow);
         MainWindow.DataContext = mainWindowViewModel; 

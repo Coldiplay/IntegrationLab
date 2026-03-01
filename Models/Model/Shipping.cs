@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Models.Model;
@@ -19,7 +20,18 @@ public partial class Shipping : ObservableValidator
     //
     public int? DesignatedDriverId { get; set; }
     [ObservableProperty] private bool _confirmed = false;
-    
+
+    [NotMapped]
+    public string ConfirmedStatus
+    {
+        get;
+        set
+        {
+            if (value == field) return;
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "Не подтверждён";
 
     public virtual List<Cargo> Cargos { get; set; } = [];
 

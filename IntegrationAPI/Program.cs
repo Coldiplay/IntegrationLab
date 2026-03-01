@@ -18,9 +18,9 @@ public class Program
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy =
-                GlobalJsonOpts.JsonSerializerOptions.PropertyNamingPolicy;
+                GlobalOptions.JsonSerializerOptions.PropertyNamingPolicy;
             options.JsonSerializerOptions.ReferenceHandler =
-                GlobalJsonOpts.JsonSerializerOptions.ReferenceHandler;
+                GlobalOptions.JsonSerializerOptions.ReferenceHandler;
         });
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
