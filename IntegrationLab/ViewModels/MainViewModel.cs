@@ -8,15 +8,6 @@ namespace IntegrationLab.ViewModels;
 
 public partial class MainViewModel : ViewModelControlBase<MainView>
 {
-    //[ObservableProperty] private string _greeting = "Welcome to Avalonia!";
-
-    public MainViewModel()
-    {
-        
-    }
-
-    private string? Test => View.Name;
-
     [RelayCommand]
     private void OpenShippingsView() =>
         CurrentView = App.Services.GetRequiredService<ShippingsView>();

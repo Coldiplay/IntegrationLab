@@ -4,13 +4,11 @@ using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using IntegrationLab.Model;
 using IntegrationLab.ViewModels;
 using IntegrationLab.Views;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Model;
 using Models.Tools;
@@ -92,16 +90,16 @@ public partial class App : Application
         
         //singleton т.к. будем всегда возвращаться на этот control
         services.AddSingleton<MainView>(_ => 
-            Tools.Helper.InitializeView<MainView, MainViewModel>());
+            Tools.Helper.InitializeView<MainView>());
 
         services.AddSingleton<ShippingsView>(_ =>
-            Tools.Helper.InitializeView<ShippingsView, ShippingsViewModel>());
+            Tools.Helper.InitializeView<ShippingsView>());
         
         services.AddSingleton<ChatListView>(_ =>
-            Tools.Helper.InitializeView<ChatListView, ChatListViewModel>());
+            Tools.Helper.InitializeView<ChatListView>());
 
         services.AddTransient<ChatView>(_ =>
-            Tools.Helper.InitializeView<ChatView, ChatViewModel>());
+            Tools.Helper.InitializeView<ChatView>());
         
         services.AddSingleton<HubData>();
                                                         

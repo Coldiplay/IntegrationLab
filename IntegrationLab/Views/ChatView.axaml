@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:IntegrationLab.ViewModels"
+             xmlns:model="using:Models.Model"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="IntegrationLab.Views.ChatView"
              x:DataType="vm:ChatViewModel">
@@ -28,9 +29,13 @@
             </ListBox.ItemTemplate>
         </ListBox>
         
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <TextBox Text="{Binding MessageText}" MaxLength="300"/>
-            <Button Content="Send" 
+        <StackPanel HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
+            <TextBox MinWidth="200" 
+                     Margin="8" 
+                     Text="{Binding MessageText}" 
+                     MaxLength="300"/>
+            <Button Margin="8" 
+                    Content="Send" 
                     Command="{Binding SendMessageCommand}"
                     CommandParameter="{Binding MessageText}"/>
         </StackPanel>

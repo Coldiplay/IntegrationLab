@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Avalonia.Layout;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
@@ -16,6 +14,12 @@ namespace IntegrationLab.ViewModels;
 
 public partial class ChatViewModel : ViewModelControlBase<ChatView>
 {
+    public override void OnCreating()
+    {
+        //View.Initialized += LoadMessages;
+        View.Initialized += TestData;
+    }
+    
     [ObservableProperty]
     private Chat _chat;
     
@@ -27,12 +31,13 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
 
     [ObservableProperty] 
     private string _messageText = string.Empty;
-
     
-    private HorizontalAlignment GetAlignmentForMessage(Message message)
-        => message.SenderId == App.CurrentDriver.UserId
-        ? HorizontalAlignment.Right
-        : HorizontalAlignment.Left;
+    /*
+    // private HorizontalAlignment GetAlignmentForMessage(Message message)
+    //     => message.SenderId == App.CurrentDriver.UserId
+    //     ? HorizontalAlignment.Right
+    //     : HorizontalAlignment.Left;
+    */
 
     private void TestData(object? sender, EventArgs e)
     {
@@ -76,11 +81,5 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
             SenderId = App.CurrentDriver.User.Id
         });
         MessageText = string.Empty;
-    }
-
-    public override void OnCreating()
-    {
-        //View.Initialized += LoadMessages;
-        View.Initialized += TestData;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using IntegrationLab.ViewModels;
 
@@ -5,16 +6,17 @@ namespace IntegrationLab.Tools;
 
 public static class Helper
 {
-    public static TControl InitializeView<TControl, TViewModel>()
+    public static TControl InitializeView<TControl>()
     where TControl : Control, new()
-    where TViewModel : ViewModelControlBase<TControl>, new()
     {
-        //TODO: При вызове ChatListView говорит invalid thread
         var control = new TControl();
-        var vm = new TViewModel
-        {
-            View = control
-        };
+        
+        var vmTypeName = control.GetType().FullName!.Replace("View", "ViewModel", StringComparison.Ordinal);
+        var vmType = Type.GetType(vmTypeName);
+        var vm = Activator.CreateInstance(vmType!) as ViewModelControlBase<TControl>;
+        
+        
+        vm!.View = control;
         control.DataContext = vm;
         vm.OnCreating();
         

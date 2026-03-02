@@ -1,4 +1,3 @@
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Controls;
@@ -78,6 +77,7 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
                 var chat = _hubData.Chats.FirstOrDefault(c => c.Id == message.ChatId);
                 if (chat is not null) return;
                 
+                //message.GetMessageHorizontalAlignment;
                 chat = new Chat()
                 {
                     ReceiverId = App.CurrentDriver.UserId,
