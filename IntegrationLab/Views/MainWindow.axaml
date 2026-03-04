@@ -11,4 +11,11 @@
         Title="IntegrationLab">
         <!-- <views:MainView /> -->
         <ContentControl Content="{Binding CurrentView}"/>
+        <!-- <Grid RowDefinitions="* *"> -->
+        <!--         <StackPanel Grid.Row="1" Orientation="Horizontal"> -->
+        <!--                 <Button Content="Тест"  -->
+        <!--                         Command="{Binding InvokeOnUIThreadCommand}" -->
+        <!--                         CommandParameter="{Binding TestAction}"/> -->
+        <!--         </StackPanel> -->
+        <!-- </Grid> -->
 </Window>

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:IntegrationLab.ViewModels"
              xmlns:model="using:Models.Model"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="550"
              x:Class="IntegrationLab.Views.ChatView"
              x:DataType="vm:ChatViewModel">
     <Design.DataContext>
@@ -13,25 +13,38 @@
         <vm:ChatListViewModel />
     </Design.DataContext>
     
-    <Grid RowDefinitions="* Auto">
-        <ListBox ItemsSource="{Binding Messages}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border 
-                        BorderBrush="Black" 
-                        BorderThickness="0.5" 
-                        CornerRadius="10">
-                        <StackPanel HorizontalAlignment="Right">
-                            <TextBlock Text="{Binding Content}"/>
-                        </StackPanel>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+    <Grid RowDefinitions="Auto * Auto">
+        <StackPanel>
+            <Button Command="{Binding ReturnToChatListCommand}">
+                <Button.Content>
+                    <!--TODO: Поставить иконку назад, фон сделать transparent -->
+                    <Label Content="Назад"/> 
+                </Button.Content>
+            </Button>
+        </StackPanel>
         
-        <StackPanel HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
-            <TextBox MinWidth="200" 
-                     Margin="8" 
+        
+        <ScrollViewer Grid.Row="1">
+            <ListBox ItemsSource="{Binding Messages}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border 
+                            BorderBrush="Black" 
+                            BorderThickness="0.5" 
+                            CornerRadius="10">
+                            <StackPanel HorizontalAlignment="Right">
+                                <TextBlock Text="{Binding Content}"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>    
+        </ScrollViewer>
+        
+        <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal">
+            <TextBox HorizontalAlignment="Stretch" 
+                     Margin="8"
+                     MinWidth="300"
                      Text="{Binding MessageText}" 
                      MaxLength="300"/>
             <Button Margin="8" 

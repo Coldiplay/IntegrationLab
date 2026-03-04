@@ -26,6 +26,8 @@ public partial class App : Application
         get => MainWindowViewModel.CurrentView;
         set => MainWindowViewModel.CurrentView = value;
     }
+
+    public static MainViewModel? MainViewModel => ((CurrentView as MainView)?.DataContext as MainViewModel);
     
     public static Driver CurrentDriver { get; set; }
 

@@ -103,6 +103,6 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
     {
         var chatView = App.Services.GetRequiredService<ChatView>();
         (chatView.DataContext as ChatViewModel)!.Chat = chat;
-        ((App.MainWindowViewModel.CurrentView as MainView)!.DataContext as MainViewModel)!.CurrentView = chatView;
+        App.MainWindowViewModel.CurrentView = chatView;
     }
 }

@@ -5,9 +5,9 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using IntegrationLab.Model;
 using IntegrationLab.Views;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Models.Model;
 
 namespace IntegrationLab.ViewModels;
@@ -82,4 +82,8 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
         });
         MessageText = string.Empty;
     }
+
+    [RelayCommand]
+    private static void ReturnToChatList() =>
+        App.MainWindowViewModel.CurrentView = App.Services.GetRequiredService<MainView>();
 }

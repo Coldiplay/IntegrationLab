@@ -18,7 +18,10 @@ public partial class Shipping : ObservableValidator
 
     [ObservableProperty] private decimal _estimatedDeliveryCost;
     //
-    public int? DesignatedDriverId { get; set; }
+    
+    [ForeignKey(nameof(DesignatedDriver))] public int? DesignatedDriverId { get; set; }
+    public virtual Driver? DesignatedDriver { get; set; }
+    
     [ObservableProperty] private bool _confirmed = false;
 
     [NotMapped]

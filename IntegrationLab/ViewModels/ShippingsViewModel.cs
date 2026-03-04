@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Views;
@@ -18,18 +21,23 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
 {
     [ObservableProperty]
     private ObservableCollection<Shipping> _shippings = [];
-
-    private readonly HttpClient _client;
-    //TODO: Сделать On для обновления рейсов
-    private HubConnection _hub;
-
-    public ShippingsViewModel()
+    
+    public Shipping? SelectedShipping
     {
-        _client = App.Services.GetRequiredService<HttpClient>();
-
-        TestData();
+        get;
+        set
+        {
+            if (Equals(value, field)) return;
+            field = value;
+            OnPropertyChanged();
+            ConfirmShippingCommand.NotifyCanExecuteChanged();
+        }
     }
 
+    private HttpClient _client;
+    //TODO: Сделать On для обновления рейсов
+    private HubConnection _hub;
+    
     private void TestData()
     {
         var shippingOrder = new ShippingOrder()
@@ -38,15 +46,17 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
             Address = "Куда-нибудь",
             Id = 1
         };
-        var cargos = new List<Cargo>() 
+        var cargos = new List<Cargo>();
+        var cargoType = new CargoType()
         {
-            new()
+            Id = 1,
+            Title = "Насыпной"
+        };
+        for (int i = 1; i <= 10; i++)
+        {
+            cargos.Add(new Cargo
             {
-                CargoType = new CargoType()
-                {
-                    Id = 1,
-                    Title = "Насыпной"
-                },
+                CargoType = cargoType,
                 DangerLevel = DangerLevel.None,
                 Dimensions = new Dimensions()
                 {
@@ -56,34 +66,34 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
                 },
                 Id = Guid.NewGuid(),
                 Name = "Песок",
-            }
-        };
+            });
+        }
+        
         shippingOrder.AddRangeCargo(cargos);
 
-        var shipping = new Shipping()
+        for (int i = 1; i <= 6; i++)
         {
-            Cargos = shippingOrder.Cargos,
-            DesignatedDriverId = App.CurrentDriver.UserId,
-            EstimatedDeliveryDate = DateTime.Now.AddDays(7),
-            Id = Guid.NewGuid()
-        };
-        
-        Shippings =
-        [
-            shipping
-        ];
+            var shipping = new Shipping()
+            {
+                Cargos = shippingOrder.Cargos,
+                DesignatedDriverId = App.CurrentDriver.UserId,
+                EstimatedDeliveryDate = DateTime.Now.AddDays(7 + i),
+                Id = Guid.NewGuid()
+            };
+            Shippings.Add(shipping);
+        }
     }
-
-    [ObservableProperty]
-    private bool _true = true;
-    [RelayCommand(CanExecute = nameof(True))]
-    private void ConfirmShipping(Shipping shipping)
+    
+    [RelayCommand]
+    private void ConfirmShipping()
     {
+        var shipping = SelectedShipping;
+        if (shipping is null) return;
         //????
         new Thread(() =>
         {
             //shipping.Confirmed = true;
-            shipping.ConfirmedStatus = "Подтверждение...";
+            shipping!.ConfirmedStatus = "Подтверждение...";
             //TODO: Потом заменить
             //_client.PatchAsJsonAsync("api/Shippings/Confirm", shipping.Id);
         }).Start();
@@ -97,5 +107,8 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
 
     public override void OnCreating()
     {
+        _client = App.Services.GetRequiredService<HttpClient>();
+
+        TestData();
     }
 }

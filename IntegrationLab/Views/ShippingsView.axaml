@@ -5,26 +5,30 @@
              xmlns:vm="using:IntegrationLab.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="IntegrationLab.Views.ShippingsView"
-             x:DataType="vm:ShippingsViewModel"
-             DataContext="{DynamicResource ViewModel}">
-    <UserControl.Resources>
-        <vm:ShippingsViewModel x:Key="ViewModel"/>
-    </UserControl.Resources>
-    <Grid RowDefinitions="*">
-        <ListBox ItemsSource="{Binding Shippings}">
+             x:DataType="vm:ShippingsViewModel">
+    <Grid RowDefinitions="* *">
+        <ListBox SelectedItem="{Binding SelectedShipping}" 
+                 ItemsSource="{Binding Shippings}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="{Binding EstimatedDeliveryDate, StringFormat={}Дата прибытия: dd.MM.yyyy}"/>
                         <Label Content="{Binding Cargos.Count, StringFormat={}Количество груза: {0}}"/>
                         <Label Content="{Binding ConfirmedStatus}"/>
-                        <Button Content="Подтвердить" 
-                                Command="{Binding ConfirmShippingCommand, 
-                                RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=vm:ShippingsViewModel}}"
-                                CommandParameter="{Binding .}"/>
+                        <!-- <Button Content="Подтвердить"  -->
+                        <!--         Command="{Binding ConfirmShippingCommand,  -->
+                        <!--         RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=vm:ShippingsViewModel}}"/> -->
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Подтвердить" 
+                              Command="{Binding ConfirmShippingCommand}"
+                              CommandParameter="{Binding SelectedShipping}"
+                    />
+                </ContextMenu>
+            </ListBox.ContextMenu>
         </ListBox>
     </Grid>
 </UserControl>

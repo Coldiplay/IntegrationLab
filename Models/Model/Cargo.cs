@@ -29,8 +29,9 @@ public partial class Cargo : ObservableValidator
     public int ShippingOrderId { get; set; }
     [ForeignKey(nameof(Shipping))]
     public Guid? ShippingId { get; set; }
-
-    [ObservableProperty] private Model.CargoType _cargoType;
+    [ForeignKey(nameof(CargoType))]
+    public int CargoTypeId { get; set; }
+    public virtual CargoType CargoType { get; set; }
 
     //ВОзможно надо доббавить OnPropertyChanged
     public virtual ShippingOrder ShippingOrder { get; set; } = null!;
