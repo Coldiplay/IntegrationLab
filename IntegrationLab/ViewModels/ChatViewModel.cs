@@ -48,8 +48,8 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
             Content = "Ты опять выходишь на связь, а?",
             Date = DateTime.Now.AddSeconds(-20),
             Id = Guid.NewGuid(),
-            Sender = this.Chat.Sender,
-            SenderId = this.Chat.SenderId
+            // Sender = this.Chat.Sender,
+            // SenderId = this.Chat.SenderId
         });
         OnPropertyChanged(nameof(Messages));
     }

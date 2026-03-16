@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -7,25 +8,25 @@ public partial class Shipping : ObservableValidator
 {
     public Guid Id { get; set; }
 
-    [ObservableProperty]
-    private DateTime _shippedDate;
-    [ObservableProperty]
-    private DateTime _estimatedDeliveryDate;
-
+    [ObservableProperty] private DateTime _shippedDate;
+    [ObservableProperty] private DateTime _estimatedDeliveryDate;
     [ObservableProperty] private DateTime? _deliveryDate;
+    //[ObservableProperty] private bool _confirmed = false;
+    [Required] [ObservableProperty] private ShippingStatus _shippingStatus;
+    
     //Скорее всего не надо
     [ObservableProperty] private decimal _estimatedDeliveryPrice;
-
     [ObservableProperty] private decimal _estimatedDeliveryCost;
     //
     
+    [Required] [ForeignKey(nameof(Vehicle))] public int VehicleId { get; set; }
     [ForeignKey(nameof(DesignatedDriver))] public int? DesignatedDriverId { get; set; }
-    public virtual Driver? DesignatedDriver { get; set; }
     
-    [ObservableProperty] private bool _confirmed = false;
+    
+    public virtual Vehicle Vehicle { get; set; }
+    public virtual User? DesignatedDriver { get; set; }
 
-    [NotMapped]
-    public string ConfirmedStatus
+    [NotMapped] public string ConfirmedStatus
     {
         get;
         set

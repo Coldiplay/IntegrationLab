@@ -16,7 +16,7 @@
         <ListBox.ItemTemplate>
             <DataTemplate>
                 <StackPanel Tapped="OnDoubleTapped">
-                    <Label Content="{Binding Sender.Login}"/>
+                    <Label Content="{Binding}"/>
                 </StackPanel>
             </DataTemplate>
         </ListBox.ItemTemplate>

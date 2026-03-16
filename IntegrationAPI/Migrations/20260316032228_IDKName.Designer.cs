@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using IntegrationAPI.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,37 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IntegrationAPI.Migrations
 {
     [DbContext(typeof(IntegrationDbContext))]
-    partial class IntegrationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260316032228_IDKName")]
+    partial class IDKName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
-
-            modelBuilder.Entity("Models.Model.Break", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("BreakType")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("End")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("ShiftId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShiftId");
-
-                    b.ToTable("Breaks");
-                });
 
             modelBuilder.Entity("Models.Model.Cargo", b =>
                 {
@@ -166,60 +144,6 @@ namespace IntegrationAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Drivers");
-                });
-
-            modelBuilder.Entity("Models.Model.DriversShift", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("DriverId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DriverId");
-
-                    b.ToTable("DriversShifts");
-                });
-
-            modelBuilder.Entity("Models.Model.Incident", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("DriverId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("IncidentDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("ShippingId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DriverId");
-
-                    b.HasIndex("ShippingId");
-
-                    b.ToTable("Incidents");
                 });
 
             modelBuilder.Entity("Models.Model.Message", b =>
@@ -465,17 +389,6 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("Models.Model.Break", b =>
-                {
-                    b.HasOne("Models.Model.DriversShift", "Shift")
-                        .WithMany()
-                        .HasForeignKey("ShiftId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shift");
-                });
-
             modelBuilder.Entity("Models.Model.Cargo", b =>
                 {
                     b.HasOne("Models.Model.CargoType", "CargoType")
@@ -529,36 +442,6 @@ namespace IntegrationAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Models.Model.DriversShift", b =>
-                {
-                    b.HasOne("Models.Model.User", "Driver")
-                        .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Driver");
-                });
-
-            modelBuilder.Entity("Models.Model.Incident", b =>
-                {
-                    b.HasOne("Models.Model.User", "Driver")
-                        .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.Model.Shipping", "Shipping")
-                        .WithMany()
-                        .HasForeignKey("ShippingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Driver");
-
-                    b.Navigation("Shipping");
                 });
 
             modelBuilder.Entity("Models.Model.Message", b =>

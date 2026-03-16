@@ -42,24 +42,6 @@ namespace IntegrationAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Shippings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    DesignatedDriverId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ShippedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EstimatedDeliveryDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DeliveryDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    EstimatedDeliveryPrice = table.Column<decimal>(type: "TEXT", nullable: false),
-                    EstimatedDeliveryCost = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Confirmed = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Shippings", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -74,45 +56,6 @@ namespace IntegrationAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Cargos",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ShippingOrderId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ShippingId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Weight = table.Column<double>(type: "REAL", nullable: false),
-                    DangerLevel = table.Column<int>(type: "INTEGER", nullable: false),
-                    CargoTypeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Dimensions_Height = table.Column<double>(type: "REAL", nullable: false),
-                    Dimensions_Length = table.Column<double>(type: "REAL", nullable: false),
-                    Dimensions_Width = table.Column<double>(type: "REAL", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cargos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Cargos_CargoTypes_CargoTypeId",
-                        column: x => x.CargoTypeId,
-                        principalTable: "CargoTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Cargos_ShippingOrders_ShippingOrderId",
-                        column: x => x.ShippingOrderId,
-                        principalTable: "ShippingOrders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Cargos_Shippings_ShippingId",
-                        column: x => x.ShippingId,
-                        principalTable: "Shippings",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -159,6 +102,29 @@ namespace IntegrationAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Shippings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    DesignatedDriverId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ShippedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EstimatedDeliveryDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DeliveryDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    EstimatedDeliveryPrice = table.Column<decimal>(type: "TEXT", nullable: false),
+                    EstimatedDeliveryCost = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Confirmed = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shippings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Shippings_Users_DesignatedDriverId",
+                        column: x => x.DesignatedDriverId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
@@ -183,6 +149,45 @@ namespace IntegrationAPI.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cargos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ShippingOrderId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ShippingId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    CargoTypeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    DateAdded = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Weight = table.Column<double>(type: "REAL", nullable: false),
+                    DangerLevel = table.Column<int>(type: "INTEGER", nullable: false),
+                    Dimensions_Height = table.Column<double>(type: "REAL", nullable: false),
+                    Dimensions_Length = table.Column<double>(type: "REAL", nullable: false),
+                    Dimensions_Width = table.Column<double>(type: "REAL", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cargos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cargos_CargoTypes_CargoTypeId",
+                        column: x => x.CargoTypeId,
+                        principalTable: "CargoTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Cargos_ShippingOrders_ShippingOrderId",
+                        column: x => x.ShippingOrderId,
+                        principalTable: "ShippingOrders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Cargos_Shippings_ShippingId",
+                        column: x => x.ShippingId,
+                        principalTable: "Shippings",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -225,6 +230,11 @@ namespace IntegrationAPI.Migrations
                 name: "IX_Messages_SenderId",
                 table: "Messages",
                 column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shippings_DesignatedDriverId",
+                table: "Shippings",
+                column: "DesignatedDriverId");
         }
 
         /// <inheritdoc />

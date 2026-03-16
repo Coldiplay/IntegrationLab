@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IntegrationAPI.Migrations
 {
     [DbContext(typeof(IntegrationDbContext))]
-    [Migration("20260301155118_Initial")]
+    [Migration("20260305070554_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -188,6 +188,8 @@ namespace IntegrationAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DesignatedDriverId");
+
                     b.ToTable("Shippings");
                 });
 
@@ -327,6 +329,15 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("Chat");
 
                     b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("Models.Model.Shipping", b =>
+                {
+                    b.HasOne("Models.Model.User", "DesignatedDriver")
+                        .WithMany()
+                        .HasForeignKey("DesignatedDriverId");
+
+                    b.Navigation("DesignatedDriver");
                 });
 
             modelBuilder.Entity("Models.Model.Shipping", b =>

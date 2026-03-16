@@ -37,10 +37,10 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
             new Chat()
             {
                 Id = 1,
-                Receiver = App.CurrentDriver.User,
-                ReceiverId = App.CurrentDriver.UserId,
-                Sender = sender,
-                SenderId = sender.Id
+                // Receiver = App.CurrentDriver.User,
+                // ReceiverId = App.CurrentDriver.UserId,
+                // Sender = sender,
+                // SenderId = sender.Id
             }
         ];
         OnPropertyChanged(nameof(Chats));
@@ -80,8 +80,8 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
                 //message.GetMessageHorizontalAlignment;
                 chat = new Chat()
                 {
-                    ReceiverId = App.CurrentDriver.UserId,
-                    SenderId = message.SenderId
+                    // ReceiverId = App.CurrentDriver.UserId,
+                    // SenderId = message.SenderId
                 };
                 _hubData.Chats.Add(chat);
             });

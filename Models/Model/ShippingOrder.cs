@@ -9,17 +9,18 @@ public partial class ShippingOrder : ObservableValidator
 {
     public int Id { get; set; }
 
-    [ObservableProperty] private DateTime _orderDate;
-    [ObservableProperty] private DateTime _shippingDate;
-    [ObservableProperty] private DateTime _sentDate;
-    [ObservableProperty] private DateTime _receivedDate;
-
+    [Required] [ObservableProperty] private DateTime _orderDate;
+    [Required] [ObservableProperty] private string _receiverFio = null!;
+    [Required] [ObservableProperty] [MaxLength(120)] private string _address = null!;
+    [Required] [ObservableProperty] private OrderStatus _status;
+    [Required] [ObservableProperty] private DateTime _shippingDate;
+    [ObservableProperty] private DateTime? _sentDate;
+    [ObservableProperty] private DateTime? _receivedDate;
+    // TODO: Добавить маршрут
+    
     public virtual List<Cargo> Cargos { get; set; } = [];
     
     //public Shipping? Shipping { get; set; }
-    [MaxLength(120)]
-    [ObservableProperty]
-    private string _address = null!;
 
     public void AddCargo(Cargo cargo)
     {

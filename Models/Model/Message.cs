@@ -10,16 +10,12 @@ public partial class Message : ObservableValidator
 {
     public Guid Id { get; set; }
     
-    [Required]
-    [MaxLength(300)]
-    [MinLength(1)]
-    [ObservableProperty]
+    [Required] [ObservableProperty] [MaxLength(300)] [MinLength(1)]
     private string _content = null!;
-    public DateTime Date { get; set; }
-    [ForeignKey(nameof(Sender))]
-    public int SenderId { get; set; }
-    [ForeignKey(nameof(Chat))]
-    public int ChatId { get; set; }
+    [Required] [ObservableProperty] private DateTime _date;
+    //public DateTime Date { get; set; }
+    [Required] [ForeignKey(nameof(Sender))] public int SenderId { get; set; }
+    [Required] [ForeignKey(nameof(Chat))] public int ChatId { get; set; }
     
     public virtual User Sender { get; set; }
     public virtual Chat Chat { get; set; }
