@@ -103,6 +103,12 @@ public partial class App : Application
         services.AddTransient<ChatView>(_ =>
             Tools.Helper.InitializeView<ChatView>());
         
+        services.AddSingleton<IncidentsView>(_ => 
+            Tools.Helper.InitializeView<IncidentsView>());
+        
+        services.AddTransient<SingleIncidentView>(_ => 
+            Tools.Helper.InitializeView<SingleIncidentView>());
+        
         services.AddSingleton<HubData>();
                                                         
         Services = services.BuildServiceProvider();

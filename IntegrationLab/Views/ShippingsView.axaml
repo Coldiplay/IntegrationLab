@@ -11,7 +11,7 @@
                  ItemsSource="{Binding Shippings}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel DoubleTapped="OnDoubleTapped" Orientation="Horizontal">
                         <!-- <Label Content="{Binding }"/> -->
                         <Label Content="{Binding EstimatedDeliveryDate, StringFormat={}Дата прибытия: dd.MM.yyyy}"/>
                         <Label Content="{Binding Cargos.Count, StringFormat={}Количество груза: {0}}"/>

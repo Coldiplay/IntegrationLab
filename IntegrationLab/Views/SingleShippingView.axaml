@@ -4,21 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:IntegrationLab.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntegrationLab.Views.ChatListView"
-             x:DataType="vm:ChatListViewModel">
+             x:Class="IntegrationLab.Views.SingleShippingView"
+             x:DataType="vm:SingleShippingViewModel">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:ChatListViewModel />
+        <vm:SingleShippingViewModel />
     </Design.DataContext>
     
-    <ListBox ItemsSource="{Binding Chats}">
-        <ListBox.ItemTemplate>
-            <DataTemplate>
-                <StackPanel DoubleTapped="OnDoubleTapped">
-                    <Label Content="{Binding Name}"/>
-                </StackPanel>
-            </DataTemplate>
-        </ListBox.ItemTemplate>
-    </ListBox>
+    <Grid RowDefinitions="Auto *">
+        <!--TODO: Потом поставить иконку назад -->
+        <Button Content="Назад" Command="{Binding ReturnToShippingsListCommand}"/>
+        
+        <Grid Grid.Row="1">
+            <Label>Чтонибудь про рейс</Label>
+        </Grid>
+    </Grid>
 </UserControl>

@@ -36,7 +36,8 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
         _hubData.Chats = [
             new Chat()
             {
-                Id = 1,
+                Id = 1, 
+                Name = "Название чата",
                 // Receiver = App.CurrentDriver.User,
                 // ReceiverId = App.CurrentDriver.UserId,
                 // Sender = sender,

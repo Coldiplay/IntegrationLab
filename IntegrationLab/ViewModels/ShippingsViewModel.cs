@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -114,6 +115,22 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     {
         Shippings = await _client.GetFromJsonAsync<ObservableCollection<Shipping>>("api/Shippings")
             ?? [];
+    }
+    
+    public void OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is not StackPanel stackPanel) return;
+
+        var shipping = ((stackPanel.Parent as ListBoxItem)!.Content as Shipping)!;
+        OpenShippingCommand.Execute(shipping);
+    }
+    
+    [RelayCommand]
+    private static void OpenShipping(Shipping shipping)
+    {
+        var shippingView = App.Services.GetRequiredService<SingleShippingView>();
+        (shippingView.DataContext as SingleShippingViewModel)!.Shipping = shipping;
+        App.MainWindowViewModel.CurrentView = shippingView;
     }
 
     public override void OnCreating()
