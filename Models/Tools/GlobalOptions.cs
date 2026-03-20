@@ -1,19 +1,26 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Bogus;
 
 namespace Models.Tools;
 
 public static class GlobalOptions
 {
     public const string API_URI = "https://localhost:7106/";
-    public static JsonSerializerOptions JsonSerializerOptions { get; }
-
-    static GlobalOptions()
+    public static JsonSerializerOptions JsonSerializerOptions { get; } = new()
     {
-        JsonSerializerOptions = new JsonSerializerOptions
-        {
-            ReferenceHandler = ReferenceHandler.Preserve,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-    }
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        ReferenceHandler = ReferenceHandler.Preserve
+    };
+
+    public static Faker Faker { get; } = new();
+    
+    // static GlobalOptions()
+    // {
+    //     JsonSerializerOptions = new JsonSerializerOptions
+    //     {
+    //         ReferenceHandler = ReferenceHandler.Preserve,
+    //         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    //     };
+    // }
 }

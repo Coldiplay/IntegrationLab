@@ -21,11 +21,20 @@
       
       <ContentControl Content="{Binding CurrentView}"/>
       
-      <StackPanel Grid.Row="1" Orientation="Horizontal">
+      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+          <StackPanel.Styles>
+              <Style Selector="Button">
+                  <Setter Property="MinWidth" Value="100"/>
+                  <Setter Property="HorizontalContentAlignment" Value="Center"/>
+              </Style>
+          </StackPanel.Styles>
+          
           <Button Content="Рейсы"
                   Command="{Binding OpenShippingsViewCommand}"/>
           <Button Content="Чаты"
                   Command="{Binding OpenChatListViewCommand}"/>
+          <Button Content="Происшествия"
+                  />
       </StackPanel>
   </Grid>
 </UserControl>

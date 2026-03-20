@@ -5,8 +5,14 @@ namespace IntegrationAPI.Db;
 
 public class IntegrationDbContext : DbContext
 {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
-        optionsBuilder.UseSqlite("Data Source=integration.db");
+    //TODO: Потом вынести в переменные окружения
+    private const string Connection = "server=localhost;user=root;password=toor;database=IntegrationLabDB";
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        //optionsBuilder.UseSqlite("Data Source=integration.db");
+        optionsBuilder.UseMySql(Connection, ServerVersion.AutoDetect(Connection));
+        //this.Database.EnsureCreated();
+    }
     
     public DbSet<Break> Breaks { get; set; }
     public DbSet<Cargo> Cargos { get; set; }

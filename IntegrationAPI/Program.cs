@@ -14,7 +14,6 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddDbContext<IntegrationDbContext>();
         
-
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy =
@@ -43,7 +42,7 @@ public class Program
 
 
         app.MapControllers();
-
+        
         app.Run();
     }
 }

@@ -25,6 +25,7 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
     </ItemGroup>

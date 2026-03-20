@@ -14,6 +14,7 @@ using IntegrationLab.Views;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Model;
+using Models.Tools;
 
 namespace IntegrationLab.ViewModels;
 
@@ -21,6 +22,11 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
 {
     [ObservableProperty]
     private ObservableCollection<Shipping> _shippings = [];
+
+    public ShippingsViewModel()
+    {
+        TestData();
+    }
     
     public Shipping? SelectedShipping
     {
@@ -40,39 +46,44 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     
     private void TestData()
     {
-        var shippingOrder = new ShippingOrder()
-        {
-            OrderDate = DateTime.Now.AddDays(2),
-            Address = "Куда-нибудь",
-            Id = 1
-        };
-        var cargos = new List<Cargo>();
-        var cargoType = new CargoType()
-        {
-            Id = 1,
-            Title = "Насыпной"
-        };
-        for (int i = 1; i <= 10; i++)
-        {
-            cargos.Add(new Cargo
-            {
-                CargoType = cargoType,
-                DangerLevel = DangerLevel.None,
-                Dimensions = new Dimensions()
-                {
-                    Height = 20,
-                    Length = 40,
-                    Width = 40
-                },
-                Id = Guid.NewGuid(),
-                Name = "Песок",
-            });
-        }
-        
-        shippingOrder.AddRangeCargo(cargos);
+        var faker = GlobalOptions.Faker;
 
-        for (int i = 1; i <= 6; i++)
+        for (int i = 0; i < 10; i++)
         {
+            var shippingOrder = new ShippingOrder()
+            {
+                OrderDate = DateTime.Now.AddDays(2),
+                Address = faker.Address.FullAddress(),
+                Id = i + 1
+            };
+            var cargos = new List<Cargo>();
+            
+            for (int j = 0; j < faker.Random.Int(1, 10); j++)
+            {
+                var cargoType = new CargoType()
+                {
+                    Id = faker.Random.Int(1),
+                    Title = faker.Commerce.ProductMaterial()
+                };
+                
+                cargos.Add(new Cargo
+                {
+                    CargoType = cargoType,
+                    DangerLevel = DangerLevel.None,
+                    Dimensions = new Dimensions()
+                    {
+                        Height = faker.Random.Double(1, 100),
+                        Length = faker.Random.Double(1, 100),
+                        Width = faker.Random.Double(1, 100)
+                    },
+                    Id = Guid.NewGuid(),
+                    Name = faker.Commerce.ProductName(),
+                });  
+            }
+            
+            shippingOrder.AddRangeCargo(cargos);
+            
+            
             var shipping = new Shipping()
             {
                 Cargos = shippingOrder.Cargos,
@@ -109,6 +120,6 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     {
         _client = App.Services.GetRequiredService<HttpClient>();
 
-        TestData();
+        //TestData();
     }
 }
