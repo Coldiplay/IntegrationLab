@@ -7,6 +7,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using IntegrationLab.Model;
+using IntegrationLab.Model.Db.Concrete;
 using IntegrationLab.ViewModels;
 using IntegrationLab.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -83,13 +84,40 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
         //Добавляем сервисы
-        services.AddSingleton(_ =>
+        services.AddSingleton<HttpClient>(_ =>
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(GlobalOptions.API_URI);
             return client;
         });
+       
+        RegisterDbServices(services);
         
+        RegisterViews(services);
+        
+        services.AddSingleton<HubData>();
+                                                        
+        Services = services.BuildServiceProvider();
+     
+        TestData();
+        
+        MainWindow = new MainWindow();
+        var mainWindowViewModel = new MainWindowViewModel(MainWindow);
+        MainWindow.DataContext = mainWindowViewModel; 
+        
+        mainWindowViewModel.CurrentView = Services.GetRequiredService<MainView>();
+    }
+
+    private static void RegisterDbServices(ServiceCollection services)
+    {
+         services.AddSingleton<ReadOnlySimpleDb>(serviceProvider => 
+             new ReadOnlySimpleDb(serviceProvider.GetRequiredService<HttpClient>()));
+         
+        
+    }
+
+    private static void RegisterViews(ServiceCollection services)
+    {
         //singleton т.к. будем всегда возвращаться на этот control
         services.AddSingleton<MainView>(_ => 
             Tools.Helper.InitializeView<MainView>());
@@ -108,19 +136,14 @@ public partial class App : Application
         
         services.AddTransient<SingleIncidentView>(_ => 
             Tools.Helper.InitializeView<SingleIncidentView>());
+
+        services.AddTransient<SingleShippingView>(_ =>
+            Tools.Helper.InitializeView<SingleShippingView>());
         
-        services.AddSingleton<HubData>();
-                                                        
-        Services = services.BuildServiceProvider();
-     
-        TestData();
-        
-        MainWindow = new MainWindow();
-        var mainWindowViewModel = new MainWindowViewModel(MainWindow);
-        MainWindow.DataContext = mainWindowViewModel; 
-        
-        mainWindowViewModel.CurrentView = Services.GetRequiredService<MainView>();
+        services.AddSingleton<ActiveShippingView>(_ =>
+            Tools.Helper.InitializeView<ActiveShippingView>());
     }
+    
 
     private void DisableAvaloniaDataAnnotationValidation()
     {

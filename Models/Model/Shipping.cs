@@ -7,7 +7,7 @@ namespace Models.Model;
 public partial class Shipping : ObservableValidator
 {
     public Guid Id { get; set; }
-    //TODO: Добавить точку доставки
+    [Required] [ObservableProperty] [MaxLength(120)] private string _deliveryPoint;
     [ObservableProperty] private DateTime _shippedDate;
     [ObservableProperty] private DateTime _estimatedDeliveryDate;
     [ObservableProperty] private DateTime? _deliveryDate;

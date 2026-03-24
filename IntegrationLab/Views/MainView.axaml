@@ -29,13 +29,14 @@
               </Style>
           </StackPanel.Styles>
           
+          <Button Content="Текущий рейс"
+                  Command="{Binding OpenActiveShippingCommand}"/>
           <Button Content="Рейсы"
                   Command="{Binding OpenShippingsViewCommand}"/>
           <Button Content="Чаты"
                   Command="{Binding OpenChatListViewCommand}"/>
           <Button Content="Происшествия"
-                  Command="{Binding OpenIncidentsViewCommand}"
-                  />
+                  Command="{Binding OpenIncidentsViewCommand}"/>
       </StackPanel>
   </Grid>
 </UserControl>

@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace IntegrationLab.Views;
 
-public partial class SingleShippingView : UserControl
+public partial class ActiveShippingView : UserControl
 {
-    public SingleShippingView()
+    public ActiveShippingView()
     {
         InitializeComponent();
     }

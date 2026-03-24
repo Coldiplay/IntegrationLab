@@ -99,11 +99,8 @@ public partial class IncidentsViewModel : ViewModelControlBase<IncidentsView>
         App.CurrentView = incidentView;
     }
     
-    
-    
     public override void OnCreating()
     {
         //TestData();
-        
     }
 }

@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:IntegrationLab.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IntegrationLab.Views.ActiveShippingView"
+             x:DataType="vm:ActiveShippingViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:ActiveShippingViewModel />
+    </Design.DataContext>
+    
+    <StackPanel>
+        <StackPanel.Styles>
+            <Style Selector="Label">
+                <Setter Property="Margin" Value="5"/>
+            </Style>
+        </StackPanel.Styles>
+        
+        <Label Content="Текущий рейс"/>
+        <Label Content="{Binding ActiveShipping.Vehicle.VehicleFullName}"/>
+        <Label Content="{Binding ActiveShipping.DeliveryPoint}"/>
+        <Label Content="{Binding ActiveShipping.DeliveryDate}"/>
+        <ScrollViewer>
+            <ListBox ItemsSource="{Binding ActiveShipping.Cargos}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding Name}"/>
+                            <Label Content="{Binding CargoType, StringFormat={}Тип: {0}}"/>
+                            <Label Content="{Binding  Dimensions}"/>
+                            <Label Content="{Binding Weight, StringFormat={}{0} кг}"/>
+                            <Label Content="{Binding DangerLevel}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+    </StackPanel>
+</UserControl>
