@@ -12,6 +12,7 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:IncidentsViewModel />
     </Design.DataContext>
+    
     <UserControl.Resources>
         <model:IncidentStatusConverter x:Key="StatusConverter"/>
     </UserControl.Resources>

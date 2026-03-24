@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,8 @@ namespace Models.Model;
 public partial class Vehicle : ObservableValidator
 {
     public int Id { get; set; }
-    //[ObservableProperty]
-    //private double _engineVolume;
-    //[ObservableProperty]
-    //private int _enginePower;
+    //[ObservableProperty] private double _engineVolume;
+    //[ObservableProperty] private int _enginePower;
 
     [Required] [ObservableProperty] [MaxLength(15)] private string _number = null!;
     [Required] [ObservableProperty] [MaxLength(20)] private string _brandName = null!;
@@ -27,6 +26,8 @@ public partial class Vehicle : ObservableValidator
     [Required] [ObservableProperty] private float _vehicleWeight;
     [ObservableProperty] private byte _numberOfAxes;
 
+
+    [NotMapped] public string VehicleFullName => $"{BrandName} {Model} {Number}";
     //[ForeignKey(nameof(TransportCargoTypes))] public int TransportCargoTypesId { get; set; }
     //public virtual List<TransportCargoTypes> TransportCargoTypes { get; set; }
 }

@@ -5,9 +5,9 @@ namespace IntegrationLab.ViewModels;
 public abstract class ViewModelControlBase<TControl> : ViewModelBase
 where TControl : Control
 {
-    public ViewModelControlBase() {}
+    protected ViewModelControlBase() {}
 
-    public ViewModelControlBase(TControl view)
+    protected ViewModelControlBase(TControl view)
     {
         View = view;
     }

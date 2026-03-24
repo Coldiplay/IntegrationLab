@@ -83,12 +83,14 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
         //Добавляем сервисы
-        services.AddSingleton(_ =>
+        services.AddSingleton<HttpClient>(_ =>
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(GlobalOptions.API_URI);
             return client;
         });
+        services.AddSingleton<ApiDbHandler>(serviceProvider => 
+            new ApiDbHandler(serviceProvider.GetRequiredService<HttpClient>()));
         
         //singleton т.к. будем всегда возвращаться на этот control
         services.AddSingleton<MainView>(_ => 
@@ -108,6 +110,12 @@ public partial class App : Application
         
         services.AddTransient<SingleIncidentView>(_ => 
             Tools.Helper.InitializeView<SingleIncidentView>());
+
+        services.AddTransient<SingleShippingView>(_ =>
+            Tools.Helper.InitializeView<SingleShippingView>());
+        
+        services.AddSingleton<ActiveShippingView>(_ =>
+            Tools.Helper.InitializeView<ActiveShippingView>());
         
         services.AddSingleton<HubData>();
                                                         

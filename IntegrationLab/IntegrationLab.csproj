@@ -22,12 +22,16 @@
         <PackageReference Include="CommunityToolkit.Mvvm"/>
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Update="Views\ChatListView.axaml.cs">
         <DependentUpon>ChatListView.axaml</DependentUpon>
         <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\SingleIncidentView.axaml.cs">
+        <DependentUpon>SingleIncidentView.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
 
