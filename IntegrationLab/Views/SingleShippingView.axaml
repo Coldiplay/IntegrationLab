@@ -16,8 +16,31 @@
         <!--TODO: Потом поставить иконку назад -->
         <Button Content="Назад" Command="{Binding ReturnToShippingsListCommand}"/>
         
-        <Grid Grid.Row="1">
-            <Label>Чтонибудь про рейс</Label>
-        </Grid>
+        <StackPanel Grid.Row="1">
+            <Label Content="{Binding Shipping.Vehicle.VehicleFullName, 
+            StringFormat={}Назначенное ТС: {0}}"/>
+            <Label Content="{Binding Shipping.DeliveryPoint, 
+            StringFormat={}Адрес: {0}}"/>
+            <Label Content="{Binding Shipping.DeliveryDate, 
+            StringFormat={}Дата доставки: dd.MM.yyyy}"/>
+            <Label Content="Перевозимый груз:"/>
+            <ScrollViewer>
+                <ListBox ItemsSource="{Binding Shipping.Cargos}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding Name}"/>
+                                <Label Content="{Binding CargoType.Title, StringFormat={}Тип: {0}}"/>
+                                <!-- <Label Content="{Binding  Dimensions}"/> -->
+                                <Label Content="{Binding Weight, StringFormat={}Масса: {0} кг}"/>
+                                <Label Content="{Binding DangerLevel,
+                                Converter={StaticResource DangerLevelConverter}, 
+                                ConverterParameter=True}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ScrollViewer>
+        </StackPanel>
     </Grid>
 </UserControl>

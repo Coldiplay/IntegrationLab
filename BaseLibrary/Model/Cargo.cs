@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 
-namespace Models.Model;
+namespace BaseLibrary.Model;
 
 [PrimaryKey(nameof(Id))]
 public partial class Cargo : ObservableValidator
@@ -15,7 +15,7 @@ public partial class Cargo : ObservableValidator
     [Required] [ObservableProperty] private DateTime _dateAdded = DateTime.Now;
     [Required] [ObservableProperty] private double _weight;
     [Required] [ObservableProperty] private Dimensions _dimensions;
-    [Required] [ObservableProperty] private DangerLevel _dangerLevel;
+    [ObservableProperty] private DangerLevel? _dangerLevel;
     
     [Required] [ForeignKey(nameof(ShippingOrder))] public int ShippingOrderId { get; set; }
     [ForeignKey(nameof(Shipping))] public Guid? ShippingId { get; set; }

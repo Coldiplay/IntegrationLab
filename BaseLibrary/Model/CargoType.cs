@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Models.Model;
+namespace BaseLibrary.Model;
 
 public partial class CargoType
 {

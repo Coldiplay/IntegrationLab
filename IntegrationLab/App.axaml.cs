@@ -11,8 +11,8 @@ using IntegrationLab.Model.Db.Concrete;
 using IntegrationLab.ViewModels;
 using IntegrationLab.Views;
 using Microsoft.Extensions.DependencyInjection;
-using Models.Model;
-using Models.Tools;
+using BaseLibrary.Model;
+using BaseLibrary.Tools;
 
 namespace IntegrationLab;
 
@@ -64,12 +64,16 @@ public partial class App : Application
 
     private static void TestData()
     {
+        var faker = GlobalOptions.Faker;
+        var fName = faker.Name.FirstName();
+        var lName = faker.Name.LastName();
         var user = new User()
         {
             Id = 1,
-            Name = "John",
-            LastName = "Doe",
-            Phone = "+0123456789"
+            Name = fName,
+            LastName = lName,
+            Phone = faker.Phone.PhoneNumber(), 
+            Login = faker.Internet.UserName(fName, lName)
         };
 
         CurrentDriver = new Driver()
@@ -113,7 +117,6 @@ public partial class App : Application
          services.AddSingleton<ReadOnlySimpleDb>(serviceProvider => 
              new ReadOnlySimpleDb(serviceProvider.GetRequiredService<HttpClient>()));
          
-        
     }
 
     private static void RegisterViews(ServiceCollection services)

@@ -18,7 +18,7 @@ namespace IntegrationAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
 
-            modelBuilder.Entity("Models.Model.Break", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Break", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,7 +43,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Breaks");
                 });
 
-            modelBuilder.Entity("Models.Model.Cargo", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Cargo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -76,7 +76,7 @@ namespace IntegrationAPI.Migrations
                     b.Property<double>("Weight")
                         .HasColumnType("REAL");
 
-                    b.ComplexProperty(typeof(Dictionary<string, object>), "Dimensions", "Models.Model.Cargo.Dimensions#Dimensions", b1 =>
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Dimensions", "BaseLibrary.Model.Cargo.Dimensions#Dimensions", b1 =>
                         {
                             b1.IsRequired();
 
@@ -101,7 +101,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Cargos");
                 });
 
-            modelBuilder.Entity("Models.Model.CargoType", b =>
+            modelBuilder.Entity("BaseLibrary.Model.CargoType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,7 +117,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("CargoTypes");
                 });
 
-            modelBuilder.Entity("Models.Model.Chat", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Chat", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -135,7 +135,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Chats");
                 });
 
-            modelBuilder.Entity("Models.Model.ChatMember", b =>
+            modelBuilder.Entity("BaseLibrary.Model.ChatMember", b =>
                 {
                     b.Property<int>("ChatId")
                         .HasColumnType("INTEGER");
@@ -150,7 +150,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("ChatMembers");
                 });
 
-            modelBuilder.Entity("Models.Model.Driver", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Driver", b =>
                 {
                     b.Property<string>("DriversLicense")
                         .HasMaxLength(40)
@@ -168,7 +168,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Drivers");
                 });
 
-            modelBuilder.Entity("Models.Model.DriversShift", b =>
+            modelBuilder.Entity("BaseLibrary.Model.DriversShift", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,7 +190,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("DriversShifts");
                 });
 
-            modelBuilder.Entity("Models.Model.Incident", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Incident", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -222,7 +222,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Incidents");
                 });
 
-            modelBuilder.Entity("Models.Model.Message", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Message", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -251,7 +251,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("Models.Model.Shipping", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Shipping", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -290,7 +290,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Shippings");
                 });
 
-            modelBuilder.Entity("Models.Model.ShippingOrder", b =>
+            modelBuilder.Entity("BaseLibrary.Model.ShippingOrder", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -325,7 +325,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("ShippingOrders");
                 });
 
-            modelBuilder.Entity("Models.Model.TransportCargoTypes", b =>
+            modelBuilder.Entity("BaseLibrary.Model.TransportCargoTypes", b =>
                 {
                     b.Property<int>("CargoTypeId")
                         .HasColumnType("INTEGER");
@@ -340,7 +340,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("TransportCargoTypes");
                 });
 
-            modelBuilder.Entity("Models.Model.User", b =>
+            modelBuilder.Entity("BaseLibrary.Model.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -387,7 +387,7 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Models.Model.Vehicle", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Vehicle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -432,7 +432,7 @@ namespace IntegrationAPI.Migrations
                     b.Property<float>("VehicleWeight")
                         .HasColumnType("REAL");
 
-                    b.ComplexProperty(typeof(Dictionary<string, object>), "BodySize", "Models.Model.Vehicle.BodySize#Dimensions", b1 =>
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "BodySize", "BaseLibrary.Model.Vehicle.BodySize#Dimensions", b1 =>
                         {
                             b1.IsRequired();
 
@@ -446,7 +446,7 @@ namespace IntegrationAPI.Migrations
                                 .HasColumnType("REAL");
                         });
 
-                    b.ComplexProperty(typeof(Dictionary<string, object>), "VehicleSize", "Models.Model.Vehicle.VehicleSize#Dimensions", b1 =>
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "VehicleSize", "BaseLibrary.Model.Vehicle.VehicleSize#Dimensions", b1 =>
                         {
                             b1.IsRequired();
 
@@ -465,9 +465,9 @@ namespace IntegrationAPI.Migrations
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("Models.Model.Break", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Break", b =>
                 {
-                    b.HasOne("Models.Model.DriversShift", "Shift")
+                    b.HasOne("BaseLibrary.Model.DriversShift", "Shift")
                         .WithMany()
                         .HasForeignKey("ShiftId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -476,19 +476,19 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("Shift");
                 });
 
-            modelBuilder.Entity("Models.Model.Cargo", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Cargo", b =>
                 {
-                    b.HasOne("Models.Model.CargoType", "CargoType")
+                    b.HasOne("BaseLibrary.Model.CargoType", "CargoType")
                         .WithMany()
                         .HasForeignKey("CargoTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Model.Shipping", "Shipping")
+                    b.HasOne("BaseLibrary.Model.Shipping", "Shipping")
                         .WithMany("Cargos")
                         .HasForeignKey("ShippingId");
 
-                    b.HasOne("Models.Model.ShippingOrder", "ShippingOrder")
+                    b.HasOne("BaseLibrary.Model.ShippingOrder", "ShippingOrder")
                         .WithMany("Cargos")
                         .HasForeignKey("ShippingOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -501,15 +501,15 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("ShippingOrder");
                 });
 
-            modelBuilder.Entity("Models.Model.ChatMember", b =>
+            modelBuilder.Entity("BaseLibrary.Model.ChatMember", b =>
                 {
-                    b.HasOne("Models.Model.Chat", "Chat")
+                    b.HasOne("BaseLibrary.Model.Chat", "Chat")
                         .WithMany()
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Model.User", "Member")
+                    b.HasOne("BaseLibrary.Model.User", "Member")
                         .WithMany()
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -520,9 +520,9 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("Models.Model.Driver", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Driver", b =>
                 {
-                    b.HasOne("Models.Model.User", "User")
+                    b.HasOne("BaseLibrary.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -531,9 +531,9 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Models.Model.DriversShift", b =>
+            modelBuilder.Entity("BaseLibrary.Model.DriversShift", b =>
                 {
-                    b.HasOne("Models.Model.User", "Driver")
+                    b.HasOne("BaseLibrary.Model.User", "Driver")
                         .WithMany()
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -542,15 +542,15 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("Driver");
                 });
 
-            modelBuilder.Entity("Models.Model.Incident", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Incident", b =>
                 {
-                    b.HasOne("Models.Model.User", "Driver")
+                    b.HasOne("BaseLibrary.Model.User", "Driver")
                         .WithMany()
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Model.Shipping", "Shipping")
+                    b.HasOne("BaseLibrary.Model.Shipping", "Shipping")
                         .WithMany()
                         .HasForeignKey("ShippingId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -561,15 +561,15 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("Shipping");
                 });
 
-            modelBuilder.Entity("Models.Model.Message", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Message", b =>
                 {
-                    b.HasOne("Models.Model.Chat", "Chat")
+                    b.HasOne("BaseLibrary.Model.Chat", "Chat")
                         .WithMany()
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Model.User", "Sender")
+                    b.HasOne("BaseLibrary.Model.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -580,13 +580,13 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("Models.Model.Shipping", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Shipping", b =>
                 {
-                    b.HasOne("Models.Model.User", "DesignatedDriver")
+                    b.HasOne("BaseLibrary.Model.User", "DesignatedDriver")
                         .WithMany()
                         .HasForeignKey("DesignatedDriverId");
 
-                    b.HasOne("Models.Model.Vehicle", "Vehicle")
+                    b.HasOne("BaseLibrary.Model.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -597,15 +597,15 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("Models.Model.TransportCargoTypes", b =>
+            modelBuilder.Entity("BaseLibrary.Model.TransportCargoTypes", b =>
                 {
-                    b.HasOne("Models.Model.CargoType", "CargoType")
+                    b.HasOne("BaseLibrary.Model.CargoType", "CargoType")
                         .WithMany()
                         .HasForeignKey("CargoTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Model.Vehicle", "Vehicle")
+                    b.HasOne("BaseLibrary.Model.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -616,12 +616,12 @@ namespace IntegrationAPI.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("Models.Model.Shipping", b =>
+            modelBuilder.Entity("BaseLibrary.Model.Shipping", b =>
                 {
                     b.Navigation("Cargos");
                 });
 
-            modelBuilder.Entity("Models.Model.ShippingOrder", b =>
+            modelBuilder.Entity("BaseLibrary.Model.ShippingOrder", b =>
                 {
                     b.Navigation("Cargos");
                 });

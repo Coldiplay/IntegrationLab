@@ -1,7 +1,7 @@
 using IntegrationAPI.Db;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Models.Model;
+using BaseLibrary.Model;
 
 namespace IntegrationAPI.Controllers
 {

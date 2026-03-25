@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Models.Model;
+using BaseLibrary.Model;
 
 namespace IntegrationAPI.Db;
 

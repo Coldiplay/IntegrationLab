@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IntegrationAPI.Db;
-using Models.Model;
+using BaseLibrary.Model;
 
 namespace IntegrationAPI.Controllers
 {
@@ -14,6 +14,20 @@ namespace IntegrationAPI.Controllers
         public DriversShiftsController(IntegrationDbContext context)
         {
             _context = context;
+        }
+
+        [HttpGet]
+        public async Task<double> GetDriverWorkHours(int driverId, DateTime from, DateTime by)
+        {
+            return await _context.DriversShifts
+                .Where(s =>
+                    s.DriverId == driverId &&
+                    s.EndDate.HasValue &&
+                    s.StartDate >= from &&
+                    s.StartDate <= by &&
+                    s.EndDate.Value >= from &&
+                    s.EndDate.Value <= by)
+                .SumAsync(s => (s.EndDate!.Value - s.StartDate).TotalHours);
         }
 
         // GET: api/DriversShifts

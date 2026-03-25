@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Models.Model;
+namespace BaseLibrary.Model;
 
 [Keyless]
 public partial class ChatMember

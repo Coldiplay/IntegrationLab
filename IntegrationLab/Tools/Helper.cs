@@ -15,11 +15,10 @@ public static class Helper
         var vmType = Type.GetType(vmTypeName);
         var vm = Activator.CreateInstance(vmType!) as ViewModelControlBase<TControl>;
         
-        
         vm!.View = control;
-        control.DataContext = vm;
         vm.OnCreating();
         
+        control.DataContext = vm;
         return control;
     }
 }

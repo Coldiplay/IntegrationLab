@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Bogus;
 
-namespace Models.Tools;
+namespace BaseLibrary.Tools;
 
 public static class GlobalOptions
 {
@@ -13,7 +13,7 @@ public static class GlobalOptions
         ReferenceHandler = ReferenceHandler.Preserve
     };
 
-    public static Faker Faker { get; } = new();
+    public static Faker Faker { get; } = new("ru");
     
     // static GlobalOptions()
     // {

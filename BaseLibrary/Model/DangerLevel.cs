@@ -1,9 +1,8 @@
-namespace Models.Model;
+namespace BaseLibrary.Model;
 
 [Flags] //Надо ли?
 public enum DangerLevel
 {
-    None,
     Low,
     Medium,
     High,

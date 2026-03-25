@@ -1,4 +1,4 @@
-namespace Models.Model;
+namespace BaseLibrary.Model;
 
 [Flags]
 public enum Rights

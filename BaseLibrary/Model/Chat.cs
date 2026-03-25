@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Models.Model;
+namespace BaseLibrary.Model;
 
 [PrimaryKey(nameof(Id))]
 public partial class Chat

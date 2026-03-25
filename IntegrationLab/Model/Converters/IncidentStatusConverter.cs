@@ -1,13 +1,9 @@
+using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
+using BaseLibrary.Model;
 
-namespace Models.Model;
-
-public enum IncidentStatus
-{
-    InProgress,
-    Resolved
-}
+namespace IntegrationLab.Model.Converters;
 
 public class IncidentStatusConverter : IValueConverter
 {

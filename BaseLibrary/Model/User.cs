@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 
-namespace Models.Model;
+namespace BaseLibrary.Model;
 
 [PrimaryKey(nameof(Id))]
 [Index(nameof(Login),  IsUnique = true)]

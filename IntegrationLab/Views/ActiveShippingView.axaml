@@ -20,19 +20,25 @@
         </StackPanel.Styles>
         
         <Label Content="Текущий рейс"/>
-        <Label Content="{Binding ActiveShipping.Vehicle.VehicleFullName}"/>
-        <Label Content="{Binding ActiveShipping.DeliveryPoint}"/>
-        <Label Content="{Binding ActiveShipping.DeliveryDate}"/>
+        <Label Content="{Binding ActiveShipping.Vehicle.VehicleFullName, 
+        StringFormat={}Назначенное ТС: {0}}"/>
+        <Label Content="{Binding ActiveShipping.DeliveryPoint, 
+        StringFormat={}Адрес: {0}}"/>
+        <Label Content="{Binding ActiveShipping.DeliveryDate, 
+        StringFormat={}Дата доставки: dd.MM.yyyy}"/>
+        <Label Content="Перевозимый груз:"/>
         <ScrollViewer>
             <ListBox ItemsSource="{Binding ActiveShipping.Cargos}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{Binding Name}"/>
-                            <Label Content="{Binding CargoType, StringFormat={}Тип: {0}}"/>
-                            <Label Content="{Binding  Dimensions}"/>
-                            <Label Content="{Binding Weight, StringFormat={}{0} кг}"/>
-                            <Label Content="{Binding DangerLevel}"/>
+                            <Label Content="{Binding CargoType.Title, StringFormat={}Тип: {0}}"/>
+                            <!-- <Label Content="{Binding  Dimensions}"/> -->
+                            <Label Content="{Binding Weight, StringFormat={}Масса: {0} кг}"/>
+                            <Label Content="{Binding DangerLevel, 
+                            Converter={StaticResource DangerLevelConverter},
+                            ConverterParameter=true}"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

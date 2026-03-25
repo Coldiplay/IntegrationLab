@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 
-namespace Models.Model;
+namespace BaseLibrary.Model;
 
 [Keyless]
 [Index(nameof(UserId), IsUnique = true)]

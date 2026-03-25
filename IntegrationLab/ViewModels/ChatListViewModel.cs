@@ -1,56 +1,34 @@
 using System.Collections.ObjectModel;
-using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
 using IntegrationLab.Views;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
-using Models.Model;
+using BaseLibrary.Model;
 
 namespace IntegrationLab.ViewModels;
 
 public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
 {
+
+    public ChatListViewModel()
+    {
+        _hubData = App.Services.GetRequiredService<HubData>();
+    }
     public override void OnCreating()
     {
-        TestData();
         // View.GotFocus += (sender, args) =>
         // {
         //     ConnectHub();
         // };
     }
 
-    private void TestData()
-    {
-        _hubData = new HubData();
-        var sender = new User()
-        {
-            Id = 95,
-            Login = "CoolSkeleton95",
-            Name = "Test",
-            LastName = "Test",
-        };
-        _hubData.Chats = [
-            new Chat()
-            {
-                Id = 1, 
-                Name = "Название чата",
-                // Receiver = App.CurrentDriver.User,
-                // ReceiverId = App.CurrentDriver.UserId,
-                // Sender = sender,
-                // SenderId = sender.Id
-            }
-        ];
-        OnPropertyChanged(nameof(Chats));
-    }
-
     private HubConnection? _hub;
     private HubData? _hubData;
 
-    public ObservableCollection<Chat>? Chats => _hubData?.Chats;
+    public ObservableCollection<Chat>? Chats => [.. _hubData?.Chats.Keys];
     
     private void ConnectHub()
     {
@@ -71,6 +49,7 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
         //_hubData.Chats = тут надо будет с httpclient взять все чаты 
         
         //Чтонибудь придумать
+        /*
         _hub.On<Message>("ReceiveMessage", message =>
         {
             Dispatcher.UIThread.InvokeAsync(() =>
@@ -87,6 +66,8 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
                 _hubData.Chats.Add(chat);
             });
         });
+        */
+        
         
         _hub.StartAsync();
     }

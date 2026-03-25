@@ -1,14 +1,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using IntegrationLab.Model;
 using IntegrationLab.Views;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
-using Models.Model;
+using BaseLibrary.Model;
 
 namespace IntegrationLab.ViewModels;
 
@@ -17,15 +17,30 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
     public override void OnCreating()
     {
         //View.Initialized += LoadMessages;
-        View.Initialized += TestData;
+        View.Initialized += (sender, args) =>
+        {
+            OnPropertyChanged(nameof(Messages));    
+        };
+        
     }
     
     [ObservableProperty]
     private Chat _chat;
-    
-    [ObservableProperty]
-    private ObservableCollection<Message> _messages = [];
 
+    public ObservableCollection<Message> Messages
+    {
+        get
+        {
+            if (Chat is null) return [];
+            
+            _hubData.Chats.TryGetValue(Chat, out var cartege);
+            return cartege.Item2;
+        }
+    }
+        //= HubD;
+
+    //[ObservableProperty]
+    private readonly HubData _hubData = App.Services.GetRequiredService<HubData>();
     private HubConnection _hub;
     private HttpClient _httpClient;
 
@@ -38,28 +53,14 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
     //     ? HorizontalAlignment.Right
     //     : HorizontalAlignment.Left;
     */
+    
 
-    private void TestData(object? sender, EventArgs e)
-    {
-        Messages.Add(new Message()
-        {
-            Chat = this.Chat,
-            ChatId = this.Chat.Id,
-            Content = "Ты опять выходишь на связь, а?",
-            Date = DateTime.Now.AddSeconds(-20),
-            Id = Guid.NewGuid(),
-            // Sender = this.Chat.Sender,
-            // SenderId = this.Chat.SenderId
-        });
-        OnPropertyChanged(nameof(Messages));
-    }
-
-    private async void LoadMessages(object? sender, EventArgs e)
-    {
-        Messages = 
-            await _httpClient.GetFromJsonAsync<ObservableCollection<Message>>("api/messages") 
-            ?? [];
-    }
+    // private async void LoadMessages(object? sender, EventArgs e)
+    // {
+    //     Messages = 
+    //         await _httpClient.GetFromJsonAsync<ObservableCollection<Message>>("api/messages") 
+    //         ?? [];
+    // }
 
     [RelayCommand]
     private async Task SendMessage(string message)
@@ -81,6 +82,7 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
             SenderId = App.CurrentDriver.User.Id
         });
         MessageText = string.Empty;
+        OnPropertyChanged(nameof(Messages));
     }
 
     [RelayCommand]

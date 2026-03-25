@@ -1,5 +1,5 @@
 using Avalonia.Layout;
-using Models.Model;
+using BaseLibrary.Model;
 
 namespace IntegrationLab.Model;
 

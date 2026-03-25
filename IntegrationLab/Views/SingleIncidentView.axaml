@@ -16,9 +16,17 @@
         <!--TODO: Потом поставить иконку назад -->
         <Button Content="Назад" Command="{Binding ReturnToIncidentsListCommand}"/>
         
-        <Grid Grid.Row="1">
-            <Label>Чтонибудь про инцидент</Label>
-        </Grid>
+        <StackPanel Grid.Row="1">
+            <!-- <Label>Чтонибудь про инцидент</Label> -->
+            <Label Content="{Binding Incident.IncidentDate}"/>
+            <Label Content="{Binding Incident.Status,
+            Converter={StaticResource IncidentStatusConverter}, 
+            StringFormat={}Статус: {0}}"/>
+            <Label Content="{Binding Incident.Shipping.Vehicle.VehicleFullName, 
+            StringFormat={}ТС: {0}}"/>
+            <Label Content="Описание: "/>
+            <TextBlock Text="{Binding Incident.Description}" TextWrapping="WrapWithOverflow"/>
+        </StackPanel>
     </Grid>
     
 </UserControl>

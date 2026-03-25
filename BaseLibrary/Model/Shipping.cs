@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Models.Model;
+namespace BaseLibrary.Model;
 
 public partial class Shipping : ObservableValidator
 {

@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:IntegrationLab.ViewModels"
-             xmlns:model="clr-namespace:Models.Model;assembly=Models"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:IncidentsViewModel"
              x:Class="IntegrationLab.Views.IncidentsView">
@@ -14,7 +13,7 @@
     </Design.DataContext>
     
     <UserControl.Resources>
-        <model:IncidentStatusConverter x:Key="StatusConverter"/>
+       
     </UserControl.Resources>
     
     <Grid RowDefinitions="* Auto">
@@ -23,7 +22,9 @@
                 <DataTemplate>
                     <StackPanel DoubleTapped="OnDoubleTapped" Orientation="Horizontal">
                         <Label Content="{Binding IncidentDate, StringFormat=dd.MM.yyyy}"/>
-                        <Label Content="{Binding Status, Converter={StaticResource StatusConverter}}"/>
+                        <Label Content="{Binding Status, 
+                        Converter={StaticResource IncidentStatusConverter}, 
+                        StringFormat={}Статус: {0}}"/>
                         <!-- <Label Content="{Binding }"/> -->
                     </StackPanel>
                 </DataTemplate>

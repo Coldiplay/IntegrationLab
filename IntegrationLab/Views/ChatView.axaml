@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:IntegrationLab.ViewModels"
-             xmlns:model="using:Models.Model"
+             xmlns:model="using:BaseLibrary.Model"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="550"
              x:Class="IntegrationLab.Views.ChatView"
              x:DataType="vm:ChatViewModel">
@@ -33,6 +33,8 @@
                             BorderThickness="0.5" 
                             CornerRadius="10">
                             <StackPanel HorizontalAlignment="Right">
+                                <TextBlock HorizontalAlignment="Right" 
+                                           Text="{Binding Sender.Login}"/>
                                 <TextBlock Text="{Binding Content}"/>
                             </StackPanel>
                         </Border>
