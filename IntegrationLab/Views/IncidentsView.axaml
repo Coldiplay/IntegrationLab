@@ -17,18 +17,21 @@
     </UserControl.Resources>
     
     <Grid RowDefinitions="* Auto">
-        <ListBox ItemsSource="{Binding Incidents}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel DoubleTapped="OnDoubleTapped" Orientation="Horizontal">
-                        <Label Content="{Binding IncidentDate, StringFormat=dd.MM.yyyy}"/>
-                        <Label Content="{Binding Status, 
+        <ScrollViewer>
+            <ListBox ItemsSource="{Binding Incidents}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel DoubleTapped="OnDoubleTapped" Orientation="Horizontal">
+                            <Label Content="{Binding IncidentDate, StringFormat=dd.MM.yyyy}"/>
+                            <Label Content="{Binding Status, 
                         Converter={StaticResource IncidentStatusConverter}, 
                         StringFormat={}Статус: {0}}"/>
-                        <!-- <Label Content="{Binding }"/> -->
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                            <!-- <Label Content="{Binding }"/> -->
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+        <Button Grid.Row="1" Content="Создать отчёт"/>
     </Grid>
 </UserControl>

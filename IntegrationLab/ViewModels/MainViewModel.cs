@@ -17,9 +17,6 @@ public partial class MainViewModel : ViewModelControlBase<MainView>
     [RelayCommand]
     private void OpenIncidentsView() =>
         CurrentView = App.Services.GetRequiredService<IncidentsView>();
-    [RelayCommand]
-    private void OpenActiveShipping() =>
-        CurrentView = App.Services.GetRequiredService<ActiveShippingView>();
     
     
     [ObservableProperty] private Control _currentView = App.Services.GetRequiredService<ShippingsView>();

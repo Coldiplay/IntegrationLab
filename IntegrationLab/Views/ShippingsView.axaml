@@ -6,30 +6,42 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="IntegrationLab.Views.ShippingsView"
              x:DataType="vm:ShippingsViewModel">
-    <Grid RowDefinitions="* *">
-        <ListBox SelectedItem="{Binding SelectedShipping}" 
-                 ItemsSource="{Binding Shippings}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel DoubleTapped="OnDoubleTapped" Orientation="Horizontal">
-                        <!-- <Label Content="{Binding }"/> -->
-                        <Label Content="{Binding EstimatedDeliveryDate, StringFormat={}Дата прибытия: dd.MM.yyyy}"/>
-                        <Label Content="{Binding Cargos.Count, StringFormat={}Количество груза: {0}}"/>
-                        <Label Content="{Binding ConfirmedStatus}"/>
-                        <!-- <Button Content="Подтвердить"  -->
-                        <!--         Command="{Binding ConfirmShippingCommand,  -->
-                        <!--         RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=vm:ShippingsViewModel}}"/> -->
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Подтвердить" 
-                              Command="{Binding ConfirmShippingCommand}"
-                              CommandParameter="{Binding SelectedShipping}"
-                    />
-                </ContextMenu>
-            </ListBox.ContextMenu>
-        </ListBox>
+    <Grid RowDefinitions="* Auto">
+        <ScrollViewer>
+            <ListBox SelectedItem="{Binding SelectedShipping}" 
+                     ItemsSource="{Binding Shippings}">
+                <ListBox.Styles>
+                    <!-- TODO: Как-нибудь сделать ширину stackpanel-a во всю ширину item-a -->
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    </Style>
+                    <Style Selector="StackPanel">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    </Style>
+                </ListBox.Styles>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel HorizontalAlignment="Stretch" DoubleTapped="OnDoubleTapped" Orientation="Horizontal">
+                            <!-- <Label Content="{Binding }"/> -->
+                            <Label Content="{Binding EstimatedDeliveryDate, StringFormat={}Дата прибытия: dd.MM.yyyy}"/>
+                            <Label Content="{Binding Cargos.Count, StringFormat={}Количество груза: {0}}"/>
+                            <Label Content="{Binding ConfirmedStatus}" HorizontalAlignment="Right"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Подтвердить" 
+                                  Command="{Binding ConfirmShippingCommand}"
+                                  CommandParameter="{Binding SelectedShipping}"
+                        />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
+        </ScrollViewer>
+        <Button Grid.Row="1" 
+                Content="Текущий рейс" 
+                Command="{Binding OpenActiveShippingCommand}"/>
     </Grid>
 </UserControl>

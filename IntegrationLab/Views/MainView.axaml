@@ -11,11 +11,6 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
-
-  <!-- <TextBlock  -->
-  <!--     Text="{Binding Greeting}"  -->
-  <!--     HorizontalAlignment="Center"  -->
-  <!--     VerticalAlignment="Center"/> -->
   
   <Grid RowDefinitions="* Auto">
       
@@ -29,8 +24,8 @@
               </Style>
           </StackPanel.Styles>
           
-          <Button Content="Текущий рейс"
-                  Command="{Binding OpenActiveShippingCommand}"/>
+          <!-- <Button Content="Текущий рейс" -->
+          <!--         Command="{Binding OpenActiveShippingCommand}"/> -->
           <Button Content="Рейсы"
                   Command="{Binding OpenShippingsViewCommand}"/>
           <Button Content="Чаты"

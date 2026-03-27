@@ -34,7 +34,7 @@ public partial class IncidentsViewModel : ViewModelControlBase<IncidentsView>
     {
         var incidentView = App.Services.GetRequiredService<SingleIncidentView>();
         (incidentView.DataContext as SingleIncidentViewModel)!.Incident = incident;
-        App.CurrentView = incidentView;
+        App.ChangeCurrentView(incidentView);
     }
     
     public override void OnCreating()

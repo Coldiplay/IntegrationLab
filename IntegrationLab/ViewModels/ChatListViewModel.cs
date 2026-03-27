@@ -85,6 +85,6 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
     {
         var chatView = App.Services.GetRequiredService<ChatView>();
         (chatView.DataContext as ChatViewModel)!.Chat = chat;
-        App.CurrentView = chatView;
+        App.ChangeCurrentView(chatView);
     }
 }

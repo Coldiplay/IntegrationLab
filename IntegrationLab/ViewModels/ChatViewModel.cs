@@ -87,5 +87,5 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
 
     [RelayCommand]
     private static void ReturnToChatList() =>
-        App.CurrentView = App.Services.GetRequiredService<MainView>();
+        App.ChangeCurrentView(App.Services.GetRequiredService<MainView>());
 }

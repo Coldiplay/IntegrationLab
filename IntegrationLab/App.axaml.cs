@@ -19,14 +19,26 @@ namespace IntegrationLab;
 public partial class App : Application
 {
     public static ServiceProvider Services { get; private set; }
-    public static Control CurrentView { get; set; }
-    public static Control PlatformMainIntefrace { get; set; }
-
-    public static MainViewModel? MainViewModel => ((CurrentView as MainView)?.DataContext as MainViewModel);
-    
+    public static Control CurrentView { get; private set; }
     public static Driver CurrentDriver { get; set; }
-
     public const string HUB_CONNECTION = "https://localhost:5001";
+
+    private static bool _isAppWithSingleView = true;
+    private static ISingleViewApplicationLifetime _platform;
+    private static MainWindow? _window;
+    
+    public static void ChangeCurrentView(Control view)
+    {
+        CurrentView = view;
+        if (_isAppWithSingleView)
+        {
+            _platform.MainView = CurrentView;
+        }
+        else
+        {
+            (_window!.DataContext as MainWindowViewModel)!.CurrentView = CurrentView;
+        }
+    }
 
     public override void Initialize()
     {
@@ -37,17 +49,20 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            _isAppWithSingleView = false;
             BuildServices();
             CurrentView = Services.GetRequiredService<MainView>();
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            var window = new MainWindow();
-            window.DataContext = new MainWindowViewModel(window);
-            desktop.MainWindow = window;
+            _window = new MainWindow();
+            _window.DataContext = new MainWindowViewModel(_window);
+            desktop.MainWindow = _window;
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
+            _platform = singleViewPlatform;
+            _isAppWithSingleView = true;
             BuildServices(true);
             CurrentView = Services.GetRequiredService<MainView>();
             singleViewPlatform.MainView = CurrentView;
@@ -134,6 +149,7 @@ public partial class App : Application
         services.AddSingleton<ActiveShippingView>(_ =>
             Tools.Helper.InitializeView<ActiveShippingView>());
     }
+    
     
 
     private void DisableAvaloniaDataAnnotationValidation()

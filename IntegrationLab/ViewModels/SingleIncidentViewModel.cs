@@ -19,5 +19,5 @@ public partial class SingleIncidentViewModel : ViewModelControlBase<SingleIncide
     
     [RelayCommand]
     private static void ReturnToIncidentsList() =>
-        App.CurrentView = App.Services.GetRequiredService<MainView>();
+        App.ChangeCurrentView(App.Services.GetRequiredService<MainView>());
 }

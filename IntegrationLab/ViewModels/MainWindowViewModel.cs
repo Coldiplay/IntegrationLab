@@ -16,5 +16,5 @@ public partial class MainWindowViewModel(MainWindow mainWindow) : ViewModelBase
     private static void InvokeOnUIThread(Action action) => 
         Dispatcher.UIThread.Invoke(action);
     
-    public static Control CurrentView => App.CurrentView;
+    [ObservableProperty] private Control _currentView = App.CurrentView;
 }

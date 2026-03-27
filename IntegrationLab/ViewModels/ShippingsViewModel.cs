@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
@@ -76,7 +77,15 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     {
         var shippingView = App.Services.GetRequiredService<SingleShippingView>();
         (shippingView.DataContext as SingleShippingViewModel)!.Shipping = shipping;
-        App.CurrentView = shippingView;
+        App.ChangeCurrentView(shippingView);
+    }
+
+    [RelayCommand]
+    private void OpenActiveShipping()
+    {
+        var activeShipping = Shippings.FirstOrDefault(s => s.ShippingStatus == ShippingStatus.Shipping);
+        if (activeShipping is not null)
+            OpenShippingCommand.Execute(activeShipping);
     }
 
     public override void OnCreating()
