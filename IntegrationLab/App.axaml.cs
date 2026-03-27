@@ -19,14 +19,8 @@ namespace IntegrationLab;
 public partial class App : Application
 {
     public static ServiceProvider Services { get; private set; }
-    public static MainWindow MainWindow { get; set; }
-    public static MainWindowViewModel MainWindowViewModel =>
-            (MainWindow.DataContext as MainWindowViewModel)!;
-    public static Control? CurrentView
-    {
-        get => MainWindowViewModel.CurrentView;
-        set => MainWindowViewModel.CurrentView = value;
-    }
+    public static Control CurrentView { get; set; }
+    public static Control PlatformMainIntefrace { get; set; }
 
     public static MainViewModel? MainViewModel => ((CurrentView as MainView)?.DataContext as MainViewModel);
     
@@ -41,22 +35,22 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        BuildServices();
-        
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            BuildServices();
+            CurrentView = Services.GetRequiredService<MainView>();
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = MainWindow;
+            var window = new MainWindow();
+            window.DataContext = new MainWindowViewModel(window);
+            desktop.MainWindow = window;
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = Services.GetRequiredService<MainView>();
-            // singleViewPlatform.MainView = new MainView
-            // {
-            //     DataContext = new MainViewModel()
-            // };
+            BuildServices(true);
+            CurrentView = Services.GetRequiredService<MainView>();
+            singleViewPlatform.MainView = CurrentView;
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -84,7 +78,7 @@ public partial class App : Application
         };
     }
     
-    private static void BuildServices()
+    private static void BuildServices(bool singleViewApp = false)
     {
         var services = new ServiceCollection();
         //Добавляем сервисы
@@ -104,12 +98,6 @@ public partial class App : Application
         Services = services.BuildServiceProvider();
      
         TestData();
-        
-        MainWindow = new MainWindow();
-        var mainWindowViewModel = new MainWindowViewModel(MainWindow);
-        MainWindow.DataContext = mainWindowViewModel; 
-        
-        mainWindowViewModel.CurrentView = Services.GetRequiredService<MainView>();
     }
 
     private static void RegisterDbServices(ServiceCollection services)

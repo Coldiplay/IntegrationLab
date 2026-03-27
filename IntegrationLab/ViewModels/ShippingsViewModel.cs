@@ -76,7 +76,7 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     {
         var shippingView = App.Services.GetRequiredService<SingleShippingView>();
         (shippingView.DataContext as SingleShippingViewModel)!.Shipping = shipping;
-        App.MainWindowViewModel.CurrentView = shippingView;
+        App.CurrentView = shippingView;
     }
 
     public override void OnCreating()

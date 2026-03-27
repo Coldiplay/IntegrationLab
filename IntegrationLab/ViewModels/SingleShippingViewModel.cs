@@ -19,5 +19,5 @@ public partial class SingleShippingViewModel : ViewModelControlBase<SingleShippi
     
     [RelayCommand]
     private static void ReturnToShippingsList() =>
-        App.MainWindowViewModel.CurrentView = App.Services.GetRequiredService<MainView>();
+        App.CurrentView = App.Services.GetRequiredService<MainView>();
 }
