@@ -12,22 +12,21 @@
         <vm:IncidentsViewModel />
     </Design.DataContext>
     
-    <UserControl.Resources>
-       
-    </UserControl.Resources>
-    
     <Grid RowDefinitions="* Auto">
         <ScrollViewer>
             <ListBox ItemsSource="{Binding Incidents}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel DoubleTapped="OnDoubleTapped" Orientation="Horizontal">
+                        <Grid Background="Transparent" 
+                              ColumnDefinitions="Auto Auto *" 
+                              DoubleTapped="OnDoubleTapped">
                             <Label Content="{Binding IncidentDate, StringFormat=dd.MM.yyyy}"/>
-                            <Label Content="{Binding Status, 
-                        Converter={StaticResource IncidentStatusConverter}, 
-                        StringFormat={}Статус: {0}}"/>
+                            <Label Grid.Column="1"
+                                   Content="{Binding Status, 
+                                   Converter={StaticResource IncidentStatusConverter}, 
+                                   StringFormat={}Статус: {0}}"/>
                             <!-- <Label Content="{Binding }"/> -->
-                        </StackPanel>
+                        </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

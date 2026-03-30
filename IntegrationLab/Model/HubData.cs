@@ -19,7 +19,8 @@ public partial class HubData : ObservableObject
     {
         var faker = GlobalOptions.Faker;
 
-        for (int i = 0; i < 10; i++)
+        //Заполнение рейсов (включая грузы и заказы)
+        for (var i = 0; i < 10; i++)
         {
             var shippingOrder = new ShippingOrder()
             {
@@ -31,7 +32,7 @@ public partial class HubData : ObservableObject
             };
             var cargos = new List<Cargo>();
             
-            for (int j = 0; j < faker.Random.Int(1, 10); j++)
+            for (var j = 0; j < faker.Random.Byte(1, 10); j++)
             {
                 var cargoType = new CargoType()
                 {
@@ -101,39 +102,49 @@ public partial class HubData : ObservableObject
             Shippings.Add(shipping);
         }
         
-        //
-        var sender = new User()
+        // Заполнение чатов
+        for (var i = 0; i < faker.Random.Byte(1, 6); i++)
         {
-            Id = 95,
-            Login = "CoolSkeleton95",
-            Name = "Test",
-            LastName = "Test",
-        };
-        var chat = new Chat()
-        {
-            Id = 1,
-            Name = "Название чата",
-            IsPrivateChat = true
-            // Receiver = App.CurrentDriver.User,
-            // ReceiverId = App.CurrentDriver.UserId,
-            // Sender = sender,
-            // SenderId = sender.Id
-        };
-        Chats.TryAdd(chat, ([sender], [ 
-            new Message()
-        {
-            Id = Guid.NewGuid(),
-            Chat = chat,
-            ChatId = chat.Id,
-            Content = "Ну как там с деньгами?",
-            Sender = sender,
-            SenderId = sender.Id, 
-            Date = DateTime.Now.AddMinutes(-10) 
+            var fName = faker.Person.FirstName;
+            var lName = faker.Person.LastName;
+            var sender = new User()
+            {
+                Id = faker.Random.Int(1),
+                Login = faker.Internet.UserName(fName, lName),
+                Name = fName,
+                LastName = lName,
+            };
+            var chat = new Chat()
+            {
+                Id = faker.Random.Int(1),
+                Name = sender.Login, //faker.Internet.DomainName(), //TODO: потом сделать нормальное создание чатов
+                IsPrivateChat = true
+                // Receiver = App.CurrentDriver.User,
+                // ReceiverId = App.CurrentDriver.UserId,
+                // Sender = sender,
+                // SenderId = sender.Id
+            };
+            var messages = new ObservableCollection<Message>();
+            
+            for (var j = 0; j < faker.Random.Byte(1, 6); j++)
+            {
+                messages.Add( 
+                    new Message()
+                    {
+                        Id = Guid.NewGuid(),
+                        Chat = chat,
+                        ChatId = chat.Id,
+                        Content = faker.Lorem.Lines(faker.Random.Byte(1, 3)),
+                        Sender = sender,
+                        SenderId = sender.Id, 
+                        Date = DateTime.Now.AddMinutes(-10) 
+                    });
+            }
+            Chats.TryAdd(chat, ([sender, App.CurrentDriver.User], messages));
         }
-        ]));
         
-        
-        for (int i = 0; i < Shippings.Count - faker.Random.Int(0, Shippings.Count - 1); i++)
+        //Заполнение инцидентов
+        for (var i = 0; i < Shippings.Count - faker.Random.Int(0, Shippings.Count - 1); i++)
         {
             Incidents.Add(new Incident()
             {
@@ -148,11 +159,11 @@ public partial class HubData : ObservableObject
             });
         }
     }
-
+    
+    // [ObservableProperty]
+    // private ObservableCollection<Message> _messages = [];
     [ObservableProperty]
-    private ObservableCollection<Message> _messages = [];
-    [ObservableProperty]
-    private ConcurrentDictionary<Chat, (ObservableCollection<User> members, ObservableCollection<Message>)> _chats = [];
+    private ConcurrentDictionary<Chat, (ObservableCollection<User> members, ObservableCollection<Message> messages)> _chats = [];
     [ObservableProperty]
     private ObservableCollection<Shipping> _shippings = [];
     [ObservableProperty]

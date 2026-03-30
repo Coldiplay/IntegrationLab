@@ -21,4 +21,21 @@ public static class Helper
         control.DataContext = vm;
         return control;
     }
+
+    public static T ChangeAllProperties<T>(T oldObj, T newObj)
+    where T : class
+    {
+        var type = typeof(T);
+        var properties = type.GetProperties();
+        foreach (var property in properties)
+        {
+            if (property.CanWrite)
+            {
+                property.SetValue(oldObj, property.GetValue(newObj));
+            }
+        }
+        
+        return oldObj;
+    }
+    
 }

@@ -12,6 +12,9 @@
 
     <Application.Styles>
         <FluentTheme />
+        <!-- <Style Selector="Grid" x:Key="ListBoxItemGrid"> -->
+        <!--     <Setter Property="Background" Value="Transparent"/> -->
+        <!-- </Style> -->
     </Application.Styles>
              
     <Application.Resources>

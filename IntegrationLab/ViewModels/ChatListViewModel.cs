@@ -74,9 +74,9 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
     
     public void OnDoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (sender is not StackPanel stackPanel) return;
-
-        var chat = ((stackPanel.Parent as ListBoxItem)!.Content as Chat)!;
+        if (sender is not Control control
+            || (control.Parent as ListBoxItem)?.Content is not Chat chat) 
+            return;
         OpenChatCommand.Execute(chat);
     }
     

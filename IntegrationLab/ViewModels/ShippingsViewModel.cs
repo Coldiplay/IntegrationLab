@@ -66,9 +66,8 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     
     public void OnDoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (sender is not StackPanel stackPanel) return;
-
-        var shipping = ((stackPanel.Parent as ListBoxItem)!.Content as Shipping)!;
+        if (sender is not Control control ||
+            (control.Parent as ListBoxItem)?.Content is not Shipping shipping) return;
         OpenShippingCommand.Execute(shipping);
     }
     

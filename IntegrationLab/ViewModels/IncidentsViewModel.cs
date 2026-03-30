@@ -22,10 +22,8 @@ public partial class IncidentsViewModel : ViewModelControlBase<IncidentsView>
     
     public void OnDoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (sender is not StackPanel stackPanel) return;
-
-        var incident = ((stackPanel.Parent as ListBoxItem)!.Content as Incident)!;
-        
+        if (sender is not Control control
+            || (control.Parent as ListBoxItem)?.Content is not Incident incident) return;
         OpenIncidentViewCommand.Execute(incident);
     }
 

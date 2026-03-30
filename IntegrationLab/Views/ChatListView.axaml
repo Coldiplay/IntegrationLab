@@ -13,16 +13,11 @@
     </Design.DataContext>
     
     <ListBox ItemsSource="{Binding Chats}">
-        <!-- <ListBox.ItemContainerTheme> -->
-        <!--     <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItem}"> -->
-        <!--         <Setter Property="HorizontalContentAlignment" Value="Stretch"/> -->
-        <!--     </ControlTheme> -->
-        <!-- </ListBox.ItemContainerTheme> -->
         <ListBox.ItemTemplate>
             <DataTemplate>
-                <StackPanel DoubleTapped="OnDoubleTapped">
+                <Grid Background="Transparent" DoubleTapped="OnDoubleTapped">
                     <Label Content="{Binding Name}"/>
-                </StackPanel>
+                </Grid>
             </DataTemplate>
         </ListBox.ItemTemplate>
     </ListBox>

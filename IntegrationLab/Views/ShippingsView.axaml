@@ -10,24 +10,14 @@
         <ScrollViewer>
             <ListBox SelectedItem="{Binding SelectedShipping}" 
                      ItemsSource="{Binding Shippings}">
-                <ListBox.Styles>
-                    <!-- TODO: Как-нибудь сделать ширину stackpanel-a во всю ширину item-a -->
-                    <Style Selector="ListBoxItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                    </Style>
-                    <Style Selector="StackPanel">
-                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                    </Style>
-                </ListBox.Styles>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel HorizontalAlignment="Stretch" DoubleTapped="OnDoubleTapped" Orientation="Horizontal">
+                        <Grid Background="Transparent" ColumnDefinitions="Auto Auto Auto 1*" DoubleTapped="OnDoubleTapped">
                             <!-- <Label Content="{Binding }"/> -->
                             <Label Content="{Binding EstimatedDeliveryDate, StringFormat={}Дата прибытия: dd.MM.yyyy}"/>
-                            <Label Content="{Binding Cargos.Count, StringFormat={}Количество груза: {0}}"/>
-                            <Label Content="{Binding ConfirmedStatus}" HorizontalAlignment="Right"/>
-                        </StackPanel>
+                            <Label Grid.Column="1" Content="{Binding Cargos.Count, StringFormat={}Количество груза: {0}}"/>
+                            <Label Grid.Column="2" Content="{Binding ConfirmedStatus}"/>
+                        </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
                 <ListBox.ContextMenu>
