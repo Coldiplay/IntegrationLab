@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace IntegrationLab.Model.Db;
 
-//TODO: Useless?
+[Obsolete("Хз надо ли")]
 public interface IDbAsyncImplementation<TModel> 
     where TModel : class, new()
 {

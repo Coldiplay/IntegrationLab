@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace IntegrationLab.Model;
 
+//TODO: Перенести на сервер с SignalR
 public class ApiDbHandler(HttpClient httpClient)
 {
     //public virtual async Task<List<TModel>> FetchAllAsync() => await FetchAllFromJsonAsync<List<TModel>>();

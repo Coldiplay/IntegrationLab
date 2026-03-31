@@ -1,8 +1,10 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace IntegrationLab.Model.Db.Concrete;
 
+[Obsolete("Использовать HubHandler")]
 public class ReadOnlySimpleDb(HttpClient httpClient) : SimpleApiDbHandler(httpClient)
 {
     public async override Task<bool> KillAsync<T>(T model, string? tableName = null) => false;

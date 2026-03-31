@@ -20,6 +20,7 @@ public partial class App : Application
 {
     public static ServiceProvider Services { get; private set; }
     public static Control CurrentView { get; private set; }
+    public static int CurrentDriverId => CurrentDriver.User.Id;
     public static Driver CurrentDriver { get; set; }
     public const string HUB_CONNECTION = "https://localhost:5001";
 
@@ -104,7 +105,7 @@ public partial class App : Application
             return client;
         });
        
-        RegisterDbServices(services);
+        //RegisterDbServices(services);
         
         RegisterViews(services);
         
@@ -115,12 +116,14 @@ public partial class App : Application
         TestData();
     }
 
+    /*
     private static void RegisterDbServices(ServiceCollection services)
     {
          services.AddSingleton<ReadOnlySimpleDb>(serviceProvider => 
              new ReadOnlySimpleDb(serviceProvider.GetRequiredService<HttpClient>()));
          
     }
+    */
 
     private static void RegisterViews(ServiceCollection services)
     {
