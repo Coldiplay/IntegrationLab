@@ -18,6 +18,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseLibrary", "BaseLibrary\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationAPI", "IntegrationAPI\IntegrationAPI.csproj", "{936C5E74-5671-49DE-B326-474A730EF523}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileSignalR", "MobileSignalR\MobileSignalR.csproj", "{E8B1CBA2-C529-449A-B76C-B68FB57390E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LilTestField", "LilTestField\LilTestField.csproj", "{288918F4-3666-4829-B8B7-FDB1D67B538A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +48,14 @@ Global
 		{936C5E74-5671-49DE-B326-474A730EF523}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{936C5E74-5671-49DE-B326-474A730EF523}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{936C5E74-5671-49DE-B326-474A730EF523}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8B1CBA2-C529-449A-B76C-B68FB57390E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8B1CBA2-C529-449A-B76C-B68FB57390E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8B1CBA2-C529-449A-B76C-B68FB57390E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8B1CBA2-C529-449A-B76C-B68FB57390E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{288918F4-3666-4829-B8B7-FDB1D67B538A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{288918F4-3666-4829-B8B7-FDB1D67B538A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{288918F4-3666-4829-B8B7-FDB1D67B538A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{288918F4-3666-4829-B8B7-FDB1D67B538A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

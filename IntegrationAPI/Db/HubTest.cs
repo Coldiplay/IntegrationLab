@@ -4,8 +4,9 @@ namespace IntegrationAPI.Db;
 
 public class HubTest : Hub
 {
-    public void Test()
+    public async Task Test()
     {
         //this.
+        return;
     }
 }

@@ -13,6 +13,7 @@ public class Program
         // Add services to the container.
         builder.Services.AddSwaggerGen();
         builder.Services.AddDbContext<IntegrationDbContext>();
+        builder.Services.AddSignalR();
         
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
