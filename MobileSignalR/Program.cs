@@ -17,7 +17,7 @@ public class Program
 
         //app.MapGet("/", () => "Hello World!");
 
-        app.MapHub<MobileHub>("/why");
+        app.MapHub<MobileHub>("/hub");
 
         app.UseMiddleware<GlobalExceptionMiddleWare>();
         app.Run();
