@@ -7,10 +7,18 @@ public static class Extensions
 {
     extension(HttpClient client)
     {
-        public async Task<T?> GetFromLaravel<T>(string url)
+        public async Task<TResult?> GetLaravel<TResult>(string url)
         {
-            return LaravelParser.ParseResponse<T>(await (await client.GetAsync($"api/Users/GetChatMembers")).Content
-                .ReadAsStringAsync());
+            return LaravelParser.ParseResponse<TResult>(
+                await (await client.GetAsync(url))
+                    .Content.ReadAsStringAsync());
+        }
+
+        public async Task<TResult?> PostLaravel<TResult>(string url, object parameter)
+        {
+            return LaravelParser.ParseResponse<TResult>(
+                await (await client.PostAsJsonAsync(url, parameter))
+                    .Content.ReadAsStringAsync());
         }
     }
 

@@ -1,17 +1,19 @@
+using BaseLibrary.Auth;
 using BaseLibrary.Db;
 using BaseLibrary.Model;
-using BaseLibrary.Tools;
 using Microsoft.AspNetCore.Authorization;
+using SignalRSwaggerGen.Attributes;
 
 namespace MobileSignalR.Hub;
 
-[Authorize]
+[SignalRHub]
+[Authorize(Policy = "Authorized")]
 public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.AspNetCore.SignalR.Hub
 {
     public async Task<Response> GetChatMembers()
     {
-        var token = Context.User!.Claims.First(c => c.Type.Equals("token_value")).Value;
-        return this.ToResponseWithData(await httpApi.GetFromLaravel<IEnumerable<User>>($"api/Users/GetChatMembers"));
+        //var token = Context.User!.Claims.First(c => c.Type.Equals("token_value")).Value;
+        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<User>>($"api/Users/GetChatMembers"));
         //return await httpApi.GetFromJsonAsync<IEnumerable<User>>("api/Users/GetChatMembers");
         //if (Clients.Caller.)
 
@@ -20,9 +22,9 @@ public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.
 
     }
 
-
-    public async Task<string> Authorize(string login, string passwordHash)
+    [AllowAnonymous]
+    public async Task<Response> Authorize(string login, string passwordHash)
     {
-        return "";
+        return this.ToResponseWithData(await httpApi.PostLaravel<UserAuth>("api/Login", new {login, passwordHash}));
     }
 }

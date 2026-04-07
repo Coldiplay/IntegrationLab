@@ -3,13 +3,15 @@ using System.Net;
 using System.Text.Json;
 using BaseLibrary.Model;
 using BaseLibrary.Tools;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace LilTestField;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
+        /*
         var json = """
                    {
                        "type": "Гдетотам\\PostResource",
@@ -46,6 +48,13 @@ class Program
         var test2 = LaravelParser.ParseResponse<Post>(json);
         sw.Stop();
         var tesss = sw.ElapsedMilliseconds;
+        ;
+        */
+        
+        var connection = new HubConnectionBuilder().WithUrl("https://localhost:7045/hubs/MobileHub").WithAutomaticReconnect().Build();
+        //connection.SendAsync("Authorize", "test", "test2").Wait();
+        await connection.StartAsync();
+        var response = await connection.InvokeAsync<object>("Authorize", "test", "test2");
         ;
     }
 
