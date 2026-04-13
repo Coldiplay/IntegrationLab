@@ -6,9 +6,9 @@ namespace MobileSignalR.Auth;
 public static class KeyHelper 
 {
     private static RSAParameters ParseXmlString(string xml){
-        RSAParameters parameters = new RSAParameters();
+        var parameters = new RSAParameters();
 
-        System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument();
+        var xmlDoc = new System.Xml.XmlDocument();
         xmlDoc.LoadXml(xml);
 
         if (xmlDoc.DocumentElement!.Name.Equals("RSAKeyValue"))
@@ -39,7 +39,7 @@ public static class KeyHelper
         var parameters = ParseXmlString(xml);
         var rsaProvider = new RSACryptoServiceProvider(2048);
         rsaProvider.ImportParameters(parameters);
-        var key = new RsaSecurityKey(rsaProvider);   
+        var key = new RsaSecurityKey(rsaProvider);
         return key;
     }  
 }

@@ -1,4 +1,3 @@
-using System.Net;
 using BaseLibrary.Db;
 using BaseLibrary.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,6 +33,7 @@ public class Program
             })
             .AddJwtBearer(o =>
             {
+                //private key?
                 const string xml = "<RSAKeyValue> load...from..local...files...</RSAKeyValue>";
                 var key = KeyHelper.BuildRsaSigningKey(xml);
 
@@ -62,7 +62,6 @@ public class Program
         builder.Services.AddSingleton<HttpClient>(_ => new HttpClient {
             BaseAddress = new Uri(GlobalOptions.API_URI)
         });
-
         
         
         //new HttpClient().GetAsync("").Result.Content.

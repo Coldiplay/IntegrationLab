@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Avalonia.Layout;
-using BaseLibrary.Model;
 
 namespace IntegrationLab.Model;
 

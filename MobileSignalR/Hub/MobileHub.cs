@@ -1,11 +1,13 @@
 using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using BaseLibrary.Auth;
 using BaseLibrary.Db;
 using BaseLibrary.Model;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using MobileSignalR.Auth;
 using SignalRSwaggerGen.Attributes;
@@ -16,12 +18,13 @@ namespace MobileSignalR.Hub;
 [Authorize(Policy = "Authorized")]
 public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.AspNetCore.SignalR.Hub
 {
+    private ConcurrentDictionary<string, string> _jwtToLaravel = [];
     public async Task<Response> GetChatMembers()
     {
-        //var token = Context.User!.Claims.First(c => c.Type.Equals("token_value")).Value;
+        if (GetLaravelToken() is not { } result) return this.BadResponse("Unauthorized", HttpStatusCode.Unauthorized);
+        
+        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result);
         return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<User>>($"api/Users/GetChatMembers"));
-        //return await httpApi.GetFromJsonAsync<IEnumerable<User>>("api/Users/GetChatMembers");
-        //if (Clients.Caller.)
 
         // Мобилка <-> SignalR <<-> API (Laravel) <->> Сайт (Laravel)
         // Как авторизовывать мобилки?
@@ -31,10 +34,13 @@ public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.
     [AllowAnonymous]
     public async Task<Response> Authorize(string login, string passwordHash)
     {
-        return this.ToResponseWithData(await httpApi.PostLaravel<UserAuth>("api/Login", new {login, passwordHash}));
+        var result = await httpApi.PostLaravel<UserAuth>("api/Login", new { login, passwordHash });
+        if (string.IsNullOrEmpty(result?.Token))
+            _jwtToLaravel.TryAdd(result!.Token, GenerateToken(DateTime.Now.AddMinutes(30)));
+        return this.ToResponseWithData<object>();
     }
     
-    private string GenerateToken(DateTime expiry)
+    private static string GenerateToken(DateTime expiry)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var identity = new ClaimsIdentity([
@@ -42,8 +48,9 @@ public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.
             // ... other claims
         ]);
         
+        //private key?
         const string xml = "<RSAKeyValue> load...from..local...files...</RSAKeyValue>";
-        SecurityKey key = KeyHelper.BuildRsaSigningKey(xml); 
+        SecurityKey key = KeyHelper.BuildRsaSigningKey(xml);
 
         var token = new JwtSecurityToken
         (
@@ -52,9 +59,14 @@ public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.
             claims: identity.Claims,
             notBefore: DateTime.UtcNow,
             expires: expiry,
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest)
+            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.RsaSha256, SecurityAlgorithms.Sha256Digest)
         );
         var tokenString = tokenHandler.WriteToken(token);
         return tokenString;
+    }
+
+    private string? GetLaravelToken()
+    {
+        return _jwtToLaravel.GetValueOrDefault(Context.GetHttpContext().Request.Headers.Authorization);
     }
 }

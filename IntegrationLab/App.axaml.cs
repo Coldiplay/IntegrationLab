@@ -7,7 +7,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using IntegrationLab.Model;
-using IntegrationLab.Model.Db.Concrete;
 using IntegrationLab.ViewModels;
 using IntegrationLab.Views;
 using Microsoft.Extensions.DependencyInjection;

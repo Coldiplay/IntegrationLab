@@ -1,12 +1,6 @@
-﻿using System.Diagnostics;
-using System.Net;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.Json;
-using BaseLibrary.Model;
-using BaseLibrary.Tools;
-using Microsoft.AspNetCore.SignalR.Client;
 
 namespace LilTestField;
 
@@ -82,43 +76,59 @@ class Program
         var response = await connection.InvokeAsync<object>("Authorize", "test", "test2");
         ;
         */
-        
+        Test();
+
+    }
+
+    private static void Test()
+    {
         var rsaKey = RSA.Create(2048);
-        const string subject = "CN=myauthority.ru";
-        var certReq = new CertificateRequest(subject, rsaKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        var test = rsaKey.ExportRSAPublicKey();
+        const string subjectCa = "CN=myauthority.ru";
+        var certReq = new CertificateRequest(subjectCa, rsaKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         certReq.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true)); 
         certReq.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(certReq.PublicKey, false));
         var expiration = DateTimeOffset.Now.AddYears(5);
         var caCert  = certReq.CreateSelfSigned(DateTimeOffset.Now, expiration);
         
-        
-    }
-
-    private void Test(X509Certificate2 caCert, DateTime expiration)
-    {
         var clientKey = RSA.Create(2048);
         const string subject = "CN=10.10.10.*";
         var clientReq = new CertificateRequest(subject, clientKey,HashAlgorithmName.SHA256,RSASignaturePadding.Pkcs1);
         clientReq.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
         clientReq.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.NonRepudiation, false));
         clientReq.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(clientReq.PublicKey, false));
-        byte[] serialNumber = BitConverter.GetBytes(DateTime.Now.ToBinary());
+        var serialNumber = BitConverter.GetBytes(DateTime.Now.ToBinary());
         var clientCert = clientReq.Create(caCert, DateTimeOffset.Now, expiration, serialNumber);
         
         //Save cert public key
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         builder.AppendLine("-----BEGIN CERTIFICATE-----");
         builder.AppendLine(Convert.ToBase64String(clientCert.RawData, Base64FormattingOptions.InsertLineBreaks));
         builder.AppendLine("-----END CERTIFICATE-----");
         File.WriteAllText("public.crt", builder.ToString());
         
         //Save cert private key
-        string name = clientKey.SignatureAlgorithm.ToUpper();
-        StringBuilder builder2 = new StringBuilder();
-        builder2.AppendLine($"-----BEGIN {name} PRIVATE KEY-----");
-        builder2.AppendLine(Convert.ToBase64String(clientKey.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks));
-        builder2.AppendLine($"-----END {name} PRIVATE KEY-----");
-        File.WriteAllText("private.key", builder2.ToString());
+        var name = clientKey.SignatureAlgorithm.ToUpper();
+        builder.Clear();
+        builder.AppendLine($"-----BEGIN {name} PRIVATE KEY-----");
+        builder.AppendLine(Convert.ToBase64String(clientKey.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks));
+        builder.AppendLine($"-----END {name} PRIVATE KEY-----");
+        File.WriteAllText("private.key", builder.ToString());
+        
+        
+        var textPrivate = File.ReadAllText("private.key");
+        var textCert = File.ReadAllText("public.crt");
+        var fullPath = Path.GetFullPath("private.key");
+        ;
+
+        /*
+        //origin loader
+        //var exportCert = new X509Certificate2(clientCert.Export(X509ContentType.Cert), (string)null, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet).CopyWithPrivateKey(clientKey);
+
+        var exportCert = X509CertificateLoader.LoadPkcs12(clientCert.Export(X509ContentType.Cert), (string)null, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet).CopyWithPrivateKey(clientKey);
+        //File.WriteAllBytes("client.pfx", exportCert.Export(X509ContentType.Pfx));
+        File.WriteAllBytes("client.p12", exportCert.Export(X509ContentType.Pkcs12));
+        */
     }
 
     
