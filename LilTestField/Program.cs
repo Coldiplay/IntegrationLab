@@ -76,8 +76,24 @@ class Program
         var response = await connection.InvokeAsync<object>("Authorize", "test", "test2");
         ;
         */
-        Test();
+        //Test();
+        ;
+    }
 
+    private static async Task SaveRSAKeyPair()
+    {
+        var rsa = new RSACryptoServiceProvider();
+        var keys = GenerateRSAKeyPair();
+        await File.WriteAllTextAsync("private.xml", keys.privateKey);
+        await File.WriteAllTextAsync("public.xml", keys.publicKey);
+    }
+    
+    private static (string publicKey, string privateKey) GenerateRSAKeyPair()
+    {
+        using var rsa = new RSACryptoServiceProvider();
+        var publicKey = rsa.ToXmlString(false); //Открытый
+        var privateKey = rsa.ToXmlString(true); //И открытый и закрытый ключи
+        return (publicKey, privateKey);
     }
 
     private static void Test()

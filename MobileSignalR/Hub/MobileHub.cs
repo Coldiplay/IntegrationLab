@@ -36,11 +36,11 @@ public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.
     {
         var result = await httpApi.PostLaravel<UserAuth>("api/Login", new { login, passwordHash });
         if (string.IsNullOrEmpty(result?.Token))
-            _jwtToLaravel.TryAdd(result!.Token, GenerateToken(DateTime.Now.AddMinutes(30)));
+            _jwtToLaravel.TryAdd(result!.Token, await GenerateToken(DateTime.Now.AddMinutes(30)));
         return this.ToResponseWithData<object>();
     }
     
-    private static string GenerateToken(DateTime expiry)
+    private static async Task<string> GenerateToken(DateTime expiry)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var identity = new ClaimsIdentity([
@@ -48,8 +48,8 @@ public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.
             // ... other claims
         ]);
         
-        //private key?
-        const string xml = "<RSAKeyValue> load...from..local...files...</RSAKeyValue>";
+        //string xml = await File.ReadAllTextAsync("private.xml");
+        var xml = "<RSAKeyValue><Modulus>uq+6W9nJslsaLMdfcuHTtxuFk7RPmvj4NKfXTVm5a0hckqlTi5EEEltlaFE33X/8V2dQIql8vOvRDJo4z+/zlBaBLyRo2oliRBZudrc1vQI9euvai0kL16FH8YY6dYnbah9RhfdpNkhQfd4bZksfgvEOYSbxw/28K64j6i/tJ9U=</Modulus><Exponent>AQAB</Exponent><P>3UKsCIN8Kg+lQTtiBh+ExZddY92WiiP8XwlVaVLcC2EhKBktfdVFgdZKakEugWj+KebybDrRp1jqTVGzcUPNGw==</P><Q>1/9kCsFO1aNG0rOkrY/OOnhBH6Shww4xFzWxd00enQTXQ7CL5GvVobXJDbKsAp0dt8EkDHLbOPEHzYTdCL7dzw==</Q><DP>NM5Jsop24q7zOLtMbLuu+11hq4jh+bwW6jOXD9j3rTuUJzbDFaoFubQD9JHz4GzHZAa7SrtK+A6PdL6P/fM5iw==</DP><DQ>rDTHc/OugJFOc8oZru6KAv/BHBNLjJGR/ekm9fCcSZ+EaEknHxQCHI0sICmlDehpuwjXTr17nig8ilQ1TTWu7Q==</DQ><InverseQ>Y7KECd58t6Aef2JxkZTMd2EFhmiJdFHh3u4i/XPR8yG+zbO8liIqY/YFpy6ev1JnnG1dSAjfYsuRQPnR7vwg4g==</InverseQ><D>C8sGDr9XSnkO0j1V/j/dy/dlHMuLK9MGeu0PYMeGOwy7LFid+ncStsYnRcu7p7ZqDmtsWIQ0aQrMjetAI4KY9GpIPoIqsQCVnw2pVz4hw5iXpRDCY5udSG6nhYsokxKjBKe+sGHLwsszzTTe0qmlJSmH4LfZfUxS5ugzPrOLOJE=</D></RSAKeyValue>";
         SecurityKey key = KeyHelper.BuildRsaSigningKey(xml);
 
         var token = new JwtSecurityToken

@@ -35,6 +35,11 @@ public static class KeyHelper
         return parameters;
     }
     
+    /// <summary>
+    /// Создание публичного ключа из приватного
+    /// </summary>
+    /// <param name="xml">Приватный ключ в виде xml</param>
+    /// <returns>Публичный rsa ключ</returns>
     public static RsaSecurityKey BuildRsaSigningKey(string xml){ 
         var parameters = ParseXmlString(xml);
         var rsaProvider = new RSACryptoServiceProvider(2048);
