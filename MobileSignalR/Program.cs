@@ -24,14 +24,17 @@ public class Program
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "Some API v1", Version = "v1" });
             options.AddSignalRSwaggerGen();
-            options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+            options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
             {
-                Name = "Authorization",
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 BearerFormat = "JWT",
-                In = ParameterLocation.Header,
                 Description = "JWT Authorization header using the Bearer scheme."
+            });
+
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("bearer", document)] = []
             });
             
         });
@@ -70,11 +73,11 @@ public class Program
         //             new AuthRequirement(new HttpClient {BaseAddress = new Uri(GlobalOptions.API_URI)})
         //         ));
         
-        builder.Services.AddSignalR();
         builder.Services.AddDbContext<IntegrationDbContext>();
         builder.Services.AddSingleton<HttpClient>(_ => new HttpClient {
             BaseAddress = new Uri(GlobalOptions.API_URI)
         });
+        builder.Services.AddHostedService<JwtTokenHandler>();
         
         
         //new HttpClient().GetAsync("").Result.Content.

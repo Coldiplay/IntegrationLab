@@ -16,19 +16,19 @@ namespace MobileSignalR.Hub;
 
 [SignalRHub("/hub")]
 [Authorize(Policy = "Authorized")]
-public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.AspNetCore.SignalR.Hub
+//TODO: Придумать, как запустить JwtTokenHandler как background сервис и получить его сюда
+public class MobileHub(IntegrationDbContext db, HttpClient httpApi, JwtTokenHandler checker) : Microsoft.AspNetCore.SignalR.Hub
 {
-    private ConcurrentDictionary<string, string> _jwtToLaravel = [];
+    private readonly ConcurrentDictionary<string, string> _jwtToLaravel = checker.JwtToLaravel;
     public async Task<Response> GetChatMembers()
     {
-        if (GetLaravelToken() is not { } result) return this.BadResponse("Unauthorized", HttpStatusCode.Unauthorized);
+        //Надо ли? политика ведь не должна пропускать
+        //if (GetLaravelToken() is not { } result) return this.BadResponse("Unauthorized", HttpStatusCode.Unauthorized);
         
-        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result);
+        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
         return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<User>>($"api/Users/GetChatMembers"));
 
         // Мобилка <-> SignalR <<-> API (Laravel) <->> Сайт (Laravel)
-        // Как авторизовывать мобилки?
-
     }
 
     [AllowAnonymous]
@@ -36,7 +36,8 @@ public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.
     {
         var result = await httpApi.PostLaravel<UserAuth>("api/Login", new { login, passwordHash });
         if (string.IsNullOrEmpty(result?.Token))
-            _jwtToLaravel.TryAdd(result!.Token, await GenerateToken(DateTime.Now.AddMinutes(30)));
+            _jwtToLaravel.TryAdd(await GenerateToken(DateTime.Now.AddMinutes(30)), result!.Token);
+        
         return this.ToResponseWithData<object>();
     }
     
@@ -44,8 +45,7 @@ public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var identity = new ClaimsIdentity([
-            new Claim(ClaimTypes.Name, "...")
-            // ... other claims
+            new Claim("ID", Guid.NewGuid().ToString())
         ]);
         
         //string xml = await File.ReadAllTextAsync("private.xml");
@@ -67,6 +67,7 @@ public class MobileHub(IntegrationDbContext db, HttpClient httpApi) : Microsoft.
 
     private string? GetLaravelToken()
     {
-        return _jwtToLaravel.GetValueOrDefault(Context.GetHttpContext().Request.Headers.Authorization);
+        var token = Context.GetHttpContext()?.Request.Headers.Authorization.ToString().Remove(0, 7);
+        return string.IsNullOrEmpty(token) ? _jwtToLaravel!.GetValueOrDefault(token) : null;
     }
 }
