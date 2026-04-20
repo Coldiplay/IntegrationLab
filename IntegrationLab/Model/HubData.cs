@@ -2,9 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using BaseLibrary.Model;
 using BaseLibrary.Tools;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace IntegrationLab.Model;
 
@@ -158,6 +158,9 @@ public partial class HubData : ObservableObject
                 Status = IncidentStatus.InProgress
             });
         }
+        
+        var randShipping = faker.PickRandom<Shipping>(Shippings);
+        randShipping.ShippingStatus = ShippingStatus.Shipping;
     }
     
     // [ObservableProperty]

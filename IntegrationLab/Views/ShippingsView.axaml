@@ -31,7 +31,7 @@
             </ListBox>
         </ScrollViewer>
         <Button Grid.Row="1" 
-                Content="Текущий рейс" 
+                Content="Текущий рейс"
                 Command="{Binding OpenActiveShippingCommand}"/>
     </Grid>
 </UserControl>

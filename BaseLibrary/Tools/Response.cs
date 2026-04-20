@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace MobileSignalR.Hub;
+namespace BaseLibrary.Tools;
 
 public class Response
 {

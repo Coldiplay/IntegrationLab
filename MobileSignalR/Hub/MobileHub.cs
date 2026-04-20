@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using BaseLibrary.Auth;
 using BaseLibrary.Model;
+using BaseLibrary.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
@@ -32,7 +33,24 @@ public class MobileHub(HttpClient httpApi, JwtTokenHandler checker) : Microsoft.
         httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
         return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Message>>($"api/Users/GetChatMessages?chatId={chatId}"));
     }
-    
+
+    public async Task<Response> GetChats(int userId)
+    {
+        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
+        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Chat>>($"api/Users/GetChats?userId={userId}"));
+    }
+
+    public async Task<Response> GetIncidents(int userId)
+    {
+        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
+        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Incident>>($"api/Users/GetIncidents?userId={userId}"));
+    }
+
+    public async Task<Response> GetShippings(int userId)
+    {
+        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
+        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Shipping>>($"api/Users/GetShippings?userId={userId}"));
+    }
 
     [AllowAnonymous]
     public async Task<Response> Authorize(string login, string passwordHash)
