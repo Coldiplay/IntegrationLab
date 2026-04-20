@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Net;
 using BaseLibrary.Tools;
 
@@ -21,10 +22,10 @@ public static class Extensions
                     .Content.ReadAsStringAsync());
         }
     }
-
     extension(Microsoft.AspNetCore.SignalR.Hub hub)
     {
         public Response ToResponseWithData<T>(T? model = default, string? message = null, HttpStatusCode statusCode = HttpStatusCode.OK)
+            where  T : notnull
         {
             if (model is null)
             {
@@ -52,6 +53,34 @@ public static class Extensions
                 StatusCode = statusCode,
                 Message = message
             };
+        }
+    }
+    extension(IDictionary dictionary)
+    {
+        public T? TryGetValue<T>(string key, T? defaultValue = default)
+        {
+            return dictionary.Contains(key) ? (T?)dictionary[key] : defaultValue;
+        }
+
+        public bool TryGetValue<T>(string key, out T value)
+            where T : notnull
+        {
+            try
+            {
+                if (dictionary.Contains(key))
+                {
+                    value = (T)(dictionary[key] ?? throw new KeyNotFoundException($"Key {key} not found"));
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            value = default;
+            return false;
         }
     }
 }

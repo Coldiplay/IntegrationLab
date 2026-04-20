@@ -31,8 +31,8 @@ namespace MobileSignalR.Controllers
             ;
             var token = new JwtSecurityToken
             (
-                issuer: JwtOptions.Issuer,
-                audience: JwtOptions.Audience,
+                issuer: Options.Issuer,
+                audience: Options.Audience,
                 claims: identity.Claims,
                 notBefore: DateTime.UtcNow,
                 expires: expiry,

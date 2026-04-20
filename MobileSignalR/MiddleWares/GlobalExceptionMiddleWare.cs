@@ -10,10 +10,6 @@ namespace MobileSignalR.MiddleWares
     /// <param name="logger">Логгер для логгирования в консоль</param>
     public class GlobalExceptionMiddleWare(RequestDelegate request, IWebHostEnvironment environment, ILogger<GlobalExceptionMiddleWare> logger) : IExceptionMiddleWare
     {
-        private readonly RequestDelegate _requestDelegate = request;
-        private readonly IWebHostEnvironment _environment = environment;
-        private readonly ILogger<GlobalExceptionMiddleWare> _logger = logger;
-
         public static int GetErrorCode(Exception exception) => exception switch
         {
             UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
@@ -57,7 +53,7 @@ namespace MobileSignalR.MiddleWares
             try
             {
                 // Пробуем запустить запрос в контексте
-                await _requestDelegate.Invoke(httpContext);
+                await request.Invoke(httpContext);
             }
             //Отлавливаем возможную ошибку
             catch (Exception ex)
@@ -75,9 +71,9 @@ namespace MobileSignalR.MiddleWares
 
                 var severity = GetSeverityOfError(ex);
                 //Логгируем ошибку в консоль
-                _logger.Log(severity, "MiddleWare поймал ошибку в выполнении запроса пользователя {0} в методе {1} {2}, ошибка: {3}", httpContext.Connection.RemoteIpAddress, httpContext.Request.Method, httpContext.Request.Path, message);
+                logger.Log(severity, "MiddleWare поймал ошибку в выполнении запроса пользователя {0} в методе {1} {2}, ошибка: {3}", httpContext.Connection.RemoteIpAddress, httpContext.Request.Method, httpContext.Request.Path, message);
                 //Запускаем метод для отправки ошибки клиенту
-                await HandleExceptionAsync(httpContext, ex, _environment.IsDevelopment());
+                await HandleExceptionAsync(httpContext, ex, environment.IsDevelopment());
             }
         }
 
