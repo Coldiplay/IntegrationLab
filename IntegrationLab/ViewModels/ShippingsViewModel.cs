@@ -6,13 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
+using BaseLibrary.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
 using IntegrationLab.Views;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
-using BaseLibrary.Model;
 
 namespace IntegrationLab.ViewModels;
 
@@ -74,8 +74,8 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     [RelayCommand]
     private static void OpenShipping(Shipping shipping)
     {
-        var shippingView = App.Services.GetRequiredService<SingleShippingView>();
-        (shippingView.DataContext as SingleShippingViewModel)!.Shipping = shipping;
+        var shippingView = App.Services.GetRequiredService<SingleShippingViewModel>();
+        shippingView.Shipping = shipping;
         App.ChangeCurrentView(shippingView);
     }
 

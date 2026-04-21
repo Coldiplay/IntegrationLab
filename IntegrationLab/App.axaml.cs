@@ -1,24 +1,21 @@
 using System;
-using System.Linq;
 using System.Net.Http;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using BaseLibrary.Model;
+using BaseLibrary.Tools;
 using IntegrationLab.Model;
 using IntegrationLab.ViewModels;
 using IntegrationLab.Views;
 using Microsoft.Extensions.DependencyInjection;
-using BaseLibrary.Model;
-using BaseLibrary.Tools;
 
 namespace IntegrationLab;
 
 public partial class App : Application
 {
     public static ServiceProvider Services { get; private set; }
-    public static Control CurrentView { get; private set; }
+    public static ViewModelBase CurrentView { get; private set; }
     public static int CurrentDriverId => CurrentDriver.User.Id;
     public static Driver CurrentDriver { get; set; }
     public const string HUB_CONNECTION = "https://localhost:5001";
@@ -27,17 +24,22 @@ public partial class App : Application
     private static ISingleViewApplicationLifetime _platform;
     private static MainWindow? _window;
     
-    public static void ChangeCurrentView(Control view)
+    public static void ChangeCurrentView(ViewModelBase viewModel)
     {
-        CurrentView = view;
+        CurrentView = viewModel;
         if (_isAppWithSingleView)
         {
-            _platform.MainView = CurrentView;
+            _platform.MainView = Services.GetRequiredService<ViewLocator>().Build(CurrentView);
         }
         else
         {
-            (_window!.DataContext as MainWindowViewModel)!.CurrentView = CurrentView;
+            (_window!.DataContext as MainWindowViewModel)!.CurrentPage = CurrentView;
         }
+    }
+
+    public static void ChangeCurrentView<TViewModel>() where TViewModel : ViewModelBase
+    {
+        ChangeCurrentView(Services.GetRequiredService<TViewModel>());
     }
 
     public override void Initialize()
@@ -51,12 +53,9 @@ public partial class App : Application
         {
             _isAppWithSingleView = false;
             BuildServices();
-            CurrentView = Services.GetRequiredService<MainView>();
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
-            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
-            DisableAvaloniaDataAnnotationValidation();
-            _window = new MainWindow();
-            _window.DataContext = new MainWindowViewModel(_window);
+            DataTemplates.Add(new ViewLocator(Services));
+            CurrentView = new MainViewModel();
+            _window = Services.GetRequiredService<MainWindow>();
             desktop.MainWindow = _window;
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
@@ -64,8 +63,10 @@ public partial class App : Application
             _platform = singleViewPlatform;
             _isAppWithSingleView = true;
             BuildServices(true);
-            CurrentView = Services.GetRequiredService<MainView>();
-            singleViewPlatform.MainView = CurrentView;
+            var locator = Services.GetRequiredService<ViewLocator>();
+            DataTemplates.Add(locator);
+            CurrentView = new MainViewModel();
+            singleViewPlatform.MainView = locator.Build(CurrentView);
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -103,67 +104,82 @@ public partial class App : Application
             client.BaseAddress = new Uri(GlobalOptions.API_URI);
             return client;
         });
-       
-        //RegisterDbServices(services);
         
         RegisterViews(services);
+
+        if (!singleViewApp)
+        {
+            services.AddSingleton<MainWindow>();
+            services.AddSingleton<MainWindowViewModel>();
+        }
         
         services.AddSingleton<HubData>();
-                                                        
+                        
+        services.AddSingleton<ViewLocator>(serviceProvider => new ViewLocator(serviceProvider));
         Services = services.BuildServiceProvider();
      
         TestData();
     }
 
-    /*
-    private static void RegisterDbServices(ServiceCollection services)
-    {
-         services.AddSingleton<ReadOnlySimpleDb>(serviceProvider => 
-             new ReadOnlySimpleDb(serviceProvider.GetRequiredService<HttpClient>()));
-         
-    }
-    */
-
     private static void RegisterViews(ServiceCollection services)
     {
+        /*
+         Old Approach
         //singleton т.к. будем всегда возвращаться на этот control
-        services.AddSingleton<MainView>(_ => 
+
+        services.AddSingleton<MainView>(_ =>
             Tools.Helper.InitializeView<MainView>());
 
         services.AddSingleton<ShippingsView>(_ =>
             Tools.Helper.InitializeView<ShippingsView>());
-        
+
         services.AddSingleton<ChatListView>(_ =>
             Tools.Helper.InitializeView<ChatListView>());
 
         services.AddTransient<ChatView>(_ =>
             Tools.Helper.InitializeView<ChatView>());
-        
-        services.AddSingleton<IncidentsView>(_ => 
+
+        services.AddSingleton<IncidentsView>(_ =>
             Tools.Helper.InitializeView<IncidentsView>());
-        
-        services.AddTransient<SingleIncidentView>(_ => 
+
+        services.AddTransient<SingleIncidentView>(_ =>
             Tools.Helper.InitializeView<SingleIncidentView>());
 
         services.AddTransient<SingleShippingView>(_ =>
             Tools.Helper.InitializeView<SingleShippingView>());
-        
+
         services.AddSingleton<ActiveShippingView>(_ =>
             Tools.Helper.InitializeView<ActiveShippingView>());
-    }
-    
-    
 
-    private void DisableAvaloniaDataAnnotationValidation()
-    {
-        // Get an array of plugins to remove
-        var dataValidationPluginsToRemove =
-            BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
-
-        // remove each entry found
-        foreach (var plugin in dataValidationPluginsToRemove)
-        {
-            BindingPlugins.DataValidators.Remove(plugin);
-        }
+        services.AddTransient<CreateIncidentView>(_ =>
+            Tools.Helper.InitializeView<CreateIncidentView>());
+        */
+        //Register views and vms
+        services.AddSingleton<MainView>();
+        services.AddSingleton<MainViewModel>();
+        
+        services.AddSingleton<ShippingsView>();
+        services.AddSingleton<ShippingsViewModel>();
+        
+        services.AddSingleton<ChatListView>();
+        services.AddSingleton<ChatViewModel>();
+        
+        services.AddTransient<ChatView>();
+        services.AddTransient<ChatViewModel>();
+        
+        services.AddSingleton<IncidentsView>();
+        services.AddSingleton<IncidentsViewModel>();
+        
+        services.AddTransient<SingleIncidentView>();
+        services.AddTransient<SingleIncidentViewModel>();
+        
+        services.AddTransient<SingleShippingView>();
+        services.AddTransient<SingleShippingViewModel>();
+        
+        services.AddSingleton<ActiveShippingView>();
+        services.AddSingleton<ActiveShippingViewModel>();
+        
+        services.AddTransient<CreateIncidentView>();
+        services.AddTransient<CreateIncidentViewModel>();
     }
 }

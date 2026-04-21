@@ -12,7 +12,10 @@ where TControl : Control
         View = view;
     }
 
-    public abstract void OnCreating();
+    public virtual void OnCreating()
+    {
+        
+    }
     
     
     public TControl View;

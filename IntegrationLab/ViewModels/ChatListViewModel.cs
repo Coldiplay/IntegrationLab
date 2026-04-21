@@ -1,12 +1,12 @@
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Avalonia.Input;
+using BaseLibrary.Model;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
 using IntegrationLab.Views;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
-using BaseLibrary.Model;
 
 namespace IntegrationLab.ViewModels;
 
@@ -83,8 +83,8 @@ public partial class ChatListViewModel : ViewModelControlBase<ChatListView>
     [RelayCommand]
     private static void OpenChat(Chat chat)
     {
-        var chatView = App.Services.GetRequiredService<ChatView>();
-        (chatView.DataContext as ChatViewModel)!.Chat = chat;
+        var chatView = App.Services.GetRequiredService<ChatViewModel>();
+        chatView.Chat = chat;
         App.ChangeCurrentView(chatView);
     }
 }

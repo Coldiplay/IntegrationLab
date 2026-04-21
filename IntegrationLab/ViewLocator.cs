@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using IntegrationLab.ViewModels;
+using IntegrationLab.Views;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationLab;
 
@@ -14,6 +16,14 @@ namespace IntegrationLab;
     Url = "https://docs.avaloniaui.net/docs/concepts/view-locator")]
 public class ViewLocator : IDataTemplate
 {
+    private readonly IServiceProvider _services;
+    public ViewLocator(IServiceProvider services)
+    {
+        _services = services;
+    }
+    
+    /*
+     Old Approach
     public Control? Build(object? param)
     {
         if (param is null)
@@ -29,9 +39,25 @@ public class ViewLocator : IDataTemplate
 
         return new TextBlock { Text = "Not Found: " + name };
     }
-
-    public bool Match(object? data)
+    */
+    public Control Build(object? data)
     {
-        return data is ViewModelBase;
+        return data switch
+        {
+            ActiveShippingViewModel => _services.GetRequiredService<ActiveShippingView>(),
+            ChatListViewModel => _services.GetRequiredService<ChatListView>(),
+            ChatViewModel => _services.GetRequiredService<ChatView>(),
+            CreateIncidentViewModel => _services.GetRequiredService<CreateIncidentView>(),
+            IncidentsViewModel => _services.GetRequiredService<IncidentsView>(),
+            MainViewModel => _services.GetRequiredService<MainView>(),
+            MainWindowViewModel => _services.GetRequiredService<MainWindow>(),
+            ShippingsViewModel => _services.GetRequiredService<ShippingsView>(),
+            SingleIncidentViewModel => _services.GetRequiredService<SingleIncidentView>(),
+            SingleShippingViewModel => _services.GetRequiredService<SingleShippingView>(),
+            
+            _ => new TextBlock { Text = $"No view for {data?.GetType().Name}" }
+        };
     }
+
+    public bool Match(object? data) => data is ViewModelBase;
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using BaseLibrary.Model;
 using BaseLibrary.Tools;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -163,12 +164,9 @@ public partial class HubData : ObservableObject
         randShipping.ShippingStatus = ShippingStatus.Shipping;
     }
     
-    // [ObservableProperty]
-    // private ObservableCollection<Message> _messages = [];
-    [ObservableProperty]
-    private ConcurrentDictionary<Chat, (ObservableCollection<User> members, ObservableCollection<Message> messages)> _chats = [];
-    [ObservableProperty]
-    private ObservableCollection<Shipping> _shippings = [];
-    [ObservableProperty]
-    private ObservableCollection<Incident> _incidents = [];
+    public Shipping? ActiveShipping => Shippings.FirstOrDefault(s => s.ShippingStatus == ShippingStatus.Shipping);
+
+    [ObservableProperty] public partial ConcurrentDictionary<Chat, (ObservableCollection<User> members, ObservableCollection<Message> messages)> Chats { get; set; } = [];
+    [ObservableProperty] public partial ObservableCollection<Shipping> Shippings { get; set; } = [];
+    [ObservableProperty] public partial ObservableCollection<Incident> Incidents { get; set; } = [];
 }

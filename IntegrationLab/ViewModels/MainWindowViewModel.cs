@@ -1,19 +1,16 @@
-using System;
-using Avalonia.Controls;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Views;
 
 namespace IntegrationLab.ViewModels;
 
-public partial class MainWindowViewModel(MainWindow mainWindow) : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase
 {
-    public MainWindow MainWindow { get; private set; } = mainWindow;
+    public MainWindowViewModel(MainWindow mainWindow)
+    {
+        MainWindow = mainWindow;
+    }
+
+    public MainWindow MainWindow { get; private set; }
     
-    [RelayCommand]
-    private static void InvokeOnUIThread(Action action) => 
-        Dispatcher.UIThread.Invoke(action);
-    
-    [ObservableProperty] private Control _currentView = App.CurrentView;
+    [ObservableProperty] public partial ViewModelBase CurrentPage { get; set; } = App.CurrentView;
 }
