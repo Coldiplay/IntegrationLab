@@ -19,11 +19,12 @@ namespace IntegrationLab.ViewModels;
 public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
 {
     [ObservableProperty]
-    private ObservableCollection<Shipping> _shippings = [];
+    public partial ObservableCollection<Shipping> Shippings { get; set; } = [];
 
     public ShippingsViewModel()
     {
-        //TestData();
+        _client = App.Services.GetRequiredService<HttpClient>();
+        Shippings = App.Services.GetRequiredService<HubData>().Shippings;
     }
     
     public Shipping? SelectedShipping
@@ -85,12 +86,5 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
         var activeShipping = Shippings.FirstOrDefault(s => s.ShippingStatus == ShippingStatus.Shipping);
         if (activeShipping is not null)
             OpenShippingCommand.Execute(activeShipping);
-    }
-
-    public override void OnCreating()
-    {
-        _client = App.Services.GetRequiredService<HttpClient>();
-        Shippings = App.Services.GetRequiredService<HubData>().Shippings;
-        //TestData();
     }
 }

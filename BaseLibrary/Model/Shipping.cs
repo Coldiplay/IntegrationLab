@@ -7,18 +7,32 @@ namespace BaseLibrary.Model;
 public partial class Shipping : ObservableValidator
 {
     public Guid Id { get; set; }
-    [Required] [ObservableProperty] [MaxLength(120)] private string _deliveryPoint;
-    [ObservableProperty] private DateTime _shippedDate;
-    [ObservableProperty] private DateTime _estimatedDeliveryDate;
-    [ObservableProperty] private DateTime? _deliveryDate;
+    [Required]
+    [ObservableProperty]
+    [MaxLength(120)]
+    public partial string DeliveryPoint { get; set; }
+
+    [ObservableProperty]
+    public partial DateTime ShippedDate { get; set; }
+
+    [ObservableProperty]
+    public partial DateTime EstimatedDeliveryDate { get; set; }
+
+    [ObservableProperty]
+    public partial DateTime? DeliveryDate { get; set; }
+
     //[ObservableProperty] private bool _confirmed = false;
-    [Required] [ObservableProperty] private ShippingStatus _shippingStatus;
-    
+    [Required]
+    [ObservableProperty]
+    public partial ShippingStatus ShippingStatus { get; set; }
+
     //Скорее всего не надо
     [ObservableProperty] private decimal _estimatedDeliveryPrice;
-    [ObservableProperty] private decimal _estimatedDeliveryCost;
+    [ObservableProperty]
+    public partial decimal EstimatedDeliveryCost { get; set; }
+
     //
-    
+
     [Required] [ForeignKey(nameof(Vehicle))] public int VehicleId { get; set; }
     [ForeignKey(nameof(DesignatedDriver))] public int? DesignatedDriverId { get; set; }
     

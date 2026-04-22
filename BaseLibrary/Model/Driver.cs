@@ -10,8 +10,12 @@ namespace BaseLibrary.Model;
 public partial class Driver : ObservableValidator
 {
     [Required] [ForeignKey(nameof(User))] public int UserId { get; set; }
-    [Required] [ObservableProperty] private Rights _rights;
-    [ObservableProperty] [MaxLength(40)] private string? _driversLicense = null!;
-    
+    [Required]
+    [ObservableProperty]
+    public partial Rights Rights { get; set; }
+
+    [ObservableProperty]
+    [MaxLength(40)]
+    public partial string? DriversLicense { get; set; } = null!;
     public virtual User User { get; set; }
 }

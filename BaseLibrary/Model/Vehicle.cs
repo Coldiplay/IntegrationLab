@@ -12,20 +12,58 @@ public partial class Vehicle : ObservableValidator
     //[ObservableProperty] private double _engineVolume;
     //[ObservableProperty] private int _enginePower;
 
-    [Required] [ObservableProperty] [MaxLength(15)] private string _number = null!;
-    [Required] [ObservableProperty] [MaxLength(20)] private string _brandName = null!;
-    [Required] [ObservableProperty] [MaxLength(40)] private string _model = null!;
-    [ObservableProperty] private Rights _neededRights;
-    [Required] [ObservableProperty] private float _liftingCapacity;
-    [Required] [ObservableProperty] private VehicleBodyType _bodyType;
-    [Required] [ObservableProperty] private Dimensions _vehicleSize;
-    [Required] [ObservableProperty] private Dimensions _bodySize;
-    [Required] [ObservableProperty] private float _maxCargoVolume;
-    [Required] [ObservableProperty] private VehicleFuelType _fuelType;
-    [Required] [ObservableProperty] private float _maxFuelVolume;
-    [Required] [ObservableProperty] private float _vehicleWeight;
-    [ObservableProperty] private byte _numberOfAxes;
+    [Required]
+    [ObservableProperty]
+    [MaxLength(15)]
+    public partial string Number { get; set; } = null!;
 
+    [Required]
+    [ObservableProperty]
+    [MaxLength(20)]
+    public partial string BrandName { get; set; } = null!;
+
+    [Required]
+    [ObservableProperty]
+    [MaxLength(40)]
+    public partial string Model { get; set; } = null!;
+
+    [ObservableProperty]
+    public partial Rights NeededRights { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial float LiftingCapacity { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial VehicleBodyType BodyType { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial Dimensions VehicleSize { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial Dimensions BodySize { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial float MaxCargoVolume { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial VehicleFuelType FuelType { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial float MaxFuelVolume { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial float VehicleWeight { get; set; }
+
+    [ObservableProperty]
+    public partial byte NumberOfAxes { get; set; }
 
     [NotMapped] public string VehicleFullName => $"{BrandName} {Model} {Number}";
     //[ForeignKey(nameof(TransportCargoTypes))] public int TransportCargoTypesId { get; set; }

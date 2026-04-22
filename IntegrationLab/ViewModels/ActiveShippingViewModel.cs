@@ -1,16 +1,17 @@
+using BaseLibrary.Model;
+using BaseLibrary.Tools;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IntegrationLab.Model;
 using IntegrationLab.Views;
 using Microsoft.Extensions.DependencyInjection;
-using BaseLibrary.Model;
-using BaseLibrary.Tools;
 
 namespace IntegrationLab.ViewModels;
 
 public partial class ActiveShippingViewModel : ViewModelControlBase<ActiveShippingView>
 {
-    [ObservableProperty] private Shipping _activeShipping;
-    
+    [ObservableProperty]
+    public partial Shipping ActiveShipping { get; set; }
+
     public ActiveShippingViewModel()
     {
         //TODO: Убрать потом и раскомментить в OnCreating

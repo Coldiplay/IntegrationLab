@@ -9,15 +9,35 @@ public partial class ShippingOrder : ObservableValidator
 {
     public int Id { get; set; }
 
-    [Required] [ObservableProperty] private DateTime _orderDate;
-    [Required] [ObservableProperty] private string _receiverFio = null!;
-    [Required] [ObservableProperty] [MaxLength(120)] private string _address = null!;
-    [Required] [ObservableProperty] private OrderStatus _status;
-    [Required] [ObservableProperty] private DateTime _shippingDate;
-    [ObservableProperty] private DateTime? _sentDate;
-    [ObservableProperty] private DateTime? _receivedDate;
+    [Required]
+    [ObservableProperty]
+    public partial DateTime OrderDate { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial string ReceiverFio { get; set; } = null!;
+
+    [Required]
+    [ObservableProperty]
+    [MaxLength(120)]
+    public partial string Address { get; set; } = null!;
+
+    [Required]
+    [ObservableProperty]
+    public partial OrderStatus Status { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial DateTime ShippingDate { get; set; }
+
+    [ObservableProperty]
+    public partial DateTime? SentDate { get; set; }
+
+    [ObservableProperty]
+    public partial DateTime? ReceivedDate { get; set; }
+
     // TODO: Добавить маршрут
-    
+
     public virtual List<Cargo> Cargos { get; set; } = [];
     
     //public Shipping? Shipping { get; set; }

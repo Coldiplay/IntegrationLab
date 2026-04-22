@@ -9,9 +9,16 @@ public partial class Break : ObservableValidator
 {
     public Guid Id { get; set; }
 
-    [Required] [ObservableProperty] private BreakType _breakType;
-    [Required] [ObservableProperty] private DateTime _start;
-    [ObservableProperty] private DateTime? _end;
+    [Required]
+    [ObservableProperty]
+    public partial BreakType BreakType { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial DateTime Start { get; set; }
+
+    [ObservableProperty]
+    public partial DateTime? End { get; set; }
     [Required] public Guid ShiftId { get; set; }
     public virtual DriversShift Shift { get; set; }
 }

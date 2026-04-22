@@ -9,13 +9,7 @@ namespace IntegrationLab.ViewModels;
 public partial class SingleIncidentViewModel : ViewModelControlBase<SingleIncidentView>
 {
     [ObservableProperty]
-    private Incident _incident = null!;
-    
-    
-    public override void OnCreating()
-    {
-        
-    }
+    public partial Incident Incident { get; set; } = null!;
     
     [RelayCommand]
     private static void ReturnToIncidentsList() =>

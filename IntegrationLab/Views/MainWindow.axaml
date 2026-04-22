@@ -8,6 +8,6 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="IntegrationLab">
-        <TransitioningContentControl Content="{Binding CurrentPage}"/>
+        <ContentControl Content="{Binding CurrentPage}"/>
         <!-- <ContentControl Content="{Binding CurrentView}"/> -->
 </Window>

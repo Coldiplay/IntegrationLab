@@ -18,5 +18,5 @@ where TControl : Control
     }
     
     
-    public TControl View;
+    public new TControl View;
 }

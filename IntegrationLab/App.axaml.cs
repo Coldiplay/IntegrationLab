@@ -23,6 +23,7 @@ public partial class App : Application
     private static bool _isAppWithSingleView = true;
     private static ISingleViewApplicationLifetime _platform;
     private static MainWindow? _window;
+    private static ViewLocator _locator;
     
     public static void ChangeCurrentView(ViewModelBase viewModel)
     {
@@ -53,9 +54,11 @@ public partial class App : Application
         {
             _isAppWithSingleView = false;
             BuildServices();
-            DataTemplates.Add(new ViewLocator(Services));
-            CurrentView = new MainViewModel();
+            _locator = new ViewLocator(Services);
+            DataTemplates.Add(_locator);
             _window = Services.GetRequiredService<MainWindow>();
+            _window.DataContext = Services.GetRequiredService<MainWindowViewModel>();
+            ChangeCurrentView<MainViewModel>();
             desktop.MainWindow = _window;
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
@@ -63,10 +66,10 @@ public partial class App : Application
             _platform = singleViewPlatform;
             _isAppWithSingleView = true;
             BuildServices(true);
-            var locator = Services.GetRequiredService<ViewLocator>();
-            DataTemplates.Add(locator);
-            CurrentView = new MainViewModel();
-            singleViewPlatform.MainView = locator.Build(CurrentView);
+            _locator = new ViewLocator(Services);
+            DataTemplates.Add(_locator);
+            ChangeCurrentView<MainViewModel>();
+            singleViewPlatform.MainView = _locator.Build(CurrentView);
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -114,8 +117,7 @@ public partial class App : Application
         }
         
         services.AddSingleton<HubData>();
-                        
-        services.AddSingleton<ViewLocator>(serviceProvider => new ViewLocator(serviceProvider));
+        
         Services = services.BuildServiceProvider();
      
         TestData();
@@ -162,7 +164,7 @@ public partial class App : Application
         services.AddSingleton<ShippingsViewModel>();
         
         services.AddSingleton<ChatListView>();
-        services.AddSingleton<ChatViewModel>();
+        services.AddSingleton<ChatListViewModel>();
         
         services.AddTransient<ChatView>();
         services.AddTransient<ChatViewModel>();

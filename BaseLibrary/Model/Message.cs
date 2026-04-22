@@ -9,10 +9,17 @@ namespace BaseLibrary.Model;
 public partial class Message : ObservableValidator
 {
     public Guid Id { get; set; }
-    
-    [Required] [ObservableProperty] [MaxLength(300)] [MinLength(1)]
-    private string _content = null!;
-    [Required] [ObservableProperty] private DateTime _date;
+
+    [Required]
+    [ObservableProperty]
+    [MaxLength(300)]
+    [MinLength(1)]
+    public partial string Content { get; set; } = null!;
+
+    [Required]
+    [ObservableProperty]
+    public partial DateTime Date { get; set; }
+
     //public DateTime Date { get; set; }
     [Required] [ForeignKey(nameof(Sender))] public int SenderId { get; set; }
     [Required] [ForeignKey(nameof(Chat))] public int ChatId { get; set; }

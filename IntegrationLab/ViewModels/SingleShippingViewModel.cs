@@ -9,8 +9,8 @@ namespace IntegrationLab.ViewModels;
 public partial class SingleShippingViewModel : ViewModelControlBase<SingleShippingView>
 {
     [ObservableProperty]
-    private Shipping _shipping = null!;
-    
+    public partial Shipping Shipping { get; set; } = null!;
+
     public override void OnCreating()
     {
         

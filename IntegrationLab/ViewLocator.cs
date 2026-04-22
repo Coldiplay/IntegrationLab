@@ -42,7 +42,9 @@ public class ViewLocator : IDataTemplate
     */
     public Control Build(object? data)
     {
-        return data switch
+        if (data is not ViewModelBase viewModel) return new TextBlock { Text = $"No view for {data?.GetType().Name}" };
+        
+        Control view = viewModel switch
         {
             ActiveShippingViewModel => _services.GetRequiredService<ActiveShippingView>(),
             ChatListViewModel => _services.GetRequiredService<ChatListView>(),
@@ -55,8 +57,11 @@ public class ViewLocator : IDataTemplate
             SingleIncidentViewModel => _services.GetRequiredService<SingleIncidentView>(),
             SingleShippingViewModel => _services.GetRequiredService<SingleShippingView>(),
             
-            _ => new TextBlock { Text = $"No view for {data?.GetType().Name}" }
+            _ => new TextBlock { Text = $"No view for {data.GetType().Name}" }
         };
+        if (viewModel is not MainWindowViewModel) viewModel.View = view;
+
+        return view;
     }
 
     public bool Match(object? data) => data is ViewModelBase;

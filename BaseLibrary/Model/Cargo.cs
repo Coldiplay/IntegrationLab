@@ -9,14 +9,30 @@ namespace BaseLibrary.Model;
 public partial class Cargo : ObservableValidator
 {
     public Guid Id { get; set; }
-    
-    [Required] [ObservableProperty] [MaxLength(40)] private string _name = null!;
-    [ObservableProperty] [MaxLength(200)] private string? _description;
-    [Required] [ObservableProperty] private DateTime _dateAdded = DateTime.Now;
-    [Required] [ObservableProperty] private double _weight;
-    [Required] [ObservableProperty] private Dimensions _dimensions;
-    [ObservableProperty] private DangerLevel? _dangerLevel;
-    
+
+    [Required]
+    [ObservableProperty]
+    [MaxLength(40)]
+    public partial string Name { get; set; } = null!;
+
+    [ObservableProperty]
+    [MaxLength(200)]
+    public partial string? Description { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial DateTime DateAdded { get; set; } = DateTime.Now;
+
+    [Required]
+    [ObservableProperty]
+    public partial double Weight { get; set; }
+
+    [Required]
+    [ObservableProperty]
+    public partial Dimensions Dimensions { get; set; }
+
+    [ObservableProperty]
+    public partial DangerLevel? DangerLevel { get; set; }
     [Required] [ForeignKey(nameof(ShippingOrder))] public int ShippingOrderId { get; set; }
     [ForeignKey(nameof(Shipping))] public Guid? ShippingId { get; set; }
     [Required] [ForeignKey(nameof(CargoType))] public int CargoTypeId { get; set; }
