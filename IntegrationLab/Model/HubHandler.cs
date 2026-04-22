@@ -127,7 +127,7 @@ public class HubHandler
     public async Task<IEnumerable<Message>?> GetChatMessages(int chatId)
     {
         var response = await SimpleGet("GetChatMessages", chatId);
-        return  await HandleResponse<IEnumerable<Message>>(response);
+        return await HandleResponse<IEnumerable<Message>>(response);
     }
 
     public async Task<IEnumerable<Incident>?> GetIncidents(int? userId = null)
@@ -165,15 +165,18 @@ public class HubHandler
             catch (Exception e)
             {
                 //TODO: Создать обработку ошибки преобразования данных
+                if (response.DataTypeName is not null && response.DataTypeName.Equals("array"))
+                {
+                    //TODO: Придумать как возвращать коллекцию в случае array
+                    //return (IEnumerable<T>)(response.Data);
+                }
                 Console.WriteLine(e);
                 throw;
             }
         }
         
         
-        //TODO: Создать обработку ошибки получения данных
-        await MessageBoxManager.GetMessageBoxStandard("Ошибка", response.Message).ShowAsync();
-        
+        await MessageBoxManager.GetMessageBoxStandard("Ошибка получения данных с сервера", response.Message).ShowAsync();
         return default;
     }
 
