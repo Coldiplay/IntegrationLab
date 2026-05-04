@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Text.Json;
 using BaseLibrary.Auth;
 using BaseLibrary.Model;
 using BaseLibrary.Tools;
@@ -57,14 +58,13 @@ public class MobileHub(HttpClient httpApi, JwtTokenHandler checker) : Microsoft.
     [AllowAnonymous] 
     public async Task<Response> Authorize(string login, string password)
     {
-        Debug.WriteLine("Начало авторизации");
-        Console.WriteLine("Начало авторизации");
         var result = await httpApi.PostLaravel<UserAuth>("api/login", new { login, password });
-        if (!string.IsNullOrEmpty(result?.Token))
+        if (string.IsNullOrEmpty(result?.Token))
             return this.BadResponse("Неверная пара логин-пароль", HttpStatusCode.Unauthorized);
         var token = GenerateToken(DateTime.Now.AddMinutes(30));
         _jwtToLaravel.TryAdd(token, result!.Token);
-        return this.ToResponseWithData(token, "Успешная авторизация!");
+        result.Token = token;
+        return this.ToResponseWithData(result, "Успешная авторизация!");
     }
     
     private static string GenerateToken(DateTime expiry)

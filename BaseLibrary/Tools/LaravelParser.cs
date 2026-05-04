@@ -13,17 +13,26 @@ public static class LaravelParser
     {
         var test = JsonSerializer.Deserialize<LaravelJsonResponse>(json, Options);
 
-        if (test!.Status == (HttpStatusCode)201 && test?.Data is not null)
+        if (((int)test!.Status == 200 || (int)test.Status == 201) && test?.Data is not null)
         {
-            var typeName = test.Type?.Remove(0, test.Type.LastIndexOf('\\') + 1).Replace("Resource", "");
-            var type = FindType(typeName!);
-            if (type is null) throw new Exception();
-            if (type == typeof(T))
+            try
             {
                 var element = JsonElement.Parse(test.Data.ToString()!);
                 var model = element.Deserialize<T>(Options);
-                //FillWithRelations((model, type), JsonElement.Parse(test.Relationships?.ToString()!));
                 return model;
+            }
+            catch (Exception e)
+            {
+                var typeName = test.Type?.Remove(0, test.Type.LastIndexOf('\\') + 1).Replace("Resource", "");
+                var type = FindType(typeName!);
+                if (type is null) throw new Exception();
+                if (type == typeof(T))
+                {
+                    var element = JsonElement.Parse(test.Data.ToString()!);
+                    var model = element.Deserialize<T>(Options);
+                    //FillWithRelations((model, type), JsonElement.Parse(test.Relationships?.ToString()!));
+                    return model;
+                }
             }
         }
         ;

@@ -17,9 +17,9 @@ public static class Extensions
 
         public async Task<TResult?> PostLaravel<TResult>(string url, object parameter)
         {
-            return LaravelParser.ParseResponse<TResult>(
-                await (await client.PostAsJsonAsync(url, parameter))
-                    .Content.ReadAsStringAsync());
+            var response = await client.PostAsJsonAsync(url, parameter);
+            var responseString = await response.Content.ReadAsStringAsync();
+            return LaravelParser.ParseResponse<TResult>(responseString);
         }
     }
     extension(Microsoft.AspNetCore.SignalR.Hub hub)
