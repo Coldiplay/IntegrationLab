@@ -103,8 +103,9 @@ public partial class App : Application
         //Добавляем сервисы
         services.AddSingleton<HttpClient>(_ =>
         {
+            //TODO: ..... А зачем оно надо?..
             var client = new HttpClient();
-            client.BaseAddress = new Uri(GlobalOptions.API_URI);
+            client.BaseAddress = new Uri(GlobalOptions.HUB_URI);
             return client;
         });
         

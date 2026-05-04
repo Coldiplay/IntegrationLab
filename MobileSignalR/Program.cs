@@ -67,7 +67,7 @@ public class Program
                     new AuthRequirement(new HttpClient {BaseAddress = new Uri(GlobalOptions.API_URI)})
                 ));
 
-        builder.Services.AddKeyedSingleton("ForMobileHub", new HttpClient {
+        builder.Services.AddSingleton(new HttpClient {
             BaseAddress = new Uri(GlobalOptions.API_URI)
         });
         // ???

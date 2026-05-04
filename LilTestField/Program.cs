@@ -1,6 +1,9 @@
 ﻿using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
+using BaseLibrary.Tools;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace LilTestField;
 
@@ -49,9 +52,8 @@ class Program
         */
         
         //TODO: check later
-        /*
         var connection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7045/hub")
+            .WithUrl(GlobalOptions.HUB_URI)
             .WithAutomaticReconnect()
             .Build();
         //connection.SendAsync("Authorize", "test", "test2").Wait();
@@ -65,19 +67,20 @@ class Program
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Thread.Sleep(6000);
+                Thread.Sleep(8000);
             }
         }
-
-        Console.Clear();
-        Console.WriteLine("Успешное подключение");
-        ;
         
-        var response = await connection.InvokeAsync<object>("Authorize", "test", "test2");
-        ;
-        */
-        //Test();
-        ;
+        var connected = connection.State == HubConnectionState.Connected;
+        Console.WriteLine(connected ? "Успешное подключение" : "Мда");
+
+        if (connected)
+        {
+            Console.Clear();
+            var response = await connection.InvokeAsync<object>("Authorize", "admin", "password");
+            Console.WriteLine(JsonSerializer.Serialize(response));
+        }
+        Thread.Sleep(60000); 
     }
 
     private static async Task SaveRSAKeyPair()
