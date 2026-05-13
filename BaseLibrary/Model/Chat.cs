@@ -1,20 +1,38 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using BaseLibrary.Tools;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace BaseLibrary.Model;
 
 [PrimaryKey(nameof(Id))]
-public partial class Chat
+public partial class Chat : ObservableValidator
 {
     public int Id { get; set; }
     [MaxLength(60)] public string? Name { get; set; }
     public bool IsPrivateChat { get; set; } = true;
 
-    // [ForeignKey(nameof(Receiver))]
-    // public int ReceiverId { get; set; }
-    // [ForeignKey(nameof(Sender))]
-    // public int SenderId { get; set; }
-    //
-    // public virtual User Receiver { get; set; }
-    // public virtual User Sender { get; set; }
+    public virtual ObservableCollection<Message> Messages
+    {
+        get;
+        set
+        {
+            if (Equals(value, field)) return;
+            field = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(LastMessage));
+            OnPropertyChanged(nameof(LastMessageText));
+        }
+    } = [];
+
+    public Message? LastMessage => Messages.MaxBy(m => m.Date);
+    public string? LastMessageText
+    {
+        get
+        {
+            var text = LastMessage?.Content.TruncateByWordsEfficient(20);
+            return !string.IsNullOrEmpty(text) && text.Length < 17 ? text : text + "...";
+        }
+    }
 }

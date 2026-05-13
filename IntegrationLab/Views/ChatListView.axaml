@@ -12,13 +12,91 @@
         <vm:ChatListViewModel />
     </Design.DataContext>
     
-    <ListBox ItemsSource="{Binding Chats}">
-        <ListBox.ItemTemplate>
-            <DataTemplate>
-                <Grid Background="Transparent" DoubleTapped="OnDoubleTapped">
-                    <Label Content="{Binding Name}"/>
-                </Grid>
-            </DataTemplate>
-        </ListBox.ItemTemplate>
-    </ListBox>
+    <UserControl.Resources>
+    <!-- Цвета/кисти -->
+    <SolidColorBrush x:Key="PageBackground" Color="#F5F7FB"/>
+    <SolidColorBrush x:Key="CardBackground" Color="#FFFFFFFF"/>
+    <SolidColorBrush x:Key="DividerBrush" Color="#E6E8ED"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#6B7280"/>
+    <SolidColorBrush x:Key="ChipBackground" Color="#F1F3F5"/>
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#2F80ED"/>
+    </UserControl.Resources>
+  
+  <UserControl.Styles>
+
+    <!-- Тексты -->
+    <Style Selector="TextBlock.sectionTitle">
+      <Setter Property="FontSize" Value="20"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Margin" Value="0,4,0,8"/>
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+      <Setter Property="FontSize" Value="14"/>
+    </Style>
+    <Style Selector="TextBlock.value">
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <!-- Карточка списка -->
+    <Style Selector="Border.listCard">
+      <Setter Property="CornerRadius" Value="14"/>
+      <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+      <Setter Property="Padding" Value="12"/>
+      <Setter Property="Margin" Value="0,0,0,12"/>
+    </Style>
+
+    <!-- Чип -->
+    <Style Selector="Border.chip">
+      <Setter Property="Background" Value="{StaticResource ChipBackground}"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="10,4"/>
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="Auto *" Background="{StaticResource PageBackground}">
+    <!-- Верхняя панель -->
+    <Border
+            Background="{StaticResource CardBackground}"
+            BorderBrush="{StaticResource DividerBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="12,10">
+      <TextBlock Text="Чаты"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontSize="18"
+                 FontWeight="SemiBold"/>
+    </Border>
+
+    <!-- Контент -->
+    <ScrollViewer Grid.Row="1">
+      <Grid Margin="16,12">
+        <Border Background="{StaticResource CardBackground}"
+                CornerRadius="24"
+                Padding="16">
+          <ListBox ItemsSource="{Binding Chats}">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Border Classes="listCard">
+                  <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="8">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}"
+                               FontWeight="SemiBold" FontSize="16"/>
+                    <Border Grid.Row="0" Grid.Column="1" Classes="chip" HorizontalAlignment="Right">
+                      <TextBlock Text="{Binding LastMessage?.Date, StringFormat=hh:mm}" 
+                                 FontSize="13"/>
+                    </Border>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding LastMessageText}"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Border>
+      </Grid>
+    </ScrollViewer>
+  </Grid>
 </UserControl>

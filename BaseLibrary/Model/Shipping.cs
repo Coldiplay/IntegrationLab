@@ -50,6 +50,9 @@ public partial class Shipping : ObservableValidator
             OnPropertyChanged();
         }
     } = "Не подтверждён";
+    [NotMapped]
+    public double CargoWeight => Cargos.Sum(c => c.Weight) / 1000;
+    
 
     public virtual List<Cargo> Cargos { get; set; } = [];
 

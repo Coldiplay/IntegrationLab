@@ -12,35 +12,178 @@
         <vm:SingleShippingViewModel />
     </Design.DataContext>
     
-    <Grid RowDefinitions="Auto *">
-        <!--TODO: Потом поставить иконку назад -->
-        <Button Content="Назад" Command="{Binding ReturnToShippingsListCommand}"/>
-        
-        <StackPanel Grid.Row="1">
-            <Label Content="{Binding Shipping.Vehicle.VehicleFullName, 
-            StringFormat={}Назначенное ТС: {0}}"/>
-            <Label Content="{Binding Shipping.DeliveryPoint, 
-            StringFormat={}Адрес: {0}}"/>
-            <Label Content="{Binding Shipping.DeliveryDate, 
-            StringFormat={}Дата доставки: dd.MM.yyyy}"/>
-            <Label Content="Перевозимый груз:"/>
+    <UserControl.Resources>
+    <SolidColorBrush x:Key="PageBackground" Color="#F5F7FB"/>
+    <SolidColorBrush x:Key="CardBackground" Color="#FFFFFFFF"/>
+    <SolidColorBrush x:Key="DividerBrush" Color="#E6E8ED"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#6B7280"/>
+    <SolidColorBrush x:Key="ChipBackground" Color="#F1F3F5"/>
+  </UserControl.Resources>
+  
+  <UserControl.Styles>
+
+    <!-- Тексты -->
+    <Style Selector="TextBlock.sectionTitle">
+      <Setter Property="FontSize" Value="20"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Margin" Value="0,4,0,8"/>
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+      <Setter Property="FontSize" Value="14"/>
+    </Style>
+    <Style Selector="TextBlock.value">
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <!-- Карточка груза -->
+    <Style Selector="Border.cargoCard">
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+      <Setter Property="Padding" Value="12"/>
+      <Setter Property="Margin" Value="0,0,0,12"/>
+    </Style>
+
+    <!-- Большая кнопка -->
+    <Style Selector="Button.primary">
+      <Setter Property="Height" Value="56"/>
+      <Setter Property="CornerRadius" Value="16"/>
+      <Setter Property="FontSize" Value="16"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+      <Setter Property="Foreground" Value="White"/>
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="Auto * Auto" Background="{StaticResource PageBackground}">
+    <!-- Верхняя панель -->
+    <Border DockPanel.Dock="Top"
+            Background="{StaticResource CardBackground}"
+            BorderBrush="{StaticResource DividerBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="12,8">
+      <Grid ColumnDefinitions="40,*,40" VerticalAlignment="Center">
+        <Button Grid.Column="0"
+                Background="Transparent"
+                                BorderThickness="0"
+                ToolTip.Tip="Закрыть">
+          <TextBlock Text="✕" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Button>
+        <TextBlock Grid.Column="1"
+                   Text="Рейс №123"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="18"
+                   FontWeight="SemiBold"/>
+      </Grid>
+    </Border>
+
+    <!-- Контент -->
+    <ScrollViewer Grid.Row="1">
+      <StackPanel Margin="16,12" Spacing="12">
+        <!-- Белый «лист» со скруглением, как карточка экрана -->
+        <Border Background="{StaticResource CardBackground}"
+                CornerRadius="24"
+                Padding="16">
+          <StackPanel Spacing="8">
+
+            <!-- Основное -->
+            <TextBlock Classes="sectionTitle" Text="Основное"/>
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto Auto Auto Auto Auto" RowSpacing="10">
+              <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Номер рейса"/>
+              <TextBlock Grid.Row="0" Grid.Column="1" Classes="value" Text="{Binding Shipping.Id}"/>
+
+              <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Дата отправки"/>
+              <TextBlock Grid.Row="1" Grid.Column="1" Classes="value" Text="{Binding Shipping.ShippedDate, StringFormat=dd.mm.yyyy}"/>
+
+              <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Желаемая дата доставки" TextWrapping="Wrap"/>
+              <TextBlock Grid.Row="2" Grid.Column="1" Classes="value" Text="{Binding Shipping.DeliveryDate, StringFormat=dd.mm.yyyy}"/>
+
+              <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Адрес доставки" TextWrapping="Wrap"/>
+              <TextBlock Grid.Row="3" Grid.Column="1" Classes="value" Text="{Binding Shipping.DeliveryPoint}"/>
+
+              <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Статус рейса"/>
+              <Border Grid.Row="4" Grid.Column="1"
+                      Background="{StaticResource ChipBackground}"
+                      Padding="10,4"
+                      CornerRadius="12"
+                      HorizontalAlignment="Right">
+                <TextBlock Text="{Binding Shipping.ShippingStatus}" FontSize="13"/>
+                </Border>
+            </Grid>
+
+            <!-- Разделитель -->
+            <Border Height="1" Background="{StaticResource DividerBrush}" Margin="-16,12,-16,8"/>
+
+            <!-- Грузы -->
+            <TextBlock Classes="sectionTitle" Text="Грузы"/>
             <ScrollViewer>
-                <ListBox ItemsSource="{Binding Shipping.Cargos}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding Name}"/>
-                                <Label Content="{Binding CargoType.Title, StringFormat={}Тип: {0}}"/>
-                                <!-- <Label Content="{Binding  Dimensions}"/> -->
-                                <Label Content="{Binding Weight, StringFormat={}Масса: {0} кг}"/>
-                                <Label Content="{Binding DangerLevel,
-                                Converter={StaticResource DangerLevelConverter}, 
-                                ConverterParameter=True}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+              <ListBox ItemsSource="{Binding Shipping.Cargos}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <Border Classes="cargoCard">
+                      <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                        <StackPanel Orientation="Horizontal">
+                          <TextBlock Foreground="{StaticResource TextSecondaryBrush}" Text="{Binding CargoType.Title, StringFormat={}Тип: {0}}"/>
+                          <TextBlock Foreground="{StaticResource TextSecondaryBrush}" Text="{Binding Weight, StringFormat={} Вес: {0:F2}}"/>
+                        </StackPanel>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
             </ScrollViewer>
-        </StackPanel>
-    </Grid>
+
+            <!-- Разделитель -->
+            <Border Height="1" Background="{StaticResource DividerBrush}" Margin="-16,8,-16,8"/>
+
+            <!-- Транспортное средство -->
+            <TextBlock Classes="sectionTitle" Text="Транспортное средство"/>
+            <Grid ColumnDefinitions="* Auto" RowDefinitions="Auto Auto Auto Auto" RowSpacing="10">
+              <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Номер"/>
+              <TextBlock Grid.Row="0" Grid.Column="1" Classes="value" Text="{Binding Shipping.Vehicle.Number}"/>
+
+              <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Марка"/>
+              <TextBlock Grid.Row="1" Grid.Column="1" Classes="value" Text="{Binding Shipping.Vehicle.BrandName}"/>
+
+              <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Модель"/>
+              <TextBlock Grid.Row="2" Grid.Column="1" Classes="value" Text="{Binding Shipping.Vehicle.Model}"/>
+
+              <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Габариты"/>
+              <!-- <TextBlock Grid.Row="3" Grid.Column="1" Classes="value" Text="{Binding }"/> -->
+              <StackPanel Grid.Row="3" Grid.Column="1"
+                          Orientation="Horizontal">
+                <TextBlock Classes="value" Text="{Binding Shipping.Vehicle.VehicleSize.Length,
+                StringFormat={}Д {0:F2} м}"/>
+                <TextBlock Classes="value" Text="{Binding Shipping.Vehicle.VehicleSize.Width,
+                StringFormat={}Ш {0:F2} м}"/>
+                <TextBlock Classes="value" Text="{Binding Shipping.Vehicle.VehicleSize.Height,
+                StringFormat={}В {0:F2} м}"/>
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+    
+    <!-- Нижняя область: кнопка -->
+    <Border Grid.Row="2" DockPanel.Dock="Bottom"
+            Background="{StaticResource CardBackground}"
+            BorderBrush="{StaticResource DividerBrush}"
+            BorderThickness="0,1,0,0">
+      <StackPanel>
+        <!-- Большая CTA-кнопка -->
+        <Border Padding="16,12,16,12">
+          <Button Classes="primary" Content="Подтвердить рейс" 
+                  HorizontalContentAlignment="Center"
+                  VerticalContentAlignment="Center"
+                  HorizontalAlignment="Stretch"/>
+        </Border>
+      </StackPanel>
+    </Border>
+  </Grid>
 </UserControl>

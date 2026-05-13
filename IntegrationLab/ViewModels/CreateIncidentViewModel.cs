@@ -11,6 +11,7 @@ public partial class CreateIncidentViewModel : ViewModelControlBase<CreateIncide
 {
     [ObservableProperty] public partial Shipping? Shipping { get; set; } = App.Services.GetRequiredService<HubData>().ActiveShipping;
     [ObservableProperty] public partial TimeSpan Time { get; set; } = DateTime.Now.TimeOfDay;
+    [ObservableProperty] public partial string? Description { get; set; }
     
     public override void OnCreating()
     {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
@@ -18,8 +19,26 @@ namespace IntegrationLab.ViewModels;
 
 public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
 {
-    [ObservableProperty]
-    public partial ObservableCollection<Shipping> Shippings { get; set; } = [];
+    public ObservableCollection<Shipping> Shippings
+    {
+        get;
+        set
+        {
+            if (Equals(value, field)) return;
+            field = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentShippings));
+            OnPropertyChanged(nameof(PastShippings));
+        }
+    } = [];
+
+    public List<Shipping> CurrentShippings =>
+        Shippings.Where(s => s.ShippingStatus is ShippingStatus.GettingReadyToShip 
+            or ShippingStatus.Shipping).ToList();
+
+    public List<Shipping> PastShippings =>
+        Shippings.Where(s => s.ShippingStatus == ShippingStatus.Delivered)
+            .ToList();
 
     public ShippingsViewModel()
     {
