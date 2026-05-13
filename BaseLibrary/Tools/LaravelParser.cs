@@ -5,16 +5,17 @@ namespace BaseLibrary.Tools;
 
 public static class LaravelParser
 {
-    private static readonly JsonSerializerOptions Options = new() {
+    private static readonly JsonSerializerOptions Options = new()
+    {
         PropertyNameCaseInsensitive = true
     };
-    
+
     public static T? ParseResponse<T>(string json)
     {
         var test = JsonSerializer.Deserialize<LaravelJsonResponse>(json, Options);
 
+        //TODO: ОБНОВИТЬ МОДЕЛИ НА НОВЫЕ!!!
         if (((int)test!.Status == 200 || (int)test.Status == 201) && test?.Data is not null)
-        {
             try
             {
                 var element = JsonElement.Parse(test.Data.ToString()!);
@@ -34,7 +35,7 @@ public static class LaravelParser
                     return model;
                 }
             }
-        }
+
         ;
         return default;
     }
@@ -43,13 +44,16 @@ public static class LaravelParser
     {
         //TODO: Сделать наполнение relations
         var relations = data.Deserialize<object>();
-        
+
         return;
     }
 
-    private static readonly Type[] Types = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "BaseLibrary")
+    private static readonly Type[] Types = AppDomain.CurrentDomain.GetAssemblies()
+        .First(a => a.GetName().Name == "BaseLibrary")
         .GetTypes().Where(t => t.FullName!.Contains("BaseLibrary.Model")).ToArray();
+
     private static readonly Dictionary<string, Type> KnownTypes = [];
+
     private static Type? FindType(string typeName)
     {
         if (KnownTypes.TryGetValue(typeName, out var findType)) return findType;
@@ -58,16 +62,14 @@ public static class LaravelParser
         foreach (var type in Types)
         {
             if (!type.Name.Contains(typeName)) continue;
-            
-            if (typee is not null)
-            {
-                throw new Exception();
-            }
+
+            if (typee is not null) throw new Exception();
+
             typee = type;
         }
 
         if (typee is not null) KnownTypes.Add(typeName, typee);
-        
+
         return typee;
     }
 }

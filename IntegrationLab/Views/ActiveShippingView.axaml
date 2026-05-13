@@ -11,34 +11,35 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:ActiveShippingViewModel />
     </Design.DataContext>
-    
+
     <StackPanel>
         <StackPanel.Styles>
             <Style Selector="Label">
-                <Setter Property="Margin" Value="5"/>
+                <Setter Property="Margin" Value="5" />
             </Style>
         </StackPanel.Styles>
-        
-        <Label Content="Текущий рейс"/>
+
+        <Label Content="Текущий рейс" />
         <Label Content="{Binding ActiveShipping.Vehicle.VehicleFullName, 
-        StringFormat={}Назначенное ТС: {0}}"/>
+        StringFormat={}Назначенное ТС: {0}}" />
         <Label Content="{Binding ActiveShipping.DeliveryPoint, 
-        StringFormat={}Адрес: {0}}"/>
+        StringFormat={}Адрес: {0}}" />
         <Label Content="{Binding ActiveShipping.DeliveryDate, 
-        StringFormat={}Дата доставки: dd.MM.yyyy}"/>
-        <Label Content="Перевозимый груз:"/>
+        StringFormat={}Дата доставки: dd.MM.yyyy}" />
+        <Label Content="Перевозимый груз:" />
         <ScrollViewer>
             <ListBox ItemsSource="{Binding ActiveShipping.Cargos}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="{Binding Name}"/>
-                            <Label Content="{Binding CargoType.Title, StringFormat={}Тип: {0}}"/>
+                            <Label Content="{Binding Name}" />
+                            <Label Content="{Binding CargoType.Title, StringFormat={}Тип: {0}}" />
                             <!-- <Label Content="{Binding  Dimensions}"/> -->
-                            <Label Content="{Binding Weight, StringFormat={}Масса: {0} кг}"/>
-                            <Label Content="{Binding DangerLevel, 
+                            <Label Content="{Binding Weight, StringFormat={}Масса: {0} кг}" />
+                            <Label
+                                Content="{Binding DangerLevel, 
                             Converter={StaticResource DangerLevelConverter},
-                            ConverterParameter=true}"/>
+                            ConverterParameter=true}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

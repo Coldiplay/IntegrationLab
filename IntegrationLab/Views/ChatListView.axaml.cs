@@ -11,6 +11,8 @@ public partial class ChatListView : UserControl
         InitializeComponent();
     }
 
-    private void OnDoubleTapped(object? sender, TappedEventArgs e) =>
+    private void OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
         (DataContext as ChatListViewModel)!.OnDoubleTapped(sender, e);
+    }
 }

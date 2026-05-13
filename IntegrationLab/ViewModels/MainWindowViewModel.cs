@@ -11,6 +11,6 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     public MainWindow MainWindow { get; private set; }
-    
+
     [ObservableProperty] public partial ViewModelBase CurrentPage { get; set; } = App.CurrentView;
 }

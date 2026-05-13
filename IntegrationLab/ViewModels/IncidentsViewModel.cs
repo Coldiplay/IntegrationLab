@@ -12,14 +12,15 @@ namespace IntegrationLab.ViewModels;
 public partial class IncidentsViewModel : ViewModelControlBase<IncidentsView>
 {
     public ObservableCollection<Incident> Incidents => _hubData.Incidents;
-    
+
 
     private readonly HubData _hubData = App.Services.GetRequiredService<HubData>();
+
     public IncidentsViewModel()
     {
         //TestData();
     }
-    
+
     public void OnDoubleTapped(object? sender, TappedEventArgs e)
     {
         if (sender is not Control control
@@ -40,7 +41,7 @@ public partial class IncidentsViewModel : ViewModelControlBase<IncidentsView>
     {
         App.ChangeCurrentView<CreateIncidentViewModel>();
     }
-    
+
     public override void OnCreating()
     {
         //TestData();

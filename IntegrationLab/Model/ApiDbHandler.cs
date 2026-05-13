@@ -14,7 +14,7 @@ public class ApiDbHandler(HttpClient httpClient)
     //public virtual async Task<bool> Update(Shipping shipping) => await UpdateAsync(shipping);
 
     public virtual async Task<T?> FetchByIdFromJsonAsync<T>(string id, string? tableName = null)
-    where T : class, new()
+        where T : class, new()
     {
         tableName ??= typeof(T).Name + 's';
         try
@@ -29,9 +29,9 @@ public class ApiDbHandler(HttpClient httpClient)
             return null;
         }
     }
-    
+
     public virtual async Task<T> FetchAllFromJsonAsync<T>(string? tableName = null)
-    where T : IList, new()
+        where T : IList, new()
     {
         var type = typeof(T);
 
@@ -49,7 +49,7 @@ public class ApiDbHandler(HttpClient httpClient)
     }
 
     public virtual async Task<bool> UpdateAsync<T>(T model, string? tableName = null)
-    where T : class, new()
+        where T : class, new()
     {
         tableName ??= typeof(T).Name + 's';
         try
@@ -67,14 +67,14 @@ public class ApiDbHandler(HttpClient httpClient)
     }
 
     public virtual async Task<T?> CreateAsync<T>(T model, string? tableName = null)
-    where T : class, new()
+        where T : class, new()
     {
         tableName ??= typeof(T).Name + 's';
         try
         {
             //TODO: Проверить работоспособность
             var response = await httpClient.PostAsJsonAsync($"api/{tableName}", model);
-            return (await response.Content.ReadFromJsonAsync<T>());
+            return await response.Content.ReadFromJsonAsync<T>();
         }
         catch (Exception e)
         {
@@ -88,7 +88,7 @@ public class ApiDbHandler(HttpClient httpClient)
     {
         var type = typeof(T);
         tableName ??= type.Name + 's';
-        
+
         try
         {
             //TODO: Проверить работоспособность
@@ -103,17 +103,17 @@ public class ApiDbHandler(HttpClient httpClient)
             return false;
         }
     }
-    
+
     /*
     private async Task<T?> FetchAllFromJsonAsync<T>(string? tableName = null)
     {
         var type = typeof(T);
-        
+
         tableName ??= type.BaseType == typeof(List<>)
             ? type.GetGenericArguments()[0].Name + 's'
             : tableName = typeof(T).Name + 's';
-        
-        
+
+
         return await _httpClient.GetFromJsonAsync<T>($"api/{tableName}");
     }
     */

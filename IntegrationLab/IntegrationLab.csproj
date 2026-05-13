@@ -7,33 +7,33 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" />
-        <PackageReference Include="Avalonia.Themes.Fluent" />
-        <PackageReference Include="Avalonia.Fonts.Inter" />
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Themes.Fluent"/>
+        <PackageReference Include="Avalonia.Fonts.Inter"/>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" />
-        <PackageReference Include="CommunityToolkit.Mvvm" />
-        <PackageReference Include="MessageBox.Avalonia" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport"/>
+        <PackageReference Include="CommunityToolkit.Mvvm"/>
+        <PackageReference Include="MessageBox.Avalonia"/>
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Views\ChatListView.axaml.cs">
-        <DependentUpon>ChatListView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Views\SingleIncidentView.axaml.cs">
-        <DependentUpon>SingleIncidentView.axaml</DependentUpon>
-      </Compile>
+        <Compile Update="Views\ChatListView.axaml.cs">
+            <DependentUpon>ChatListView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\SingleIncidentView.axaml.cs">
+            <DependentUpon>SingleIncidentView.axaml</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BaseLibrary\BaseLibrary.csproj" />
+        <ProjectReference Include="..\BaseLibrary\BaseLibrary.csproj"/>
     </ItemGroup>
 </Project>

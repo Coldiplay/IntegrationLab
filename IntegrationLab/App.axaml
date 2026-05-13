@@ -3,14 +3,14 @@
              xmlns:converters="using:IntegrationLab.Model.Converters"
              x:Class="IntegrationLab.App"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
-             
+
     <Application.Resources>
-        <converters:IncidentStatusConverter x:Key="IncidentStatusConverter"/>
-        <converters:DangerLevelConverter x:Key="DangerLevelConverter"/>
+        <converters:IncidentStatusConverter x:Key="IncidentStatusConverter" />
+        <converters:DangerLevelConverter x:Key="DangerLevelConverter" />
     </Application.Resources>
-             
+
 </Application>

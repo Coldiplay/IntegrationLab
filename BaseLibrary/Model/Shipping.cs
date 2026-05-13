@@ -7,40 +7,39 @@ namespace BaseLibrary.Model;
 public partial class Shipping : ObservableValidator
 {
     public Guid Id { get; set; }
+
     [Required]
     [ObservableProperty]
     [MaxLength(120)]
     public partial string DeliveryPoint { get; set; }
 
-    [ObservableProperty]
-    public partial DateTime ShippedDate { get; set; }
+    [ObservableProperty] public partial DateTime ShippedDate { get; set; }
 
-    [ObservableProperty]
-    public partial DateTime EstimatedDeliveryDate { get; set; }
+    [ObservableProperty] public partial DateTime EstimatedDeliveryDate { get; set; }
 
-    [ObservableProperty]
-    public partial DateTime? DeliveryDate { get; set; }
+    [ObservableProperty] public partial DateTime? DeliveryDate { get; set; }
 
     //[ObservableProperty] private bool _confirmed = false;
-    [Required]
-    [ObservableProperty]
-    public partial ShippingStatus ShippingStatus { get; set; }
+    [Required] [ObservableProperty] public partial ShippingStatus ShippingStatus { get; set; }
 
     //Скорее всего не надо
     [ObservableProperty] private decimal _estimatedDeliveryPrice;
-    [ObservableProperty]
-    public partial decimal EstimatedDeliveryCost { get; set; }
+    [ObservableProperty] public partial decimal EstimatedDeliveryCost { get; set; }
 
     //
 
-    [Required] [ForeignKey(nameof(Vehicle))] public int VehicleId { get; set; }
+    [Required]
+    [ForeignKey(nameof(Vehicle))]
+    public int VehicleId { get; set; }
+
     [ForeignKey(nameof(DesignatedDriver))] public int? DesignatedDriverId { get; set; }
-    
-    
+
+
     public virtual Vehicle Vehicle { get; set; }
     public virtual User? DesignatedDriver { get; set; }
 
-    [NotMapped] public string ConfirmedStatus
+    [NotMapped]
+    public string ConfirmedStatus
     {
         get;
         set
@@ -50,9 +49,9 @@ public partial class Shipping : ObservableValidator
             OnPropertyChanged();
         }
     } = "Не подтверждён";
-    [NotMapped]
-    public double CargoWeight => Cargos.Sum(c => c.Weight) / 1000;
-    
+
+    [NotMapped] public double CargoWeight => Cargos.Sum(c => c.Weight) / 1000;
+
 
     public virtual List<Cargo> Cargos { get; set; } = [];
 
@@ -65,10 +64,7 @@ public partial class Shipping : ObservableValidator
     public void AddRangeCargo(List<Cargo> cargos)
     {
         Cargos.AddRange(cargos);
-        foreach (var cargo in cargos)
-        {
-            cargo.Shipping = this;
-        }
+        foreach (var cargo in cargos) cargo.Shipping = this;
     }
 
     public void RemoveCargo(Cargo cargo)

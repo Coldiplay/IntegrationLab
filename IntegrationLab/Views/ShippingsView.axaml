@@ -16,36 +16,36 @@
                       RowDefinitions="Auto Auto">
                     <Grid.Styles>
                         <Style Selector="Label">
-                            <Setter Property="FontSize" Value="11"/>
+                            <Setter Property="FontSize" Value="11" />
                         </Style>
                         <Style Selector="Label.Status">
-                            <Setter Property="FontSize" Value="8"/>
+                            <Setter Property="FontSize" Value="8" />
                         </Style>
                     </Grid.Styles>
                     <!-- <Label -->
                     <!-- Content="{Binding Id, StringFormat={}Рейс №{0}}" -->
                     <!-- HorizontalAlignment="Left"/> -->
                     <Label>Рейс №111</Label>
-                                
+
                     <Label Grid.Row="1" Grid.Column="0"
-                           Content="{Binding ShippedDate, StringFormat={}Отпр. dd.MM.yyyy}" 
-                           HorizontalAlignment="Left"/>
-                    
-                    <Border Grid.Row="0" Grid.Column="1" 
+                           Content="{Binding ShippedDate, StringFormat={}Отпр. dd.MM.yyyy}"
+                           HorizontalAlignment="Left" />
+
+                    <Border Grid.Row="0" Grid.Column="1"
                             BorderBrush="DarkGray" BorderThickness="0.5"
                             HorizontalAlignment="Right">
-                        <Label Classes="Status" Content="{Binding ConfirmedStatus}"/>
+                        <Label Classes="Status" Content="{Binding ConfirmedStatus}" />
                     </Border>
-                                
+
                     <!-- <Label Grid.Row="1" Grid.Column="1" Content="{Binding Cargos.Count, StringFormat={}Груз: {0} шт.}"/> -->
                     <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
                         <StackPanel.Styles>
                             <Style Selector="Label">
-                                <Setter Property="FontSize" Value="11"/>
+                                <Setter Property="FontSize" Value="11" />
                             </Style>
                         </StackPanel.Styles>
-                        <Label Content="{Binding Cargos.Count, StringFormat={}Груз: {0} шт.}"/>
-                        <Label Content="{Binding CargoWeight, StringFormat={}{0:F1} т}"/>
+                        <Label Content="{Binding Cargos.Count, StringFormat={}Груз: {0} шт.}" />
+                        <Label Content="{Binding CargoWeight, StringFormat={}{0:F1} т}" />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -53,26 +53,26 @@
     </UserControl.DataTemplates>
     <UserControl.Styles>
         <Style Selector="ListBox">
-            <Setter Property="CornerRadius" Value="25"/>
-            <Setter Property="SelectedItem" Value="{Binding SelectedShipping}"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="SelectedItem" Value="{Binding SelectedShipping}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
         <Style Selector="Grid.BlockSP">
-            <Setter Property="MaxHeight" Value="300"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0 10 0 35"/>
+            <Setter Property="MaxHeight" Value="300" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0 10 0 35" />
         </Style>
-        
+
         <Style Selector="Border.BlockBorder">
-            <Setter Property="CornerRadius" Value="25"/>
+            <Setter Property="CornerRadius" Value="25" />
             <!-- <Setter Property="Background" Value="Gray"/> -->
             <!-- <Setter Property="MinWidth" Value="300"/> -->
         </Style>
     </UserControl.Styles>
     <Design.DataContext>
-        <vm:ShippingsViewModel/>
+        <vm:ShippingsViewModel />
     </Design.DataContext>
-    
+
     <Grid>
         <Grid HorizontalAlignment="Center" Margin="20 10 20 5" RowDefinitions="Auto Auto">
             <Grid RowDefinitions="Auto *" Classes="BlockSP">
@@ -82,23 +82,23 @@
                         <ListBox ItemsSource="{Binding CurrentShippings}">
                             <ListBox.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Подтвердить" 
+                                    <MenuItem Header="Подтвердить"
                                               Command="{Binding ConfirmShippingCommand}"
-                                              CommandParameter="{Binding SelectedShipping}"/>
+                                              CommandParameter="{Binding SelectedShipping}" />
                                 </ContextMenu>
                             </ListBox.ContextMenu>
                         </ListBox>
                     </ScrollViewer>
                 </Border>
             </Grid>
-        
+
             <Grid Classes="BlockSP" RowDefinitions="Auto *" Grid.Row="1">
                 <Label>ЗАВЕРШЁННЫЕ</Label>
                 <ScrollViewer Grid.Row="1" HorizontalAlignment="Center">
-                    <ListBox ItemsSource="{Binding PastShippings}"/>
+                    <ListBox ItemsSource="{Binding PastShippings}" />
                 </ScrollViewer>
             </Grid>
-        
+
         </Grid>
     </Grid>
 </UserControl>

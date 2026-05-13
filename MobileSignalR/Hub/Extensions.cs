@@ -10,9 +10,9 @@ public static class Extensions
     {
         public async Task<TResult?> GetLaravel<TResult>(string url)
         {
-            return LaravelParser.ParseResponse<TResult>(
-                await (await client.GetAsync(url))
-                    .Content.ReadAsStringAsync());
+            var response = await client.GetAsync(url);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            return LaravelParser.ParseResponse<TResult>(responseContent);
         }
 
         public async Task<TResult?> PostLaravel<TResult>(string url, object parameter)
@@ -22,22 +22,22 @@ public static class Extensions
             return LaravelParser.ParseResponse<TResult>(responseString);
         }
     }
+
     extension(Microsoft.AspNetCore.SignalR.Hub hub)
     {
-        public Response ToResponseWithData<T>(T? model = default, string? message = null, HttpStatusCode statusCode = HttpStatusCode.OK)
-            where  T : notnull
+        public Response ToResponseWithData<T>(T? model = default, string? message = null,
+            HttpStatusCode statusCode = HttpStatusCode.OK)
+            where T : notnull
         {
             if (model is null)
-            {
-                return new Response()
+                return new Response
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = message ?? "Not found"
                 };
-            }
 
             var typeName = typeof(T).Name;
-            return new Response()
+            return new Response
             {
                 StatusCode = statusCode,
                 Data = model,
@@ -48,13 +48,14 @@ public static class Extensions
 
         public Response BadResponse(string message, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
         {
-            return new Response()
+            return new Response
             {
                 StatusCode = statusCode,
                 Message = message
             };
         }
     }
+
     extension(IDictionary dictionary)
     {
         public T? TryGetValue<T>(string key, T? defaultValue = default)

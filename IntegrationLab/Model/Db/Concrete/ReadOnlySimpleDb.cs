@@ -7,7 +7,18 @@ namespace IntegrationLab.Model.Db.Concrete;
 [Obsolete("Использовать HubHandler")]
 public class ReadOnlySimpleDb(HttpClient httpClient) : SimpleApiDbHandler(httpClient)
 {
-    public async override Task<bool> KillAsync<T>(T model, string? tableName = null) => false;
-    public async override Task<T?> CreateAsync<T>(T model, string? tableName = null) where T : class => null;
-    public async override Task<bool> UpdateAsync<T>(T model, string? tableName = null) => false;
+    public override async Task<bool> KillAsync<T>(T model, string? tableName = null)
+    {
+        return false;
+    }
+
+    public override async Task<T?> CreateAsync<T>(T model, string? tableName = null) where T : class
+    {
+        return null;
+    }
+
+    public override async Task<bool> UpdateAsync<T>(T model, string? tableName = null)
+    {
+        return false;
+    }
 }

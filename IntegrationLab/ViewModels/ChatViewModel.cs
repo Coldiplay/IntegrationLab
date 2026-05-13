@@ -16,10 +16,7 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
 {
     public ChatViewModel(ChatView view) : base(view)
     {
-        View.Initialized += (sender, args) =>
-        {
-            OnPropertyChanged(nameof(Messages));    
-        };
+        View.Initialized += (sender, args) => { OnPropertyChanged(nameof(Messages)); };
     }
 
     [ObservableProperty] public partial Chat Chat { get; set; }
@@ -29,12 +26,12 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
         get
         {
             if (Chat is null) return [];
-            
+
             _hubData.Chats.TryGetValue(Chat, out var cartege);
             return cartege.messages;
         }
     }
-    
+
     private readonly HubData _hubData = App.Services.GetRequiredService<HubData>();
     private HubConnection _hub;
     private HttpClient _httpClient;
@@ -53,15 +50,15 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
     {
         //Вообще другая проверка нужна, но и так сойдёт :)
         if (string.IsNullOrWhiteSpace(message)) return;
-        
+
         //TODO: Потом добавить обратно
         //await _hub.SendAsync("SendMessage", message);
 
-        Messages.Add(new Message()
+        Messages.Add(new Message
         {
             Sender = App.CurrentDriver.User,
-            Chat = this.Chat,
-            ChatId = this.Chat.Id,
+            Chat = Chat,
+            ChatId = Chat.Id,
             Content = message,
             Date = DateTime.Now,
             Id = Guid.NewGuid(),
@@ -72,6 +69,8 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
     }
 
     [RelayCommand]
-    private static void ReturnToChatList() =>
+    private static void ReturnToChatList()
+    {
         App.ChangeCurrentView<MainViewModel>();
+    }
 }

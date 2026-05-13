@@ -27,6 +27,7 @@ public partial class Chat : ObservableValidator
     } = [];
 
     public Message? LastMessage => Messages.MaxBy(m => m.Date);
+
     public string? LastMessageText
     {
         get

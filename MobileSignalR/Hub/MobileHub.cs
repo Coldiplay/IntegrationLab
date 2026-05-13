@@ -22,8 +22,9 @@ public class MobileHub(HttpClient httpApi, JwtTokenHandler checker) : Microsoft.
 {
     //private readonly HttpClient httpApi
     // Мобилка <-> SignalR <<-> API (Laravel) <->> Сайт (Laravel)
-    
+
     private readonly ConcurrentDictionary<string, string> _jwtToLaravel = checker.JwtToLaravel;
+
     public async Task<Response> GetChatMembers(int chatId)
     {
         httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
@@ -40,22 +41,24 @@ public class MobileHub(HttpClient httpApi, JwtTokenHandler checker) : Microsoft.
     public async Task<Response> GetChats(int userId)
     {
         httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
-        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Chat>>($"api/chat/?userId={userId}"));
+        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Chat>>($"api/chat/"));
     }
 
     public async Task<Response> GetIncidents(int userId)
     {
         httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
-        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Incident>>($"api/incident/?driverId={userId}"));
+        return this.ToResponseWithData(
+            await httpApi.GetLaravel<IEnumerable<Incident>>($"api/incident/"));
     }
 
     public async Task<Response> GetShippings(int userId)
     {
         httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
-        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Shipping>>($"api/shipping/?driverId={userId}"));
+        return this.ToResponseWithData(
+            await httpApi.GetLaravel<IEnumerable<Shipping>>($"api/shipping/"));
     }
 
-    [AllowAnonymous] 
+    [AllowAnonymous]
     public async Task<Response> Authorize(string login, string password)
     {
         var result = await httpApi.PostLaravel<UserAuth>("api/login", new { login, password });
@@ -66,25 +69,26 @@ public class MobileHub(HttpClient httpApi, JwtTokenHandler checker) : Microsoft.
         result.Token = token;
         return this.ToResponseWithData(result, "Успешная авторизация!");
     }
-    
+
     private static string GenerateToken(DateTime expiry)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var identity = new ClaimsIdentity([
             new Claim("ID", Guid.NewGuid().ToString())
         ]);
-        
-        var xml = Options.RSA; 
+
+        var xml = Options.RSA;
         SecurityKey key = KeyHelper.BuildRsaSigningKey(xml);
 
         var token = new JwtSecurityToken
         (
-            issuer: Options.Issuer,
-            audience: Options.Audience,
-            claims: identity.Claims,
-            notBefore: DateTime.UtcNow,
-            expires: expiry,
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.RsaSha256, SecurityAlgorithms.Sha256Digest)
+            Options.Issuer,
+            Options.Audience,
+            identity.Claims,
+            DateTime.UtcNow,
+            expiry,
+            new SigningCredentials(key, SecurityAlgorithms.RsaSha256,
+                SecurityAlgorithms.Sha256Digest)
         );
         var tokenString = tokenHandler.WriteToken(token);
         return tokenString;
@@ -93,6 +97,6 @@ public class MobileHub(HttpClient httpApi, JwtTokenHandler checker) : Microsoft.
     private string? GetLaravelToken()
     {
         var token = Context.GetHttpContext()?.Request.Headers.Authorization.ToString().Remove(0, 7);
-        return string.IsNullOrEmpty(token) ? _jwtToLaravel!.GetValueOrDefault(token) : null;
+        return !string.IsNullOrEmpty(token) ? _jwtToLaravel.GetValueOrDefault(token) : null;
     }
 }

@@ -11,6 +11,8 @@ public partial class IncidentsView : UserControl
         InitializeComponent();
     }
 
-    private void OnDoubleTapped(object? sender, TappedEventArgs e) =>
+    private void OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
         (DataContext as IncidentsViewModel)!.OnDoubleTapped(sender, e);
+    }
 }

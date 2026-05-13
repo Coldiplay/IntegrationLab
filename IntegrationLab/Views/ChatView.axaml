@@ -11,96 +11,96 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:ChatListViewModel />
     </Design.DataContext>
-    
-   <UserControl.Resources>
-    
-    <SolidColorBrush x:Key="PageBackground" Color="#F5F7FB"/>
-    <SolidColorBrush x:Key="CardBackground" Color="#FFFFFFFF"/>
-    <SolidColorBrush x:Key="DividerBrush" Color="#E6E8ED"/>
-    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#6B7280"/>
-    <SolidColorBrush x:Key="BubbleLeft" Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="BubbleRight" Color="#E6F0FF"/>
-  </UserControl.Resources>
+
+    <UserControl.Resources>
+
+        <SolidColorBrush x:Key="PageBackground" Color="#F5F7FB" />
+        <SolidColorBrush x:Key="CardBackground" Color="#FFFFFFFF" />
+        <SolidColorBrush x:Key="DividerBrush" Color="#E6E8ED" />
+        <SolidColorBrush x:Key="BubbleLeft" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="BubbleRight" Color="#E6F0FF" />
+    </UserControl.Resources>
     <UserControl.Styles>
 
-    <Style Selector="Border.bubbleL">
-      <Setter Property="Background" Value="{StaticResource BubbleLeft}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="14"/>
-      <Setter Property="Padding" Value="10"/>
-      <Setter Property="MaxWidth" Value="320"/>
-      <Setter Property="Margin" Value="8,6"/>
-    </Style>
-    <Style Selector="Border.bubbleR">
-      <Setter Property="Background" Value="{StaticResource BubbleRight}"/>
-      <Setter Property="CornerRadius" Value="14"/>
-      <Setter Property="Padding" Value="10"/>
-      <Setter Property="MaxWidth" Value="320"/>
-      <Setter Property="Margin" Value="8,6"/>
-    </Style>
+        <Style Selector="Border.bubbleL">
+            <Setter Property="Background" Value="{StaticResource BubbleLeft}" />
+            <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="MaxWidth" Value="320" />
+            <Setter Property="Margin" Value="8,6" />
+        </Style>
+        <Style Selector="Border.bubbleR">
+            <Setter Property="Background" Value="{StaticResource BubbleRight}" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="MaxWidth" Value="320" />
+            <Setter Property="Margin" Value="8,6" />
+        </Style>
 
-    <Style Selector="Button.send">
-      <Setter Property="MinWidth" Value="72"/>
-      <Setter Property="Height" Value="44"/>
-      <Setter Property="CornerRadius" Value="12"/>
-      <Setter Property="FontWeight" Value="SemiBold"/>
-      <Setter Property="Content" Value="Отпр."/>
-      <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
-      <Setter Property="Foreground" Value="White"/>
-    </Style>
+        <Style Selector="Button.send">
+            <Setter Property="MinWidth" Value="72" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Content" Value="Отпр." />
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
 
-    <Style Selector="Border.input">
-      <Setter Property="CornerRadius" Value="22"/>
-      <Setter Property="Background" Value="#FFFFFF"/>
-      <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="Padding" Value="12,6"/>
-    </Style>
-  </UserControl.Styles>
+        <Style Selector="Border.input">
+            <Setter Property="CornerRadius" Value="22" />
+            <Setter Property="Background" Value="#FFFFFF" />
+            <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="12,6" />
+        </Style>
+    </UserControl.Styles>
 
-  <Grid RowDefinitions="Auto * Auto" Background="{StaticResource PageBackground}">
-    <!-- Верхняя панель -->
-    <Border
+    <Grid RowDefinitions="Auto * Auto" Background="{StaticResource PageBackground}">
+        <!-- Верхняя панель -->
+        <Border
             Background="{StaticResource CardBackground}"
             BorderBrush="{StaticResource DividerBrush}"
             BorderThickness="0,0,0,1"
             Padding="12,10">
-      <Grid ColumnDefinitions="40,*,40" VerticalAlignment="Center">
-        <Button Grid.Column="0" Background="Transparent" BorderThickness="0">
-          <TextBlock Text="✕" FontSize="20"/>
-        </Button>
-        <TextBlock Grid.Column="1" Text="{Binding Chat.Name}"
-                   HorizontalAlignment="Center" FontSize="18" FontWeight="SemiBold"/>
-        <Button Grid.Column="2" Background="Transparent" BorderThickness="1" CornerRadius="12">
-          <TextBlock Text="✕" FontSize="16" Margin="0,0,0,1"/>
-        </Button>
-      </Grid>
-    </Border>
-    
-    <!-- Сообщения -->
-    <ScrollViewer Grid.Row="1">
-      <ListBox Margin="16,12" ItemsSource="{Binding Messages}">
-        <ListBox.ItemTemplate>
-          <DataTemplate>
-            <Border Classes="bubbleR" HorizontalAlignment="Right">
-              <TextBlock Text="{Binding Content}" TextWrapping="Wrap"/>
+            <Grid ColumnDefinitions="40,*,40" VerticalAlignment="Center">
+                <Button Grid.Column="0" Background="Transparent" BorderThickness="0">
+                    <TextBlock Text="✕" FontSize="20" />
+                </Button>
+                <TextBlock Grid.Column="1" Text="{Binding Chat.Name}"
+                           HorizontalAlignment="Center" FontSize="18" FontWeight="SemiBold" />
+                <Button Grid.Column="2" Background="Transparent" BorderThickness="1" CornerRadius="12">
+                    <TextBlock Text="✕" FontSize="16" Margin="0,0,0,1" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Сообщения -->
+        <ScrollViewer Grid.Row="1">
+            <ListBox Margin="16,12" ItemsSource="{Binding Messages}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Classes="bubbleR" HorizontalAlignment="Right">
+                            <TextBlock Text="{Binding Content}" TextWrapping="Wrap" />
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+
+        <!-- Нижняя панель: поле ввода-->
+        <Grid Grid.Row="2" DockPanel.Dock="Bottom">
+            <Border Background="{StaticResource CardBackground}" BorderBrush="{StaticResource DividerBrush}"
+                    BorderThickness="0,1,0,1" Padding="12,8">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <Border Classes="input" Grid.Column="0">
+                        <TextBox Name="InputBox" BorderThickness="0" Background="Transparent" PlaceholderText="" />
+                    </Border>
+                    <Button Grid.Column="1" Classes="send" />
+                </Grid>
             </Border>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-    </ScrollViewer>
-    
-    <!-- Нижняя панель: поле ввода-->
-    <Grid Grid.Row="2" DockPanel.Dock="Bottom">
-      <Border Background="{StaticResource CardBackground}" BorderBrush="{StaticResource DividerBrush}" BorderThickness="0,1,0,1" Padding="12,8">
-        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-          <Border Classes="input" Grid.Column="0">
-            <TextBox Name="InputBox" BorderThickness="0" Background="Transparent" PlaceholderText=""/>
-          </Border>
-          <Button Grid.Column="1" Classes="send"/>
         </Grid>
-      </Border>
     </Grid>
-  </Grid>
 </UserControl>

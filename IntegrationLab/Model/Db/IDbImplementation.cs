@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace IntegrationLab.Model.Db;
 
 [Obsolete("Хз надо ли")]
-public interface IDbAsyncImplementation<TModel> 
+public interface IDbAsyncImplementation<TModel>
     where TModel : class, new()
 {
     Task<List<TModel>> FetchAllAsync();

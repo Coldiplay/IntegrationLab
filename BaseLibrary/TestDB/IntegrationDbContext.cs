@@ -40,8 +40,9 @@ public partial class IntegrationDbContext : DbContext
     public virtual DbSet<Vehicle> Vehicles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;user=root;password=toor;database=IntegrationLab", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.11.14-mariadb"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https: //go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("server=localhost;user=root;password=toor;database=IntegrationLab",
+            ServerVersion.Parse("10.11.14-mariadb"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -212,7 +213,7 @@ public partial class IntegrationDbContext : DbContext
                 .HasColumnType("timestamp")
                 .HasColumnName("updated_at");
         });
-        
+
         modelBuilder.Entity<Incident>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -461,7 +462,8 @@ public partial class IntegrationDbContext : DbContext
             entity.Property(e => e.BodySizeLength).HasColumnName("body_size_length");
             entity.Property(e => e.BodySizeWidth).HasColumnName("body_size_width");
             entity.Property(e => e.BodyType)
-                .HasColumnType("enum('Awning','Van','Isothermal','Refrigerator','OnboardPlatform','DumpTruck','Tank','ContainerShip')")
+                .HasColumnType(
+                    "enum('Awning','Van','Isothermal','Refrigerator','OnboardPlatform','DumpTruck','Tank','ContainerShip')")
                 .HasColumnName("body_type");
             entity.Property(e => e.Brand)
                 .HasMaxLength(20)

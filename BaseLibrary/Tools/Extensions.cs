@@ -4,7 +4,6 @@ namespace BaseLibrary.Tools;
 
 public static class Extensions
 {
-
     extension(string str)
     {
         public string TruncateByWordsEfficient(int maxLength)
@@ -23,13 +22,11 @@ public static class Extensions
 
                 if (sb.Length > 0)
                     sb.Append(' ');
-        
+
                 sb.Append(str);
             }
 
             return sb.ToString();
         }
     }
-    
-    
 }

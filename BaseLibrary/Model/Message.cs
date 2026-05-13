@@ -16,14 +16,15 @@ public partial class Message : ObservableValidator
     [MinLength(1)]
     public partial string Content { get; set; } = null!;
 
-    [Required]
-    [ObservableProperty]
-    public partial DateTime Date { get; set; }
+    [Required] [ObservableProperty] public partial DateTime Date { get; set; }
 
     //public DateTime Date { get; set; }
-    [Required] [ForeignKey(nameof(Sender))] public int SenderId { get; set; }
+    [Required]
+    [ForeignKey(nameof(Sender))]
+    public int SenderId { get; set; }
+
     [Required] [ForeignKey(nameof(Chat))] public int ChatId { get; set; }
-    
+
     public virtual User Sender { get; set; }
     public virtual Chat Chat { get; set; }
 }

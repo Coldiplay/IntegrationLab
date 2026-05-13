@@ -13,7 +13,6 @@ internal static class Options
             Audience = "Audience";
 
         if (!data.TryGetValue("MOBILE_SIGNALR_SECRET", out RSA))
-        {
             try
             {
                 RSA = File.ReadAllText("private.key");
@@ -22,7 +21,6 @@ internal static class Options
             {
                 RSA = System.Security.Cryptography.RSA.Create(2048).ToXmlString(true);
             }
-        }
     }
 
     internal static readonly string RSA;

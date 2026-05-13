@@ -6,7 +6,8 @@ namespace MobileSignalR.Auth;
 
 public class AuthRequirement(HttpClient authClient) : AuthorizationHandler<AuthRequirement>, IAuthorizationRequirement
 {
-    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthRequirement requirement)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        AuthRequirement requirement)
     {
         Debug.WriteLine("Начата проверка");
         var token = context.User.Claims.FirstOrDefault(c => c.Type == "token_value");
@@ -17,7 +18,7 @@ public class AuthRequirement(HttpClient authClient) : AuthorizationHandler<AuthR
         }
 
         var response = await authClient.PostAsJsonAsync("api/Auth/Check", token);
-        
+
         if (response.StatusCode == HttpStatusCode.OK)
         {
             context.Succeed(requirement);

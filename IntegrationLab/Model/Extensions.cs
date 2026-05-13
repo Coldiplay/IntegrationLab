@@ -14,10 +14,7 @@ public static class Extensions
 
     public static void AddRange<T>(this ObservableCollection<T> collection, IEnumerable<T> newItems)
     {
-        foreach (var newItem in newItems)
-        {
-            collection.Add(newItem);
-        }
+        foreach (var newItem in newItems) collection.Add(newItem);
     }
 
     /*
@@ -25,19 +22,19 @@ public static class Extensions
     {
         lock (collection)
         {
-            
+
         }
     }
     */
-    
-    
+
+
     /*
     public static HorizontalAlignment GetMessageHorizontalAlignment(this Message message)
         => message.SenderId == App.CurrentDriver.UserId
             ? HorizontalAlignment.Right
             : HorizontalAlignment.Left;
     */
-    
+
     /*
     extension(Message message)
     {
@@ -53,5 +50,4 @@ public static class Extensions
             HorizontalAlignment.Right;
     }
     */
-    
 }

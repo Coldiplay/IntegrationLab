@@ -8,6 +8,7 @@ public class LaravelJsonResponse
     public string? Type { get; init; }
     public object? Relationships { get; init; }
     public string Message { get; init; } = null!;
+
     public HttpStatusCode Status { get; init; }
     //public int Status { get; set; }
 }

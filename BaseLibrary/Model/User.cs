@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BaseLibrary.Model;
 
 [PrimaryKey(nameof(Id))]
-[Index(nameof(Login),  IsUnique = true)]
+[Index(nameof(Login), IsUnique = true)]
 public partial class User : ObservableValidator
 {
     public int Id { get; set; }
@@ -25,17 +25,11 @@ public partial class User : ObservableValidator
     [MaxLength(40)]
     public partial string LastName { get; set; } = null!;
 
-    [ObservableProperty]
-    [MaxLength(40)]
-    public partial string Patronymic { get; set; } = null!;
+    [ObservableProperty] [MaxLength(40)] public partial string Patronymic { get; set; } = null!;
 
-    [Required]
-    [ObservableProperty]
-    public partial DateOnly HireDate { get; set; }
+    [Required] [ObservableProperty] public partial DateOnly HireDate { get; set; }
 
-    [ObservableProperty]
-    [MaxLength(20)]
-    public partial string Phone { get; set; } = null!;
+    [ObservableProperty] [MaxLength(20)] public partial string Phone { get; set; } = null!;
 
     [Required]
     [ObservableProperty]

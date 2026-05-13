@@ -8,10 +8,11 @@ namespace IntegrationLab.ViewModels;
 
 public partial class SingleIncidentViewModel : ViewModelControlBase<SingleIncidentView>
 {
-    [ObservableProperty]
-    public partial Incident Incident { get; set; } = null!;
-    
+    [ObservableProperty] public partial Incident Incident { get; set; } = null!;
+
     [RelayCommand]
-    private static void ReturnToIncidentsList() =>
+    private static void ReturnToIncidentsList()
+    {
         App.ChangeCurrentView(App.Services.GetRequiredService<MainViewModel>());
+    }
 }

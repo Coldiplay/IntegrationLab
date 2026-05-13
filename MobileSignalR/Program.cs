@@ -33,10 +33,9 @@ public class Program
             {
                 [new OpenApiSecuritySchemeReference("bearer", document)] = []
             });
-            
         });
         builder.Services.AddOpenApi();
-        
+
         builder.Services.AddAuthentication(a =>
             {
                 a.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -61,13 +60,14 @@ public class Program
                     ValidAudience = Options.Audience
                 };
             });
-        
+
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy("Authorized", policy => policy.Requirements.Add(
-                    new AuthRequirement(new HttpClient {BaseAddress = new Uri(GlobalOptions.API_URI)})
-                ));
+                new AuthRequirement(new HttpClient { BaseAddress = new Uri(GlobalOptions.API_URI) })
+            ));
 
-        builder.Services.AddSingleton(new HttpClient {
+        builder.Services.AddSingleton(new HttpClient
+        {
             BaseAddress = new Uri(GlobalOptions.API_URI)
         });
         // ???
@@ -77,10 +77,10 @@ public class Program
 
         builder.Services.AddSingleton<JwtTokenHandler>();
         builder.Services.AddHostedService(provider => provider.GetRequiredService<JwtTokenHandler>());
-        
+
         var app = builder.Build();
         app.UseHttpsRedirection();
-        
+
         if (builder.Environment.IsDevelopment())
         {
             app.MapOpenApi();

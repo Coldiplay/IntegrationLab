@@ -10,7 +10,9 @@ public partial class ShippingsView : UserControl
     {
         InitializeComponent();
     }
-    
-    private void OnDoubleTapped(object? sender, TappedEventArgs e) =>
+
+    private void OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
         (DataContext as ShippingsViewModel)!.OnDoubleTapped(sender, e);
+    }
 }

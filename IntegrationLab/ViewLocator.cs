@@ -17,11 +17,12 @@ namespace IntegrationLab;
 public class ViewLocator : IDataTemplate
 {
     private readonly IServiceProvider _services;
+
     public ViewLocator(IServiceProvider services)
     {
         _services = services;
     }
-    
+
     /*
      Old Approach
     public Control? Build(object? param)
@@ -43,7 +44,7 @@ public class ViewLocator : IDataTemplate
     public Control Build(object? data)
     {
         if (data is not ViewModelBase viewModel) return new TextBlock { Text = $"No view for {data?.GetType().Name}" };
-        
+
         Control view = viewModel switch
         {
             ActiveShippingViewModel => _services.GetRequiredService<ActiveShippingView>(),
@@ -56,7 +57,7 @@ public class ViewLocator : IDataTemplate
             ShippingsViewModel => _services.GetRequiredService<ShippingsView>(),
             SingleIncidentViewModel => _services.GetRequiredService<SingleIncidentView>(),
             SingleShippingViewModel => _services.GetRequiredService<SingleShippingView>(),
-            
+
             _ => new TextBlock { Text = $"No view for {data.GetType().Name}" }
         };
         if (viewModel is not MainWindowViewModel) viewModel.View = view;
@@ -64,5 +65,8 @@ public class ViewLocator : IDataTemplate
         return view;
     }
 
-    public bool Match(object? data) => data is ViewModelBase;
+    public bool Match(object? data)
+    {
+        return data is ViewModelBase;
+    }
 }

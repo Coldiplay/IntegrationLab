@@ -33,7 +33,7 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     } = [];
 
     public List<Shipping> CurrentShippings =>
-        Shippings.Where(s => s.ShippingStatus is ShippingStatus.GettingReadyToShip 
+        Shippings.Where(s => s.ShippingStatus is ShippingStatus.GettingReadyToShip
             or ShippingStatus.Shipping).ToList();
 
     public List<Shipping> PastShippings =>
@@ -45,7 +45,7 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
         _client = App.Services.GetRequiredService<HttpClient>();
         Shippings = App.Services.GetRequiredService<HubData>().Shippings;
     }
-    
+
     public Shipping? SelectedShipping
     {
         get;
@@ -59,9 +59,10 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     }
 
     private HttpClient _client;
+
     //TODO: Сделать On для обновления рейсов
     private HubConnection _hub;
-    
+
     [RelayCommand]
     private void ConfirmShipping()
     {
@@ -81,16 +82,16 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     {
         //Shippings = _hub.InvokeAsync<object>("");
         Shippings = await _client.GetFromJsonAsync<ObservableCollection<Shipping>>("api/Shippings")
-            ?? [];
+                    ?? [];
     }
-    
+
     public void OnDoubleTapped(object? sender, TappedEventArgs e)
     {
         if (sender is not Control control ||
             (control.Parent as ListBoxItem)?.Content is not Shipping shipping) return;
         OpenShippingCommand.Execute(shipping);
     }
-    
+
     [RelayCommand]
     private static void OpenShipping(Shipping shipping)
     {
