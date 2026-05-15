@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using BaseLibrary.Auth;
 using BaseLibrary.Model;
+using BaseLibrary.Model.Classes;
 using BaseLibrary.Tools;
 using IntegrationLab.Tools;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -71,6 +72,7 @@ public class HubHandler
 
     public async Task<HubConnection> Initialize(HubConnection connection)
     {
+        connection.On("asd", () => { });
         connection.On("ReceiveMessage", async (Message newMessage) =>
         {
             if (_hubData.Chats.TryGetValue(newMessage.Chat, out var tuple))
@@ -132,32 +134,32 @@ public class HubHandler
             _hubData.Chats.TryAdd(chat, ([.. await GetChatMembers(chat.Id)], [.. await GetChatMessages(chat.Id)]));
     }
 
-    public async Task<IEnumerable<User>?> GetChatMembers(int chatId)
+    public async Task<IEnumerable<User>?> GetChatMembers(ulong chatId)
     {
         var response = await SimpleGet("GetChatMembers", chatId);
         return await HandleResponse<IEnumerable<User>>(response);
     }
 
     //TODO: Зачем я добавил userId?...
-    public async Task<IEnumerable<Chat>?> GetChats(int? userId = null)
+    public async Task<IEnumerable<Chat>?> GetChats(ulong? userId = null)
     {
         var response = await SimpleGet("GetChats", CheckUserId(userId));
         return await HandleResponse<IEnumerable<Chat>>(response);
     }
 
-    public async Task<IEnumerable<Message>?> GetChatMessages(int chatId)
+    public async Task<IEnumerable<Message>?> GetChatMessages(ulong chatId)
     {
         var response = await SimpleGet("GetChatMessages", chatId);
         return await HandleResponse<IEnumerable<Message>>(response);
     }
 
-    public async Task<IEnumerable<Incident>?> GetIncidents(int? userId = null)
+    public async Task<IEnumerable<Incident>?> GetIncidents(ulong? userId = null)
     {
         var response = await SimpleGet("GetIncidents", CheckUserId(userId));
         return await HandleResponse<IEnumerable<Incident>>(response);
     }
 
-    public async Task<IEnumerable<Shipping>?> GetShippings(int? userId = null)
+    public async Task<IEnumerable<Shipping>?> GetShippings(ulong? userId = null)
     {
         var response = await SimpleGet("GetShippings", CheckUserId(userId));
         return await HandleResponse<IEnumerable<Shipping>>(response);
@@ -223,8 +225,8 @@ public class HubHandler
     }
 
 
-    private static int CheckUserId(int? userId)
+    private static ulong CheckUserId(ulong? userId)
     {
-        return userId is null or < 1 ? App.CurrentDriverId : userId.Value;
+        return userId is null or < 1 ? (ulong)App.CurrentDriverId : userId.Value;
     }
 }

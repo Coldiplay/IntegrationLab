@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BaseLibrary.Model;
+using BaseLibrary.Model.Classes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
@@ -60,8 +61,7 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
             Chat = Chat,
             ChatId = Chat.Id,
             Content = message,
-            Date = DateTime.Now,
-            Id = Guid.NewGuid(),
+            CreatedAt = DateTime.Now,
             SenderId = App.CurrentDriver.User.Id
         });
         MessageText = string.Empty;

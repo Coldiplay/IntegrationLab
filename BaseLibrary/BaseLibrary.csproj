@@ -24,8 +24,4 @@
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="TestDB\"/>
-    </ItemGroup>
-
 </Project>

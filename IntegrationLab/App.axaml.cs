@@ -4,6 +4,8 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using BaseLibrary.Model;
+using BaseLibrary.Model.Classes;
+using BaseLibrary.Model.Enums;
 using BaseLibrary.Tools;
 using IntegrationLab.Model;
 using IntegrationLab.ViewModels;
@@ -16,7 +18,7 @@ public partial class App : Application
 {
     public static ServiceProvider Services { get; private set; }
     public static ViewModelBase CurrentView { get; private set; }
-    public static int CurrentDriverId => CurrentDriver.User.Id;
+    public static ulong CurrentDriverId => CurrentDriver.User.Id;
     public static Driver CurrentDriver { get; set; }
 
     private static bool _isAppWithSingleView = true;
@@ -78,7 +80,7 @@ public partial class App : Application
         var user = new User
         {
             Id = 1,
-            Name = fName,
+            FirstName = fName,
             LastName = lName,
             Phone = faker.Phone.PhoneNumber(),
             Login = faker.Internet.UserName(fName, lName)

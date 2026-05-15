@@ -153,11 +153,11 @@
                         <Grid ColumnDefinitions="* Auto" RowDefinitions="Auto Auto Auto Auto" RowSpacing="10">
                             <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Номер" />
                             <TextBlock Grid.Row="0" Grid.Column="1" Classes="value"
-                                       Text="{Binding Shipping.Vehicle.Number}" />
+                                       Text="{Binding Shipping.Vehicle.VehicleNumberPlate}" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Марка" />
                             <TextBlock Grid.Row="1" Grid.Column="1" Classes="value"
-                                       Text="{Binding Shipping.Vehicle.BrandName}" />
+                                       Text="{Binding Shipping.Vehicle.Brand}" />
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Модель" />
                             <TextBlock Grid.Row="2" Grid.Column="1" Classes="value"

@@ -94,7 +94,7 @@
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Гос. номер" />
                             <TextBlock Grid.Row="1" Grid.Column="1" Classes="value"
-                                       Text="{Binding Shipping.Vehicle.Number}" />
+                                       Text="{Binding Shipping.Vehicle.VehicleNumberPlate}" />
                         </Grid>
 
                         <!-- Время -->

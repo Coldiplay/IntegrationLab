@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using BaseLibrary.Model;
+using BaseLibrary.Model.Classes;
+using BaseLibrary.Model.Enums;
 using BaseLibrary.Tools;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -11,6 +13,7 @@ namespace IntegrationLab.Model;
 
 public partial class HubData : ObservableObject
 {
+    /*
     public HubData()
     {
         TestData();
@@ -160,6 +163,8 @@ public partial class HubData : ObservableObject
         var randShipping = faker.PickRandom<Shipping>(Shippings);
         randShipping.ShippingStatus = ShippingStatus.Shipping;
     }
+    */
+    
 
     public Shipping? ActiveShipping => Shippings.FirstOrDefault(s => s.ShippingStatus == ShippingStatus.Shipping);
 

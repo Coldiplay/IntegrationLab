@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using BaseLibrary.Auth;
 using BaseLibrary.Model;
+using BaseLibrary.Model.Classes;
 using BaseLibrary.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;

@@ -84,7 +84,7 @@
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}"
                                                    FontWeight="SemiBold" FontSize="16" />
                                         <Border Grid.Row="0" Grid.Column="1" Classes="chip" HorizontalAlignment="Right">
-                                            <TextBlock Text="{Binding LastMessage?.Date, StringFormat=hh:mm}"
+                                            <TextBlock Text="{Binding LastMessage?.CreatedAt, StringFormat=hh:mm}"
                                                        FontSize="13" />
                                         </Border>
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding LastMessageText}"

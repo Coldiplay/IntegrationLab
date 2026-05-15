@@ -1,4 +1,5 @@
 using BaseLibrary.Model;
+using BaseLibrary.Model.Classes;
 using BaseLibrary.Tools;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IntegrationLab.Model;

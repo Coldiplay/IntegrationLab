@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 using BaseLibrary.Model;
+using BaseLibrary.Model.Enums;
 
 namespace IntegrationLab.Model.Converters;
 
@@ -18,7 +19,7 @@ public class DangerLevelConverter : IValueConverter
             DangerLevel.Low => "Малый",
             DangerLevel.Medium => "Средний",
             DangerLevel.High => "Высокий",
-            DangerLevel.VeryHigh => "Чрезвычайный",
+            DangerLevel.Extreme => "Чрезвычайный",
             _ => null
         };
 
@@ -43,7 +44,7 @@ public class DangerLevelConverter : IValueConverter
             "Малый" => DangerLevel.Low,
             "Средний" => DangerLevel.Medium,
             "Высокий" => DangerLevel.High,
-            "Чрезвычайный" => DangerLevel.VeryHigh,
+            "Чрезвычайный" => DangerLevel.Extreme,
             _ => null
         };
     }
