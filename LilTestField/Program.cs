@@ -1,14 +1,21 @@
 ﻿using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.Json;
 using BaseLibrary.Tools;
 using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using JsonElement = System.Text.Json.JsonElement;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace LilTestField;
 
 internal class Program
 {
+    private class Test4
+    {
+        public DateTime DateForNow { get; set; }
+    }
     private static async Task Main(string[] args)
     {
         /*
@@ -51,6 +58,27 @@ internal class Program
         ;
         */
 
+        var options = new JsonSerializerSettings()
+        {
+            ContractResolver = new DefaultContractResolver()
+            {
+                NamingStrategy =new SnakeCaseNamingStrategy()
+            }
+        };
+        var test = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        var json = $"{{\"date_for_now\":\"{test}\"}}";
+        var element = JsonConvert.DeserializeObject<Test4>(json, options);
+        ;
+        // var element = JsonSerializer.Deserialize<JsonElement>(json);
+        // var prop =  element.GetProperty("date");
+        // var jsonDateTime = JsonSerializer.Serialize(DateTime.Now);
+        // var dateFromString = DateTime.Parse(test);
+        // var test2 = prop.Deserialize(typeof(DateTime));
+        // var datetime = prop.GetDateTime();
+    }
+
+    private static async Task TestConnection()
+    {
         //TODO: check later
         var connection = new HubConnectionBuilder()
             .WithUrl(GlobalOptions.HUB_URI)
@@ -81,6 +109,7 @@ internal class Program
 
         Thread.Sleep(60000);
     }
+    
 
     private static async Task SaveRSAKeyPair()
     {

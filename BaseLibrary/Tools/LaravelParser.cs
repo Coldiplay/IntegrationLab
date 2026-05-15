@@ -1,36 +1,42 @@
 using System.Net;
 using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace BaseLibrary.Tools;
 
 public static class LaravelParser
 {
-    private static readonly JsonSerializerOptions Options = new()
+    private static readonly JsonSerializerSettings Options = new()
     {
-        PropertyNameCaseInsensitive = true
+        ContractResolver = new DefaultContractResolver()
+        {
+            NamingStrategy = new SnakeCaseNamingStrategy()
+        },
     };
 
     public static T? ParseResponse<T>(string json)
     {
-        var test = JsonSerializer.Deserialize<LaravelJsonResponse>(json, Options);
-
-        //TODO: ОБНОВИТЬ МОДЕЛИ НА НОВЫЕ!!!
-        if (((int)test!.Status == 200 || (int)test.Status == 201) && test?.Data is not null)
+        var laravelResponse = JsonConvert.DeserializeObject<LaravelJsonResponse>(json, Options);
+        
+        if (((int)laravelResponse!.Status == 200 || (int)laravelResponse.Status == 201) && laravelResponse?.Data is not null)
             try
             {
-                var element = JsonElement.Parse(test.Data.ToString()!);
-                var model = element.Deserialize<T>(Options);
+                var model = JsonConvert.DeserializeObject<T>(laravelResponse.Data.ToString()!, Options);
+                // var element = JsonElement.Parse(laravelResponse.Data.ToString()!);
+                // var model = element.Deserialize<T>(Options);
                 return model;
             }
             catch (Exception e)
             {
-                var typeName = test.Type?.Remove(0, test.Type.LastIndexOf('\\') + 1).Replace("Resource", "");
+                var typeName = laravelResponse.Type?.Remove(0, laravelResponse.Type.LastIndexOf('\\') + 1).Replace("Resource", "");
                 var type = FindType(typeName!);
                 if (type is null) throw new Exception();
                 if (type == typeof(T))
                 {
-                    var element = JsonElement.Parse(test.Data.ToString()!);
-                    var model = element.Deserialize<T>(Options);
+                    var element = JsonElement.Parse(laravelResponse.Data.ToString()!);
+                    var model = element.Deserialize<T>();
                     //FillWithRelations((model, type), JsonElement.Parse(test.Relationships?.ToString()!));
                     return model;
                 }

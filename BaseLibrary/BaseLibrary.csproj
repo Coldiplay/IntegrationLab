@@ -21,6 +21,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+        <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql"/>
     </ItemGroup>
 
