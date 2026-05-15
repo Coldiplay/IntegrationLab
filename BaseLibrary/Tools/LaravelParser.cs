@@ -27,34 +27,46 @@ public static class LaravelParser
             {
                 if (laravelResponse.ContainerType!.Equals("array"))
                 {
-                    var rootObjType = FindType(laravelResponse.ClassType!);
-                    var returnList = new ArrayList();
-                    var array = JArray.Parse(laravelResponse.Data.ToString()!);
-                    foreach (var element in array)
+                    try
                     {
-                        var returnElement = element.ToObject<T>();
-                        var elemObj = element.ToObject<JObject>();
-                        if (elemObj!.ContainsKey("relationships"))
+                        var rootObjType = FindType(laravelResponse.ClassType!);
+                        var returnList = new ArrayList();
+                        var elements = JArray.Parse(laravelResponse.Data.ToString()!);
+                        foreach (var element in elements)
                         {
-                            var relations = elemObj["relationships"]!.ToObject<JObject>()!;
-                            foreach (var relationProp in relations.Properties())
+                            var returnElement = JsonConvert.DeserializeObject(element.ToString(), rootObjType, Options);
+                            var elemObj = element.ToObject<JObject>();
+                            if (elemObj!.ContainsKey("relationships"))
                             {
-                                var prop = rootObjType?.GetProperties()
-                                    .FirstOrDefault(p =>
-                                        p.Name.Contains(relationProp.Name,
-                                            StringComparison.OrdinalIgnoreCase));
-                                
-                                prop?.SetValue(returnElement, relationProp.Value.ToObject(prop.PropertyType));
-                            }
-                        }
-                        returnList.Add(returnElement);
-                    }
+                                var relations = elemObj["relationships"]!.ToObject<JObject>()!;
+                                foreach (var relationProp in relations.Properties())
+                                {
+                                    var prop = rootObjType?.GetProperties()
+                                        .FirstOrDefault(p =>
+                                            p.Name.Equals(relationProp.Name.ToPascalCase(),
+                                                StringComparison.OrdinalIgnoreCase));
 
-                    if (typeof(IEnumerable).IsAssignableFrom(rootObjType))
-                        return (T)(object)returnList;
-                    return returnList.Count > 0
-                        ? (T)returnList[0]!
-                        : default;
+                                    if (prop is null) continue;
+
+                                    var propValue =
+                                        JsonConvert.DeserializeObject(relationProp.Value.ToString(), prop.PropertyType, Options);
+                                    //var propValue = relationProp.Value.ToObject(prop.PropertyType);
+                                    prop.SetValue(returnElement, propValue);
+                                }
+                            }
+                            returnList.Add(returnElement);
+                        }
+
+                        if (typeof(IEnumerable).IsAssignableFrom(typeof(T)))
+                            return (T)(object)returnList;
+                        return returnList.Count > 0
+                            ? (T)returnList[0]!
+                            : default;
+                    }
+                    catch (Exception e)
+                    {
+                        ;
+                    }
                 }
                 
                 var model = JsonConvert.DeserializeObject<T>(laravelResponse.Data.ToString()!, Options);
@@ -99,11 +111,11 @@ public static class LaravelParser
         Type? typee = null;
         foreach (var type in Types)
         {
-            if (!type.Name.Contains(typeName)) continue;
-
-            if (typee is not null) throw new Exception();
+            var cleanClassName = type.FullName!.Remove(0, type.FullName.LastIndexOf('.') + 1).Replace("+<>c", "");
+            if (!cleanClassName.Equals(typeName)) continue;
 
             typee = type;
+            break;
         }
 
         if (typee is not null) KnownTypes.Add(typeName, typee);

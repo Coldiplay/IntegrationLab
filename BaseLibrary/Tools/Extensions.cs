@@ -28,5 +28,14 @@ public static class Extensions
 
             return sb.ToString();
         }
+        
+        public string ToPascalCase()
+        {
+            return string.Concat(
+                str.Split('_')
+                    .Select(Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase)
+            );
+        }
     }
+        
 }
