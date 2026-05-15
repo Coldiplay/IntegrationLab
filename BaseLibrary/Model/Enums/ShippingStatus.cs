@@ -2,8 +2,9 @@ namespace BaseLibrary.Model.Enums;
 
 public enum ShippingStatus
 {
-    //TODO: Обновить enum-ы
-    GettingReadyToShip,
+    InProcessing,
+    ReadyToShip,
     Shipping,
-    Delivered
+    Delivered,
+    Incident
 }

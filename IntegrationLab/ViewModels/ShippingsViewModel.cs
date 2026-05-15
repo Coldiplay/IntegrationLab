@@ -35,7 +35,7 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     } = [];
 
     public List<Shipping> CurrentShippings =>
-        Shippings.Where(s => s.ShippingStatus is ShippingStatus.GettingReadyToShip
+        Shippings.Where(s => s.ShippingStatus is ShippingStatus.ReadyToShip
             or ShippingStatus.Shipping).ToList();
 
     public List<Shipping> PastShippings =>

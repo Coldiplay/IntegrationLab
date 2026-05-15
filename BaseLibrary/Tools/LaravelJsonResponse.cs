@@ -5,7 +5,8 @@ namespace BaseLibrary.Tools;
 public class LaravelJsonResponse
 {
     public object? Data { get; init; }
-    public string? Type { get; init; }
+    public string? ClassType { get; init; }
+    public string? ContainerType { get; init; }
     public object? Relationships { get; init; }
     public string Message { get; init; } = null!;
 
