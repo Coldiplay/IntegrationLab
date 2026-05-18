@@ -3,7 +3,6 @@ using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using BaseLibrary.Model;
 using BaseLibrary.Model.Classes;
 using BaseLibrary.Model.Enums;
 using BaseLibrary.Tools;

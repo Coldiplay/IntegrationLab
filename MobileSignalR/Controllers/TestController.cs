@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MobileSignalR.Auth;
+using MobileSignalR.Tools;
 
 namespace MobileSignalR.Controllers;
 

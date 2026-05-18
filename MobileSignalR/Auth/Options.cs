@@ -12,15 +12,16 @@ internal static class Options
         if (!data.TryGetValue("MOBILE_SIGNALR_AUDIENCE", out Audience))
             Audience = "Audience";
 
-        if (!data.TryGetValue("MOBILE_SIGNALR_SECRET", out RSA))
-            try
-            {
-                RSA = File.ReadAllText("private.key");
-            }
-            catch (Exception e)
-            {
-                RSA = System.Security.Cryptography.RSA.Create(2048).ToXmlString(true);
-            }
+        if (data.TryGetValue("MOBILE_SIGNALR_SECRET", out RSA)) return;
+        
+        try
+        {
+            RSA = File.ReadAllText("private.key");
+        }
+        catch (Exception e)
+        {
+            RSA = System.Security.Cryptography.RSA.Create(2048).ToXmlString(true);
+        }
     }
 
     internal static readonly string RSA;

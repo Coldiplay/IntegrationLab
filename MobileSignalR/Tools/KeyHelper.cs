@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 
-namespace MobileSignalR.Auth;
+namespace MobileSignalR.Tools;
 
 public static class KeyHelper
 {

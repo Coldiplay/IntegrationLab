@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace BaseLibrary.Tools;
+namespace MobileSignalR.Tools;
 
 public class LaravelJsonResponse
 {

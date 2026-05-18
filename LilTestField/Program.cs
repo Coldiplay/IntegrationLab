@@ -1,21 +1,28 @@
-﻿using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿using System.Collections;
+using BaseLibrary.Auth;
+using BaseLibrary.Model.Classes;
 using BaseLibrary.Tools;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using JsonElement = System.Text.Json.JsonElement;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace LilTestField;
 
 internal class Program
 {
-    private class Test4
+    private static JsonSerializerSettings _options = new JsonSerializerSettings()
     {
-        public DateTime DateForNow { get; set; }
-    }
+        ContractResolver = new DefaultContractResolver()
+        {
+            NamingStrategy =new SnakeCaseNamingStrategy()
+        }
+    };
+
+    private static HubConnection _hub = new HubConnectionBuilder()
+        .WithUrl(GlobalOptions.HUB_URI)
+        .WithAutomaticReconnect()
+        .Build();
+    
     private static async Task Main(string[] args)
     {
         /*
@@ -46,71 +53,199 @@ internal class Program
 
         var sw = new Stopwatch();
         sw.Start();
-        var test = LaravelParser.ParseResponse<Post>(json);
+        var test = LaravelRequestHandler.ParseResponse<Post>(json);
         sw.Stop();
         var tess = sw.ElapsedMilliseconds;
         ;
         sw.Reset();
         sw.Start();
-        var test2 = LaravelParser.ParseResponse<Post>(json);
+        var test2 = LaravelRequestHandler.ParseResponse<Post>(json);
         sw.Stop();
         var tesss = sw.ElapsedMilliseconds;
         ;
         */
-
-        var options = new JsonSerializerSettings()
-        {
-            ContractResolver = new DefaultContractResolver()
-            {
-                NamingStrategy =new SnakeCaseNamingStrategy()
-            }
-        };
-        var test = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        var json = $"{{\"date_for_now\":\"{test}\"}}";
-        var element = JsonConvert.DeserializeObject<Test4>(json, options);
+        await TestConnection();
         ;
-        // var element = JsonSerializer.Deserialize<JsonElement>(json);
-        // var prop =  element.GetProperty("date");
-        // var jsonDateTime = JsonSerializer.Serialize(DateTime.Now);
-        // var dateFromString = DateTime.Parse(test);
-        // var test2 = prop.Deserialize(typeof(DateTime));
-        // var datetime = prop.GetDateTime();
     }
 
-    private static async Task TestConnection()
+
+    private class Test5(int something)
     {
-        //TODO: check later
-        var connection = new HubConnectionBuilder()
-            .WithUrl(GlobalOptions.HUB_URI)
-            .WithAutomaticReconnect()
-            .Build();
-        //connection.SendAsync("Authorize", "test", "test2").Wait();
+        public int Some { get; set; } = something;
+    };
+    private static async Task<T> TestArrayListCast<T>()
+    {
+        var list = new ArrayList();
+        for (int i = 0; i < 5; i++)
+        {
+            list.Add(new Test5(i));
+        }
+
+        var tType = typeof(T);
+        var enumType = typeof(Enumerable);
+        if (!typeof(IEnumerable).IsAssignableFrom(tType)) throw new Exception();
+        
+        var u = tType.GetGenericArguments()[0];
+        var cast = enumType
+            .GetMethod(nameof(Enumerable.Cast))!
+            .MakeGenericMethod(u);
+        var result = cast.Invoke(null, [list]);
+        return (T)result!;
+
+    }
+    
+    
+    private static async Task<bool> Connect()
+    {
         for (var i = 0; i < 3; i++)
+        {
             try
             {
-                await connection.StartAsync();
+                await _hub.StartAsync();
                 break;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Thread.Sleep(8000);
+                Thread.Sleep(6500);
             }
-
-        var connected = connection.State == HubConnectionState.Connected;
-        Console.WriteLine(connected ? "Успешное подключение" : "Мда");
-
-        if (connected)
-        {
-            Console.Clear();
-            var response = await connection.InvokeAsync<object>("Authorize", "admin", "password");
-            Console.WriteLine(JsonSerializer.Serialize(response));
         }
+            
+
+        var connected = _hub.State == HubConnectionState.Connected;
+        Console.WriteLine(connected ? "Успешное подключение" : "Мда");
+        return connected;
+    }
+
+    private static async Task TestConnection()
+    {
+        while (true)
+        {
+            if (_hub.State == HubConnectionState.Connected) break;
+            try
+            {
+                if (!await Connect()) continue;
+            
+                Console.Clear();
+                var response = await _hub.InvokeAsync<Response>("Authorize", "admin", "password");
+                var authUser = (await HandleResponse<UserAuth>(response))!;
+                Console.WriteLine(
+                    $"login {authUser.User.Login}\nrole {Enum.GetName(authUser.User.Role)}\ntoken {authUser.Token}");
+                _hub = new HubConnectionBuilder()
+                    .WithUrl(GlobalOptions.HUB_URI,
+                        options => { options.Headers.Add("Authorization", "Bearer " + authUser.Token); })
+                    .WithAutomaticReconnect()
+                    .Build();
+                if (await Connect()) break;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+        
+        Thread.Sleep(10000);
+
+        List<Shipping>? shippings;
+        List<Message>? messages;
+        List<User>? members;
+        List<Incident>? incidents;
+        List<Chat>? chats;
+        while (true)
+        {
+            while (true)
+            {
+                if (_hub.State == HubConnectionState.Connected) break;
+                try
+                {
+                    if (!await Connect()) continue;
+            
+                    Console.Clear();
+                    var response = await _hub.InvokeAsync<Response>("Authorize", "admin", "password");
+                    var authUser = (await HandleResponse<UserAuth>(response))!;
+                    Console.WriteLine(
+                        $"login {authUser.User.Login}\nrole {Enum.GetName(authUser.User.Role)}\ntoken {authUser.Token}");
+                    _hub = new HubConnectionBuilder()
+                        .WithUrl(GlobalOptions.HUB_URI,
+                            options => { options.Headers.Add("Authorization", "Bearer " + authUser.Token); })
+                        .WithAutomaticReconnect()
+                        .Build();
+                    if (await Connect()) break;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+            
+            try
+            {
+                shippings = (await GetSomething<IEnumerable<Shipping>>("GetShippings"))?.ToList();
+                incidents = (await GetSomething<IEnumerable<Incident>>("GetIncidents"))?.ToList();
+                chats = (await GetSomething<IEnumerable<Chat>>("GetChats"))?.ToList();
+                
+                if (chats?.Count > 0)
+                {
+                    messages = (await GetSomething<IEnumerable<Message>>("GetChatMessages", chats.First().Id))?.ToList();
+                    members =(await GetSomething<IEnumerable<User>>("GetChatMembers", chats.First().Id))?.ToList();
+                }
+                    
+                break;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            Thread.Sleep(5000);
+        }
+
+
 
         Thread.Sleep(60000);
     }
+
+    private static async Task<T?> GetSomething<T>(string methodName, params object?[]? parameters)
+    {
+        var response = await (parameters?.Length switch
+        {
+            1 => _hub.InvokeAsync<Response>(methodName, parameters[0]),
+            2 => _hub.InvokeAsync<Response>(methodName, parameters[0], parameters[1]),
+            3 => _hub.InvokeAsync<Response>(methodName, parameters[0], parameters[1], parameters[2]),
+            _ => _hub.InvokeAsync<Response>(methodName)
+        });
+        var smth = await HandleResponse<T>(response);
+        return smth ?? default;
+    }
+    
+    private static async Task<T?> HandleResponse<T>(Response response)
+    {
+        if ((int)response.StatusCode < 400)
+            try
+            {
+                return (T)(response.Data ?? throw new NullReferenceException());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Trying deserialize...");
+                try
+                {
+                    return JsonConvert.DeserializeObject<T>(response.Data?.ToString(), _options);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                    return default;
+                }
+            }
+
+
+        Console.WriteLine($"Ошибка\n{response.Message}\nStatusCode {response.StatusCode}\ndataType {response.DataTypeName}\n {response.Data?.ToString()}");
+        return default;
+    }
     
 
+    /*
     private static async Task SaveRSAKeyPair()
     {
         var rsa = new RSACryptoServiceProvider();
@@ -177,6 +312,7 @@ internal class Program
         var exportCert = X509CertificateLoader.LoadPkcs12(clientCert.Export(X509ContentType.Cert), (string)null, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet).CopyWithPrivateKey(clientKey);
         //File.WriteAllBytes("client.pfx", exportCert.Export(X509ContentType.Pfx));
         File.WriteAllBytes("client.p12", exportCert.Export(X509ContentType.Pkcs12));
-        */
+        
     }
+    */
 }

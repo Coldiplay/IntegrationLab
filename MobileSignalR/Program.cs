@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using BaseLibrary.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -5,6 +6,7 @@ using Microsoft.OpenApi;
 using MobileSignalR.Auth;
 using MobileSignalR.Hub;
 using MobileSignalR.MiddleWares;
+using MobileSignalR.Tools;
 
 namespace MobileSignalR;
 
@@ -17,8 +19,7 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddSignalR();
 
-        builder.Services.AddSwaggerGen(options =>
-        {
+        builder.Services.AddSwaggerGen(options => {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "Some API v1", Version = "v1" });
             options.AddSignalRSwaggerGen();
             options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
@@ -36,13 +37,11 @@ public class Program
         });
         builder.Services.AddOpenApi();
 
-        builder.Services.AddAuthentication(a =>
-            {
+        builder.Services.AddAuthentication(a => {
                 a.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 a.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(o =>
-            {
+            .AddJwtBearer(o => {
                 var xml = Options.RSA;
                 var key = KeyHelper.BuildRsaSigningKey(xml);
 
@@ -66,15 +65,19 @@ public class Program
                 new AuthRequirement(new HttpClient { BaseAddress = new Uri(GlobalOptions.API_URI) })
             ));
 
-        builder.Services.AddSingleton(new HttpClient
+        builder.Services.AddSingleton(_ =>
         {
-            BaseAddress = new Uri(GlobalOptions.API_URI)
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri(GlobalOptions.API_URI),
+            };
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return client;
         });
-        // ???
-        // builder.Services.AddSingleton<HttpClient>(_ => new HttpClient {
-        //     BaseAddress = new Uri(GlobalOptions.API_URI)
-        // });
 
+        builder.Services.AddSingleton<LaravelRequestHandler>();
         builder.Services.AddSingleton<JwtTokenHandler>();
         builder.Services.AddHostedService(provider => provider.GetRequiredService<JwtTokenHandler>());
 

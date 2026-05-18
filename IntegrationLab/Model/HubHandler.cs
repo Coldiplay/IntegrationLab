@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using BaseLibrary.Auth;
-using BaseLibrary.Model;
 using BaseLibrary.Model.Classes;
 using BaseLibrary.Tools;
 using IntegrationLab.Tools;

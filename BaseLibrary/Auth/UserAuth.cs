@@ -1,4 +1,3 @@
-using BaseLibrary.Model;
 using BaseLibrary.Model.Classes;
 
 namespace BaseLibrary.Auth;

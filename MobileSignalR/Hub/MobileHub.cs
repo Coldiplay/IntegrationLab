@@ -1,103 +1,108 @@
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text.Json;
 using BaseLibrary.Auth;
-using BaseLibrary.Model;
 using BaseLibrary.Model.Classes;
 using BaseLibrary.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.IdentityModel.Tokens;
-using MobileSignalR.Auth;
+using MobileSignalR.Tools;
 using SignalRSwaggerGen.Attributes;
 
 namespace MobileSignalR.Hub;
 
 [SignalRHub("/hub")]
 //[Authorize(Policy = "Authorized")]
-public class MobileHub(HttpClient httpApi, JwtTokenHandler checker) : Microsoft.AspNetCore.SignalR.Hub
+public class MobileHub : Microsoft.AspNetCore.SignalR.Hub
 {
-    //private readonly HttpClient httpApi
     // Мобилка <-> SignalR <<-> API (Laravel) <->> Сайт (Laravel)
-
-    private readonly ConcurrentDictionary<string, string> _jwtToLaravel = checker.JwtToLaravel;
-
-    public async Task<Response> GetChatMembers(int chatId)
+    public MobileHub(LaravelRequestHandler laraClient, 
+        JwtTokenHandler checker, ILogger<MobileHub> logger)
     {
-        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
-        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<User>>($"api/chat/{chatId}/members"));
+        _laraClient = laraClient;
+        _tokenHandler = checker;
+        _logger = logger;
     }
+    
+    private readonly LaravelRequestHandler _laraClient;
+    private readonly ILogger _logger;
+    private readonly JwtTokenHandler _tokenHandler;
+    
+    private string UserIdentity => $"{Context.ConnectionId} {Context.UserIdentifier} {Context.User?.Identity?.Name}";
+
+    public async Task<Response> GetChatMembers(int chatId) =>
+        await Get<IEnumerable<User>>($"api/chat/{chatId}/members");
 
     //TODO: Сделать пагинацию
-    public async Task<Response> GetChatMessages(int chatId)
-    {
-        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
-        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Message>>($"api/chat/{chatId}/messages"));
-    }
+    public async Task<Response> GetChatMessages(int chatId) =>
+        await Get<IEnumerable<Message>>($"api/chat/{chatId}/messages");
 
-    public async Task<Response> GetChats(int userId)
-    {
-        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
-        return this.ToResponseWithData(await httpApi.GetLaravel<IEnumerable<Chat>>($"api/chat/"));
-    }
+    public async Task<Response> GetChats() =>
+        await Get<IEnumerable<Chat>>("api/chat/");
 
-    public async Task<Response> GetIncidents(int userId)
-    {
-        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
-        return this.ToResponseWithData(
-            await httpApi.GetLaravel<IEnumerable<Incident>>($"api/incident/"));
-    }
+    public async Task<Response> GetIncidents() =>
+        await Get<IEnumerable<Incident>>("api/incident/");
 
-    public async Task<Response> GetShippings(int userId)
-    {
-        httpApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetLaravelToken());
-        return this.ToResponseWithData(
-            await httpApi.GetLaravel<IEnumerable<Shipping>>($"api/shipping/"));
-    }
+    public async Task<Response> GetShippings() =>
+        await Get<IEnumerable<Shipping>>("api/shipping/");
 
     [AllowAnonymous]
     public async Task<Response> Authorize(string login, string password)
     {
-        var result = await httpApi.PostLaravel<UserAuth>("api/login", new { login, password });
+        var result = await _laraClient.Post<UserAuth>("api/login", new { login, password });
         if (string.IsNullOrEmpty(result?.Token))
-            return this.BadResponse("Неверная пара логин-пароль", HttpStatusCode.Unauthorized);
-        var token = GenerateToken(DateTime.Now.AddMinutes(30));
-        _jwtToLaravel.TryAdd(token, result!.Token);
+            return ToBadResponse("Неверная пара логин-пароль", HttpStatusCode.Unauthorized);
+        var token = _tokenHandler.GenerateToken(DateTime.UtcNow.AddMinutes(30));
+        _tokenHandler.AddTokenPair(token, result!.Token);
         result.Token = token;
-        return this.ToResponseWithData(result, "Успешная авторизация!");
+        return ToResponseWithData(result, "Успешная авторизация!");
     }
 
-    private static string GenerateToken(DateTime expiry)
+    private async Task<Response> Get<T>(string url) where T : notnull
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var identity = new ClaimsIdentity([
-            new Claim("ID", Guid.NewGuid().ToString())
-        ]);
-
-        var xml = Options.RSA;
-        SecurityKey key = KeyHelper.BuildRsaSigningKey(xml);
-
-        var token = new JwtSecurityToken
-        (
-            Options.Issuer,
-            Options.Audience,
-            identity.Claims,
-            DateTime.UtcNow,
-            expiry,
-            new SigningCredentials(key, SecurityAlgorithms.RsaSha256,
-                SecurityAlgorithms.Sha256Digest)
-        );
-        var tokenString = tokenHandler.WriteToken(token);
-        return tokenString;
+        var token = GetAuthToken();
+        var model = await _laraClient.Get<T>(url, token);
+        return ToResponseWithData(model);
     }
 
-    private string? GetLaravelToken()
+    private string? GetAuthToken()
     {
         var token = Context.GetHttpContext()?.Request.Headers.Authorization.ToString().Remove(0, 7);
-        return !string.IsNullOrEmpty(token) ? _jwtToLaravel.GetValueOrDefault(token) : null;
+        return token;
+    }
+    
+    private Response ToResponseWithData<T>(T? model = default, string? message = null,
+        HttpStatusCode statusCode = HttpStatusCode.OK)
+        where T : notnull
+    {
+        if (model is null)
+        {
+            _logger.Log(LogLevel.Information, "");
+            return new Response
+            {
+                StatusCode = HttpStatusCode.NotFound,
+                Message = message ?? "Not found"
+            };
+        }
+
+
+        var returnType = typeof(T);
+        var typeName = returnType.IsGenericType
+            ? returnType.GetGenericArguments()[0].Name
+            :  returnType.Name;
+        return new Response
+        {
+            StatusCode = statusCode,
+            Data = model,
+            DataTypeName = typeName,
+            Message = message ?? $"Successful retrieved {typeName}"
+        };
+    }
+
+    private Response ToBadResponse(string message, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+    {
+        return new Response
+        {
+            StatusCode = statusCode,
+            Message = message
+        };
     }
 }

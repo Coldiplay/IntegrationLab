@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Avalonia.Input;
-using BaseLibrary.Model;
 using BaseLibrary.Model.Classes;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;

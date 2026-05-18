@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace MobileSignalR.MiddleWares;
 
@@ -33,7 +34,7 @@ public class GlobalExceptionMiddleWare(
             KeyNotFoundException => "Запрашиваемый ресурс не найден.",
             ArgumentException => "Некорректные входные данные.",
             ValidationException => "Ошибка валидации данных.",
-            CustomException ex => ex.ErrorMessage,
+            CustomException ex => UnwrapException(ex),
             _ => "Произошла внутренняя ошибка сервера."
         };
     }
@@ -99,5 +100,21 @@ public class GlobalExceptionMiddleWare(
             CustomException ex => ex.ErrorCode >= 500 ? LogLevel.Error : LogLevel.Information,
             _ => LogLevel.Error
         };
+    }
+
+    private static string UnwrapException(Exception e)
+    {
+        StringBuilder sb = new();
+        sb.Append(e.Message);
+        while (true)
+        {
+            if (e.InnerException is null)
+            {
+                break;
+            }
+            sb.AppendLine(e.InnerException.Message);
+        }
+
+        return sb.ToString();
     }
 }

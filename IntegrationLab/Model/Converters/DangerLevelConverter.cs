@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
-using BaseLibrary.Model;
 using BaseLibrary.Model.Enums;
 
 namespace IntegrationLab.Model.Converters;
