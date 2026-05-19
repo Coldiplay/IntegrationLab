@@ -1,6 +1,7 @@
 using System;
 using BaseLibrary.Model.Classes;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
 using IntegrationLab.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,9 +14,9 @@ public partial class CreateIncidentViewModel : ViewModelControlBase<CreateIncide
     public partial Shipping? Shipping { get; set; } = App.Services.GetRequiredService<HubData>().ActiveShipping;
 
     [ObservableProperty] public partial TimeSpan Time { get; set; } = DateTime.Now.TimeOfDay;
-    [ObservableProperty] public partial string? Description { get; set; }
-
-    public override void OnCreating()
-    {
-    }
+    [ObservableProperty] public partial string? Description { get; set; } = string.Empty;
+    
+    [RelayCommand]
+    private static void ReturnToIncidentsList() => 
+        App.ChangeCurrentView<MainViewModel>();
 }

@@ -33,8 +33,6 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
     }
 
     private readonly HubData _hubData = App.Services.GetRequiredService<HubData>();
-    private HubConnection _hub;
-    private HttpClient _httpClient;
 
     [ObservableProperty] public partial string MessageText { get; set; } = string.Empty;
 

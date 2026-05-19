@@ -144,21 +144,57 @@ public class HubHandler
             _hubData.Chats.TryAdd(chat, ([.. await GetChatMembers(chat.Id)], [.. await GetChatMessages(chat.Id)]));
     }
 
-    public async Task<IEnumerable<User>?> GetChatMembers(ulong chatId) =>
-        await GetSomething<IEnumerable<User>>("GetChatMembers", chatId);
+    public async Task<IEnumerable<User>?> GetChatMembers(ulong chatId)
+    {
+        var chatMembers = await GetSomething<IEnumerable<User>>("GetChatMembers", chatId);
+        var enumerable = chatMembers?.ToArray();
+        
+        if (enumerable is not null)
+        {
+            var chat = _hubData.Chats.FirstOrDefault(c => c.Key.Id == chatId).Value;
+            chat.members = [.. enumerable];
+        }
 
-    //TODO: Зачем я добавил userId?...
+        return enumerable;
+    }
+    
     public async Task<IEnumerable<Chat>?> GetChats() =>
         await GetSomething<IEnumerable<Chat>>("GetChats");
 
-    public async Task<IEnumerable<Message>?> GetChatMessages(ulong chatId) =>
-        await GetSomething<IEnumerable<Message>>("GetChatMessages", chatId);
+    public async Task<IEnumerable<Message>?> GetChatMessages(ulong chatId)
+    {
+        var messages = (await GetSomething<IEnumerable<Message>>("GetChatMessages", chatId))?.ToArray();
+        if (messages is not null)
+        {
+             var chatInfo = _hubData.Chats.FirstOrDefault(c => c.Key.Id == chatId).Value;
+             chatInfo.messages = [.. messages];
+        }
 
-    public async Task<IEnumerable<Incident>?> GetIncidents() =>
-        await GetSomething<IEnumerable<Incident>>("GetIncidents");
+        return messages;
+    }
 
-    public async Task<IEnumerable<Shipping>?> GetShippings() => 
-        await GetSomething<IEnumerable<Shipping>>("GetShippings");
+
+    public async Task<IEnumerable<Incident>?> GetIncidents()
+    {
+        var incidents = (await GetSomething<IEnumerable<Incident>>("GetIncidents"))?.ToArray();
+        if (incidents is not null)
+        {
+            _hubData.Incidents = [.. incidents];
+        }
+
+        return incidents;
+    }
+
+    public async Task<IEnumerable<Shipping>?> GetShippings()
+    {
+        var shippings = (await GetSomething<IEnumerable<Shipping>>("GetShippings"))?.ToArray();
+        if (shippings is not null)
+        {
+            _hubData.Shippings = [.. shippings];
+        }
+        
+        return shippings;
+    } 
 
     //TODO: Подумать над входом нормальным и убрать default значения
     public async Task<User?> Authorize(string login = "admin", string password = "password")

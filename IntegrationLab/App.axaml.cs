@@ -96,14 +96,6 @@ public partial class App : Application
     private static void BuildServices(bool singleViewApp = false)
     {
         var services = new ServiceCollection();
-        //Добавляем сервисы
-        services.AddSingleton<HttpClient>(_ =>
-        {
-            //TODO: ..... А зачем оно надо?..
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(GlobalOptions.HUB_URI);
-            return client;
-        });
 
         RegisterViews(services);
 

@@ -60,8 +60,8 @@
             BorderThickness="0,0,0,1"
             Padding="12,10">
             <Grid ColumnDefinitions="40,*,40" VerticalAlignment="Center">
-                <Button Grid.Column="0" Background="Transparent" BorderThickness="0">
-                    <!--TODO: Сделать комманду на возврат-->
+                <Button Grid.Column="0" Background="Transparent" BorderThickness="0"
+                        Command="{Binding ReturnToIncidentsListCommand}">
                     <TextBlock Text="✕" FontSize="20" />
                 </Button>
                 <TextBlock Grid.Column="1" Text="Новое происшествие"

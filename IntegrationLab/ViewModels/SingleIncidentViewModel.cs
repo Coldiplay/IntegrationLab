@@ -11,8 +11,6 @@ public partial class SingleIncidentViewModel : ViewModelControlBase<SingleIncide
     [ObservableProperty] public partial Incident Incident { get; set; } = null!;
 
     [RelayCommand]
-    private static void ReturnToIncidentsList()
-    {
-        App.ChangeCurrentView(App.Services.GetRequiredService<MainViewModel>());
-    }
+    private static void ReturnToIncidentsList() => 
+        App.ChangeCurrentView<MainViewModel>();
 }

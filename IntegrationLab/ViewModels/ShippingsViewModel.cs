@@ -43,7 +43,6 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
 
     public ShippingsViewModel()
     {
-        _client = App.Services.GetRequiredService<HttpClient>();
         _hubData = App.Services.GetRequiredService<HubData>();
         _hub =  App.Services.GetRequiredService<HubHandler>();
         LoadShippings();
@@ -60,8 +59,6 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
             ConfirmShippingCommand.NotifyCanExecuteChanged();
         }
     }
-
-    private HttpClient _client;
 
     //TODO: Сделать On для обновления рейсов
     private HubHandler _hub;
