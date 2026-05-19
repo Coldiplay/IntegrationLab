@@ -69,7 +69,8 @@
                 <Button Grid.Column="0"
                         Background="Transparent"
                         BorderThickness="0"
-                        ToolTip.Tip="Закрыть">
+                        ToolTip.Tip="Закрыть"
+                        Command="{Binding ReturnToShippingsListCommand}">
                     <TextBlock Text="✕" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 </Button>
                 <TextBlock Grid.Column="1"

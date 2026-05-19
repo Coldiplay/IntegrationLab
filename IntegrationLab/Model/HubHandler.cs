@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using BaseLibrary.Auth;
 using BaseLibrary.Model.Classes;
@@ -10,6 +10,9 @@ using IntegrationLab.Tools;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace IntegrationLab.Model;
 
@@ -17,8 +20,15 @@ public class HubHandler
 {
     private HubConnection _hub;
     private readonly HubData _hubData;
+    private static readonly JsonSerializerSettings Options = new()
+    {
+        ContractResolver = new DefaultContractResolver()
+        {
+            NamingStrategy = new CamelCaseNamingStrategy()
+        }
+    };
 
-    public HubHandler(string connectionString = GlobalOptions.HUB_URI)
+    public HubHandler()
     {
         _hubData = App.Services.GetRequiredService<HubData>();
         //_hub = Initialize(_hubData, connectionString);
@@ -127,48 +137,33 @@ public class HubHandler
 
     public async Task Load()
     {
-        _hubData.Shippings.AddRange(await GetShippings());
-        _hubData.Incidents.AddRange(await GetIncidents());
+        var shippings = await GetShippings();
+        _hubData.Shippings = [..shippings];
+        _hubData.Incidents = [.. await GetIncidents()];
         foreach (var chat in await GetChats())
             _hubData.Chats.TryAdd(chat, ([.. await GetChatMembers(chat.Id)], [.. await GetChatMessages(chat.Id)]));
     }
 
-    public async Task<IEnumerable<User>?> GetChatMembers(ulong chatId)
-    {
-        var response = await SimpleGet("GetChatMembers", chatId);
-        return await HandleResponse<IEnumerable<User>>(response);
-    }
+    public async Task<IEnumerable<User>?> GetChatMembers(ulong chatId) =>
+        await GetSomething<IEnumerable<User>>("GetChatMembers", chatId);
 
     //TODO: Зачем я добавил userId?...
-    public async Task<IEnumerable<Chat>?> GetChats(ulong? userId = null)
-    {
-        var response = await SimpleGet("GetChats", CheckUserId(userId));
-        return await HandleResponse<IEnumerable<Chat>>(response);
-    }
+    public async Task<IEnumerable<Chat>?> GetChats() =>
+        await GetSomething<IEnumerable<Chat>>("GetChats");
 
-    public async Task<IEnumerable<Message>?> GetChatMessages(ulong chatId)
-    {
-        var response = await SimpleGet("GetChatMessages", chatId);
-        return await HandleResponse<IEnumerable<Message>>(response);
-    }
+    public async Task<IEnumerable<Message>?> GetChatMessages(ulong chatId) =>
+        await GetSomething<IEnumerable<Message>>("GetChatMessages", chatId);
 
-    public async Task<IEnumerable<Incident>?> GetIncidents(ulong? userId = null)
-    {
-        var response = await SimpleGet("GetIncidents", CheckUserId(userId));
-        return await HandleResponse<IEnumerable<Incident>>(response);
-    }
+    public async Task<IEnumerable<Incident>?> GetIncidents() =>
+        await GetSomething<IEnumerable<Incident>>("GetIncidents");
 
-    public async Task<IEnumerable<Shipping>?> GetShippings(ulong? userId = null)
-    {
-        var response = await SimpleGet("GetShippings", CheckUserId(userId));
-        return await HandleResponse<IEnumerable<Shipping>>(response);
-    }
+    public async Task<IEnumerable<Shipping>?> GetShippings() => 
+        await GetSomething<IEnumerable<Shipping>>("GetShippings");
 
     //TODO: Подумать над входом нормальным и убрать default значения
     public async Task<User?> Authorize(string login = "admin", string password = "password")
     {
-        var response = await SimpleGet("Authorize", login, password);
-        var authUser = await HandleResponse<UserAuth>(response);
+        var authUser = await GetSomething<UserAuth>("Authorize", login, password);
 
         _hub = CreateConnection(bearerToken: authUser?.Token);
         await StartConnection();
@@ -177,46 +172,38 @@ public class HubHandler
     }
 
 
-    private async Task<Response> SimpleGet(string methodName)
+    private async Task<T?> GetSomething<T>(string methodName, params object?[]? parameters)
     {
-        return await _hub.InvokeAsync<Response>(methodName);
-    }
-
-    private async Task<Response> SimpleGet(string methodName, object parameter)
-    {
-        return await _hub.InvokeAsync<Response>(methodName, parameter);
-    }
-
-    private async Task<Response> SimpleGet(string methodName, object parameter, object parameter2)
-    {
-        return await _hub.InvokeAsync<Response>(methodName, parameter, parameter2);
+        var response = await (parameters?.Length switch
+        {
+            1 => _hub.InvokeAsync<Response>(methodName, parameters[0]),
+            2 => _hub.InvokeAsync<Response>(methodName, parameters[0], parameters[1]),
+            3 => _hub.InvokeAsync<Response>(methodName, parameters[0], parameters[1], parameters[2]),
+            _ => _hub.InvokeAsync<Response>(methodName)
+        });
+        var smth = await HandleResponse<T>(response);
+        return smth ?? default;
     }
 
 
     private static async Task<T?> HandleResponse<T>(Response response)
     {
         if ((int)response.StatusCode < 400)
+        {
+            Debug.WriteLine("Trying deserialize...");
             try
             {
-                return (T)(response.Data ?? throw new NullReferenceException());
+                return JsonConvert.DeserializeObject<T>(response.Data?.ToString(), Options);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                return ((JsonElement)response.Data).Deserialize<T>(GlobalOptions.JsonSerializerOptions);
-                
-                
-                //TODO: Создать обработку ошибки преобразования данных
-                if (response.DataTypeName is not null && response.DataTypeName.Equals("array"))
-                {
-                    //TODO: Придумать как возвращать коллекцию в случае array
-                    //return (IEnumerable<T>)(response.Data);
-                }
-
-                Console.WriteLine(e);
-                throw;
+                Debug.WriteLine(exception);
+                await MessageBoxManager.GetMessageBoxStandard("Ошибка сериализации данных",  exception.Message)
+                    .ShowAsync();
+                return default;
             }
-
-
+        }
+        
         //TODO: Поменять потом на response message
         await MessageBoxManager.GetMessageBoxStandard("Ошибка получения данных с сервера",  JsonSerializer.Serialize(response))//response.Message)
             .ShowAsync();

@@ -19,18 +19,19 @@ namespace IntegrationLab.ViewModels;
 
 public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
 {
+    private readonly HubData _hubData;
     public ObservableCollection<Shipping> Shippings
     {
-        get;
+        get => _hubData.Shippings;
         set
         {
-            if (Equals(value, field)) return;
-            field = value;
+            if (Equals(value, _hubData.Shippings)) return;
+            _hubData.Shippings = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(CurrentShippings));
             OnPropertyChanged(nameof(PastShippings));
         }
-    } = [];
+    }
 
     public List<Shipping> CurrentShippings =>
         Shippings.Where(s => s.ShippingStatus is ShippingStatus.ReadyToShip
@@ -43,7 +44,9 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     public ShippingsViewModel()
     {
         _client = App.Services.GetRequiredService<HttpClient>();
-        Shippings = App.Services.GetRequiredService<HubData>().Shippings;
+        _hubData = App.Services.GetRequiredService<HubData>();
+        _hub =  App.Services.GetRequiredService<HubHandler>();
+        LoadShippings();
     }
 
     public Shipping? SelectedShipping
@@ -61,7 +64,7 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     private HttpClient _client;
 
     //TODO: Сделать On для обновления рейсов
-    private HubConnection _hub;
+    private HubHandler _hub;
 
     [RelayCommand]
     private void ConfirmShipping()
@@ -78,11 +81,12 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
         }).Start();
     }
 
-    private async Task LoadShippings()
+    private async void LoadShippings()
     {
-        //Shippings = _hub.InvokeAsync<object>("");
-        Shippings = await _client.GetFromJsonAsync<ObservableCollection<Shipping>>("api/Shippings")
-                    ?? [];
+        await _hub.Load();
+        OnPropertyChanged(nameof(Shippings));
+        OnPropertyChanged(nameof(PastShippings));
+        OnPropertyChanged(nameof(CurrentShippings));
     }
 
     public void OnDoubleTapped(object? sender, TappedEventArgs e)

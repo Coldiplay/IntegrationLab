@@ -14,7 +14,7 @@ internal class Program
     {
         ContractResolver = new DefaultContractResolver()
         {
-            NamingStrategy =new SnakeCaseNamingStrategy()
+            NamingStrategy = new CamelCaseNamingStrategy()
         }
     };
 
@@ -220,28 +220,17 @@ internal class Program
     private static async Task<T?> HandleResponse<T>(Response response)
     {
         if ((int)response.StatusCode < 400)
-            try
-            {
-                return (T)(response.Data ?? throw new NullReferenceException());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                Console.WriteLine("Trying deserialize...");
-                try
-                {
-                    return JsonConvert.DeserializeObject<T>(response.Data?.ToString(), _options);
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception);
-                    return default;
-                }
-            }
-
-
-        Console.WriteLine($"Ошибка\n{response.Message}\nStatusCode {response.StatusCode}\ndataType {response.DataTypeName}\n {response.Data?.ToString()}");
-        return default;
+            Console.WriteLine("Trying deserialize...");
+        
+        try
+        {
+            return JsonConvert.DeserializeObject<T>(response.Data?.ToString(), _options);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            return default;
+        }
     }
     
 

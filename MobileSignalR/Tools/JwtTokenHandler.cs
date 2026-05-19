@@ -48,6 +48,7 @@ public class JwtTokenHandler(ILogger<JwtTokenHandler> logger) : BackgroundServic
                 if ((await _httpClient.GetAsync("api/Auth/Check", stoppingToken)).StatusCode == HttpStatusCode.OK)
                     continue;
 
+                logger.LogInformation("Deleting token {token} because laravel api said so", token?.Remove(token.Length - 10, 9));
                 _jwtToLaravel.Remove(jwtString, out _);
             }
 

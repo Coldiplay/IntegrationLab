@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using BaseLibrary.Model.Classes;
 using BaseLibrary.Model.Enums;
@@ -172,6 +173,6 @@ public partial class HubData : ObservableObject
         set;
     } = [];
 
-    [ObservableProperty] public partial ObservableCollection<Shipping> Shippings { get; set; } = [];
+    [ObservableProperty, NotifyParentProperty(true)] public partial ObservableCollection<Shipping> Shippings { get; set; } = [];
     [ObservableProperty] public partial ObservableCollection<Incident> Incidents { get; set; } = [];
 }

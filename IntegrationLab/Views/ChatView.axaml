@@ -66,11 +66,12 @@
             BorderThickness="0,0,0,1"
             Padding="12,10">
             <Grid ColumnDefinitions="40,*,40" VerticalAlignment="Center">
-                <Button Grid.Column="0" Background="Transparent" BorderThickness="0">
+                <Button Grid.Column="0" Background="Transparent" BorderThickness="0" Command="{Binding ReturnToChatListCommand}">
                     <TextBlock Text="✕" FontSize="20" />
                 </Button>
                 <TextBlock Grid.Column="1" Text="{Binding Chat.Name}"
                            HorizontalAlignment="Center" FontSize="18" FontWeight="SemiBold" />
+                <!--TODO:Сделать тут окно с chatmembers-->
                 <Button Grid.Column="2" Background="Transparent" BorderThickness="1" CornerRadius="12">
                     <TextBlock Text="✕" FontSize="16" Margin="0,0,0,1" />
                 </Button>
@@ -96,9 +97,9 @@
                     BorderThickness="0,1,0,1" Padding="12,8">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                     <Border Classes="input" Grid.Column="0">
-                        <TextBox Name="InputBox" BorderThickness="0" Background="Transparent" PlaceholderText="" />
+                        <TextBox Name="InputBox" BorderThickness="0" Background="Transparent" PlaceholderText="" Text="{Binding MessageText}" />
                     </Border>
-                    <Button Grid.Column="1" Classes="send" />
+                    <Button Grid.Column="1" Classes="send" Command="{Binding SendMessageCommand}" CommandParameter="{Binding MessageText}"/>
                 </Grid>
             </Border>
         </Grid>

@@ -97,7 +97,8 @@ public class LaravelRequestHandler(
                         var cast = _enumerableType
                             .GetMethod(nameof(Enumerable.Cast))!
                             .MakeGenericMethod(u);
-                        var result = cast.Invoke(null, [returnList]);
+                        var result = (IEnumerable)cast.Invoke(null, [returnList]);
+                        var test = result.Cast<object>().ToList();
                         return (T)result!;
                     }
                     catch (Exception e)
