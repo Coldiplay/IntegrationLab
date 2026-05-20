@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using BaseLibrary.Model.Classes;
@@ -12,7 +9,6 @@ using BaseLibrary.Model.Enums;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
 using IntegrationLab.Views;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationLab.ViewModels;
@@ -47,7 +43,7 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
         _hub =  App.Services.GetRequiredService<HubHandler>();
         LoadShippings();
     }
-
+    
     public Shipping? SelectedShipping
     {
         get;
@@ -59,15 +55,17 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
             ConfirmShippingCommand.NotifyCanExecuteChanged();
         }
     }
-
-    //TODO: Сделать On для обновления рейсов
+    
     private HubHandler _hub;
 
-    [RelayCommand]
+    private bool CanConfirmShipping()
+    {
+        return SelectedShipping is not null;
+    }
+    [RelayCommand(CanExecute = nameof(CanConfirmShipping))]
     private void ConfirmShipping()
     {
         var shipping = SelectedShipping;
-        if (shipping is null) return;
         //????
         new Thread(() =>
         {

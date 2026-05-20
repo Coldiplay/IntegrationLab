@@ -81,14 +81,10 @@ public class HubHandler
 
     public async Task<HubConnection> Initialize(HubConnection connection)
     {
-        connection.On("asd", () => { });
         connection.On("ReceiveMessage", async (Message newMessage) =>
         {
             if (_hubData.Chats.TryGetValue(newMessage.Chat, out var tuple))
-                //lock (tuple.messages)
-                //{
                 tuple.messages.Add(newMessage);
-            //}
             else
                 _hubData.Chats.TryAdd(newMessage.Chat,
                     (
@@ -101,17 +97,11 @@ public class HubHandler
         {
             await Task.Run(() =>
             {
-                //lock (hubData.Shippings)
-                //{
                 var oldShipping = _hubData.Shippings.FirstOrDefault(s => s.Id == newShipping.Id);
                 if (oldShipping is not null)
-                    //lock (oldShipping)
-                    //{
                     _hubData.Shippings.InsertInsteadOf(oldShipping, newShipping);
-                //}
                 else
                     _hubData.Shippings.Add(newShipping);
-                //}
             });
         });
 
@@ -119,16 +109,12 @@ public class HubHandler
         {
             await Task.Run(() =>
             {
-                //lock (hubData.Incidents)
-                //{
                 var oldIncident = _hubData.Incidents.FirstOrDefault(s => s.Id == newIncident.Id);
                 if (oldIncident is not null)
                     Helper.ChangeAllProperties(oldIncident, newIncident);
                 else
                     //Это вообще как должно случится?
                     throw new Exception("Как так-то");
-
-                //}
             });
         });
         
@@ -157,10 +143,8 @@ public class HubHandler
 
         return enumerable;
     }
-    
     public async Task<IEnumerable<Chat>?> GetChats() =>
         await GetSomething<IEnumerable<Chat>>("GetChats");
-
     public async Task<IEnumerable<Message>?> GetChatMessages(ulong chatId)
     {
         var messages = (await GetSomething<IEnumerable<Message>>("GetChatMessages", chatId))?.ToArray();
@@ -172,8 +156,6 @@ public class HubHandler
 
         return messages;
     }
-
-
     public async Task<IEnumerable<Incident>?> GetIncidents()
     {
         var incidents = (await GetSomething<IEnumerable<Incident>>("GetIncidents"))?.ToArray();
@@ -184,7 +166,6 @@ public class HubHandler
 
         return incidents;
     }
-
     public async Task<IEnumerable<Shipping>?> GetShippings()
     {
         var shippings = (await GetSomething<IEnumerable<Shipping>>("GetShippings"))?.ToArray();
@@ -194,7 +175,95 @@ public class HubHandler
         }
         
         return shippings;
-    } 
+    }
+
+    
+    public async Task<Incident?> CreateIncident(Incident? incident)
+    {
+        incident = await GetSomething<Incident>("CreateIncident", incident);
+        if (incident is not null)
+        {
+            _hubData.Incidents.Add(incident);
+        }
+
+        return incident;
+    }
+    public async Task<User?> AddChatMember(Chat? chat, User? user)
+    {
+        user = await GetSomething<User>("AddChatMember", chat, user);
+        if (user is not null && _hubData.Chats.TryGetValue(chat!, out var chatInfo))
+        {
+            chatInfo.members.Add(user);
+        }
+
+        return user;
+    }
+    public async Task<Chat?> CreateChat(Chat? chat)
+    {
+        chat = await GetSomething<Chat>("CreateChat", chat);
+        if (chat is not null)
+        {
+            _hubData.Chats.TryAdd(chat, ([App.CurrentDriver.User], []));
+        }
+
+        return chat;
+    }
+    public async Task<Message?> SendMessage(Message? message)
+    {
+        message = await GetSomething<Message>("SendMessage", message);
+        
+        if (message is null) return message;
+        
+        var chatInfo = _hubData.Chats.FirstOrDefault(c => c.Key.Id == message.ChatId).Value;
+        var oldMessage = chatInfo.messages.FirstOrDefault(m => m.Id == message.Id);
+        
+        if (oldMessage is null)
+            chatInfo.messages.Add(message);
+        else
+            chatInfo.messages.InsertInsteadOf(oldMessage, message);
+
+        return message;
+    }
+
+
+    public async Task<DriversShift?> StartShift()
+    {
+        var shift = await GetSomething<DriversShift>("StartShift");
+        if (shift is not null)
+        {
+            _hubData.Shifts.Add(shift);
+        }
+        return shift;
+    }
+    public async Task<DriversShift?> EndShift(DriversShift? shift)
+    {
+        var newShift = await GetSomething<DriversShift>("EndShift", shift);
+        if (newShift is not null)
+        {
+            _hubData.Shifts.InsertInsteadOf(shift!, newShift);
+        }
+        return newShift;
+    }
+
+    public async Task<ShiftBreak?> StartBreak(DriversShift? shift)
+    {
+        var shiftBreak =  await GetSomething<ShiftBreak>("StartBreak", shift);
+        if (shiftBreak is not null)
+        {
+            shift!.ShiftBreaks.Add(shiftBreak);
+        }
+        return shiftBreak;
+    }
+    public async Task<ShiftBreak?> EndBreak(ShiftBreak? shiftBreak)
+    {
+        var newBreak = await GetSomething<ShiftBreak>("EndBreak", shiftBreak);
+        if (newBreak is not null)
+        {
+            Helper.ChangeAllProperties(shiftBreak!, newBreak);
+        }
+        return newBreak;
+    }
+    
 
     //TODO: Подумать над входом нормальным и убрать default значения
     public async Task<User?> Authorize(string login = "admin", string password = "password")

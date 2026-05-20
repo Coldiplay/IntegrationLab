@@ -122,11 +122,11 @@
                 BorderThickness="0,1,0,0">
             <StackPanel HorizontalAlignment="Stretch">
                 <Border Padding="16,12,16,12">
-                    <Button Classes="primary" Content="Отправить"
+                    <Button Classes="primary" Content="{Binding }"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center" />
-                    <!--TODO: Сделать комманду для добавления инцидента-->
+                            VerticalContentAlignment="Center"
+                            Command="{Binding CreateIncidentCommand}"/>
                 </Border>
             </StackPanel>
         </Border>
