@@ -15,7 +15,7 @@ public partial class MainViewModel : ViewModelControlBase<MainView>
         //Thread.Sleep(5000);
     }
 
-[RelayCommand]
+    [RelayCommand]
     private void OpenShippingsView()
     {
         CurrentView = App.Services.GetRequiredService<ShippingsViewModel>();

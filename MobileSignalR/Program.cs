@@ -65,8 +65,7 @@ public class Program
                 new AuthRequirement(new HttpClient { BaseAddress = new Uri(GlobalOptions.API_URI) })
             ));
 
-        builder.Services.AddSingleton(_ =>
-        {
+        builder.Services.AddSingleton(_ => {
             var client = new HttpClient
             {
                 BaseAddress = new Uri(GlobalOptions.API_URI),

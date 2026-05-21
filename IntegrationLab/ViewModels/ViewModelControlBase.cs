@@ -8,7 +8,7 @@ public abstract class ViewModelControlBase<TControl> : ViewModelBase
 {
     protected ViewModelControlBase()
     {
-        View = (TControl)App.Services.GetRequiredService<ViewLocator>().Build(this);
+        //View = (TControl)App.Services.GetRequiredService<ViewLocator>().Build(this);
     }
 
     protected ViewModelControlBase(TControl view)

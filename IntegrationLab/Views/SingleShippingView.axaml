@@ -170,13 +170,16 @@
                                         Orientation="Horizontal">
                                 <TextBlock Classes="value"
                                            Text="{Binding Shipping.Vehicle.VehicleSize.Length,
-                StringFormat={}Д {0:F2} м}" />
+                                           StringFormat={}Д {0:F2}м}"
+                                           Margin="3"/>
                                 <TextBlock Classes="value"
                                            Text="{Binding Shipping.Vehicle.VehicleSize.Width,
-                StringFormat={}Ш {0:F2} м}" />
+                                           StringFormat={}Ш {0:F2}м}"
+                                           Margin="3"/>
                                 <TextBlock Classes="value"
                                            Text="{Binding Shipping.Vehicle.VehicleSize.Height,
-                StringFormat={}В {0:F2} м}" />
+                                           StringFormat={}В {0:F2}м}"
+                                           Margin="3"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

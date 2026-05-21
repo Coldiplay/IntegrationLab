@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Concurrent;
 using BaseLibrary.Auth;
 using BaseLibrary.Model.Classes;
 using BaseLibrary.Tools;
@@ -64,7 +65,23 @@ internal class Program
         var tesss = sw.ElapsedMilliseconds;
         ;
         */
-        await TestConnection();
+        //await TestConnection();
+        
+        var collection = new BlockingCollection<object>();
+
+        Task.Factory.StartNew(() =>
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                collection.Add(i);
+            }
+        });
+        
+        Task.Factory.StartNew(() =>
+        {
+           // if (collection.)
+        });
+        
         ;
     }
 

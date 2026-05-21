@@ -12,6 +12,7 @@ namespace MobileSignalR.Controllers
     public class AuthController(LaravelRequestHandler laraClient, JwtTokenHandler tokenHandler) : ControllerBase
     {
         [AllowAnonymous]
+        [HttpGet]
         public async Task<Response> Authorize(string login, string password)
         {
             var result = await laraClient.Post<UserAuth>("api/login", new { login, password });

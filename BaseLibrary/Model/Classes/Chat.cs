@@ -25,8 +25,7 @@ public partial class Chat : ObservableValidator
 
     [NotMapped] public Message? LastMessage => Messages.MaxBy(m => m.CreatedAt);
 
-    [NotMapped]
-    public string LastMessageText
+    [NotMapped] public string LastMessageText
     {
         get
         {

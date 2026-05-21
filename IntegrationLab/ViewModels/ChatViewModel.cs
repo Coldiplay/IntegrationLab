@@ -12,9 +12,12 @@ namespace IntegrationLab.ViewModels;
 
 public partial class ChatViewModel : ViewModelControlBase<ChatView>
 {
-    public ChatViewModel(ChatView view) : base(view)
+    public ChatViewModel(ChatView view, HubHandler hub, HubData hubData) : base(view)
     {
+        _hubData = hubData;
+        _hubHandler = hub;
         View.Initialized += (sender, args) => { OnPropertyChanged(nameof(Messages)); };
+        View.GettingFocus += (sender, args) => {OnPropertyChanged(nameof(Messages)); };
     }
 
     [ObservableProperty] public partial Chat Chat { get; set; }
@@ -30,35 +33,35 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
         }
     }
 
-    private readonly HubData _hubData = App.Services.GetRequiredService<HubData>();
+    private readonly HubData _hubData;
+    private readonly HubHandler _hubHandler;
 
-    [ObservableProperty] public partial string MessageText { get; set; } = string.Empty;
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(SendMessageCommand))] 
+    public partial string MessageText { get; set; } = string.Empty;
 
-    // private async void LoadMessages(object? sender, EventArgs e)
-    // {
-    //     Messages = 
-    //         await _httpClient.GetFromJsonAsync<ObservableCollection<Message>>("api/messages") 
-    //         ?? [];
-    // }
-
-    [RelayCommand]
-    private async Task SendMessage(string message)
+    private bool CanSendMessage()
     {
-        //Вообще другая проверка нужна, но и так сойдёт :)
-        if (string.IsNullOrWhiteSpace(message)) return;
+        return !string.IsNullOrWhiteSpace(MessageText);
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanSendMessage))]
+    private async Task SendMessage(string text)
+    {
 
-        //TODO: Потом добавить обратно
-        //await _hub.SendAsync("SendMessage", message);
-
-        Messages.Add(new Message
+        var message = new Message
         {
             Sender = App.CurrentDriver.User,
             Chat = Chat,
             ChatId = Chat.Id,
-            Content = message,
+            Content = text,
             CreatedAt = DateTime.Now,
             SenderId = App.CurrentDriver.User.Id
-        });
+        };
+
+        await _hubHandler.SendMessage(message);
+        
+        Messages.Add(message);
+        
         MessageText = string.Empty;
         OnPropertyChanged(nameof(Messages));
     }

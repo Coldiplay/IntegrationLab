@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using BaseLibrary.Auth;
 using BaseLibrary.Model.Classes;
 using BaseLibrary.Tools;
 using IntegrationLab.Tools;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -20,32 +21,32 @@ public class HubHandler
 {
     private HubConnection _hub;
     private readonly HubData _hubData;
-    private static readonly JsonSerializerSettings Options = new()
-    {
+    private readonly HttpClient _httpClient;
+    private static readonly JsonSerializerSettings Options = new() {
         ContractResolver = new DefaultContractResolver()
         {
             NamingStrategy = new CamelCaseNamingStrategy()
         }
     };
 
-    public HubHandler()
+    public HubHandler(HubData hubData, HttpClient httpClient)
     {
-        _hubData = App.Services.GetRequiredService<HubData>();
-        //_hub = Initialize(_hubData, connectionString);
-        //Start();
+        _hubData = hubData;
+        _httpClient = httpClient;
     }
 
     public async Task Start()
     {
-        _hub = CreateConnection();
+        var userAuth = Authorize();
         await StartConnection();
-        var user = await Authorize();
         await Initialize(_hub);
         await Load();
     }
 
     private async Task<bool> StartConnection()
     {
+        if (_hub.State == HubConnectionState.Connected) return true;
+        
         for (int i = 0; i < 3; i++)
         {
             try
@@ -64,8 +65,7 @@ public class HubHandler
         return _hub.State == HubConnectionState.Connected;
     }
 
-    private HubConnection CreateConnection(string connectionString = GlobalOptions.HUB_URI + "/hub",
-        string? bearerToken = null)
+    private HubConnection CreateConnection(string bearerToken, string connectionString = GlobalOptions.HUB_URI + "/hub")
     {
         var connection = new HubConnectionBuilder().WithAutomaticReconnect().WithUrl(connectionString, options =>
         {
@@ -79,7 +79,7 @@ public class HubHandler
     }
     
 
-    public async Task<HubConnection> Initialize(HubConnection connection)
+    private async Task<HubConnection> Initialize(HubConnection connection)
     {
         connection.On("ReceiveMessage", async (Message newMessage) =>
         {
@@ -105,7 +105,7 @@ public class HubHandler
             });
         });
 
-        connection.On("UpdateIncident", async (Incident newIncident) =>
+        connection.On("ReceiveIncident", async (Incident newIncident) =>
         {
             await Task.Run(() =>
             {
@@ -123,6 +123,7 @@ public class HubHandler
 
     public async Task Load()
     {
+        await AwaitForConnection();
         var shippings = await GetShippings();
         _hubData.Shippings = [..shippings];
         _hubData.Incidents = [.. await GetIncidents()];
@@ -266,14 +267,23 @@ public class HubHandler
     
 
     //TODO: Подумать над входом нормальным и убрать default значения
-    public async Task<User?> Authorize(string login = "admin", string password = "password")
+    public async Task<UserAuth?> Authorize(string login = "admin", string password = "password")
     {
-        var authUser = await GetSomething<UserAuth>("Authorize", login, password);
+        var response = await _httpClient.GetFromJsonAsync<Response>($"api/Auth/Authorize?login={login}&password={password}");
 
-        _hub = CreateConnection(bearerToken: authUser?.Token);
+        if (response?.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            //TODO: Поменять потом на response message
+            await MessageBoxManager.GetMessageBoxStandard("Ошибка авторизации",  JsonSerializer.Serialize(response))//response.Message)
+                .ShowAsync();
+            return null;
+        }
+        var authUser = await HandleResponse<UserAuth>(response);
+
+        _hub = CreateConnection(bearerToken: authUser!.Token);
         await StartConnection();
         
-        return authUser?.User;
+        return authUser;
     }
 
 
@@ -319,5 +329,14 @@ public class HubHandler
     private static ulong CheckUserId(ulong? userId)
     {
         return userId is null or < 1 ? (ulong)App.CurrentDriverId : userId.Value;
+    }
+
+
+    private async Task AwaitForConnection()
+    {
+        while (_hub?.State != HubConnectionState.Connected)
+        {
+            await Task.Delay(250);
+        }
     }
 }

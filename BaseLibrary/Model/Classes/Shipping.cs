@@ -35,7 +35,10 @@ public partial class Shipping : ObservableObject
 
     [ObservableProperty] public virtual partial Vehicle Vehicle { get; set; } = null!;
 
-    [NotMapped] public double CargoWeight => Cargos.Sum(c => c.Weight) / 1000;
+    //[NotMapped] public double CargoWeight => Cargos.Sum(c => c.Weight) / 1000;
 
     [NotMapped, ObservableProperty] public partial string ConfirmedStatus { get; set; } = "Не подтверждён";
+    
+    [NotMapped, ObservableProperty] public partial ushort CargoCount { get; set; }
+    [NotMapped, ObservableProperty] public partial double CargoWeight { get; set; } 
 }

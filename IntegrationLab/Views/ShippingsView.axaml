@@ -44,7 +44,7 @@
                                 <Setter Property="FontSize" Value="11" />
                             </Style>
                         </StackPanel.Styles>
-                        <Label Content="{Binding Cargos.Count, StringFormat={}Груз: {0} шт.}" />
+                        <Label Content="{Binding CargoCount, StringFormat={}Груз: {0} шт.}" />
                         <Label Content="{Binding CargoWeight, StringFormat={}{0:F1} т}" />
                     </StackPanel>
                 </Grid>

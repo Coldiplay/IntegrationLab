@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 
 namespace MobileSignalR.Auth;
@@ -17,7 +18,8 @@ public class AuthRequirement(HttpClient authClient) : AuthorizationHandler<AuthR
             return;
         }
 
-        var response = await authClient.PostAsJsonAsync("api/Auth/Check", token);
+        authClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
+        var response = await authClient.GetAsync("api/Auth/Check");
 
         if (response.StatusCode == HttpStatusCode.OK)
         {

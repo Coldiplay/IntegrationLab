@@ -111,7 +111,7 @@ public partial class App : Application
         {
             var client = new HttpClient()
             {
-                BaseAddress = new Uri(GlobalOptions.HUB_URI + "/hub")
+                BaseAddress = new Uri(GlobalOptions.HUB_URI)
             };
             return client;
         });

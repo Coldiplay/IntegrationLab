@@ -99,7 +99,9 @@
                     <Border Classes="input" Grid.Column="0">
                         <TextBox Name="InputBox" BorderThickness="0" Background="Transparent" PlaceholderText="" Text="{Binding MessageText}" />
                     </Border>
-                    <Button Grid.Column="1" Classes="send" Command="{Binding SendMessageCommand}" CommandParameter="{Binding MessageText}"/>
+                    <Button Grid.Column="1" Classes="send" 
+                            Command="{Binding SendMessageCommand}" 
+                            CommandParameter="{Binding MessageText}"/>
                 </Grid>
             </Border>
         </Grid>

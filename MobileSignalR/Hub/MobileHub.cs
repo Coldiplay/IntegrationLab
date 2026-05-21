@@ -1,8 +1,6 @@
 using System.Net;
-using BaseLibrary.Auth;
 using BaseLibrary.Model.Classes;
 using BaseLibrary.Tools;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using MobileSignalR.Tools;
 using SignalRSwaggerGen.Attributes;
@@ -14,17 +12,14 @@ namespace MobileSignalR.Hub;
 public class MobileHub : Microsoft.AspNetCore.SignalR.Hub
 {
     // Мобилка <-> SignalR <<-> API (Laravel) <->> Сайт (Laravel)
-    public MobileHub(LaravelRequestHandler laraClient, 
-        JwtTokenHandler checker, ILogger<MobileHub> logger)
+    public MobileHub(LaravelRequestHandler laraClient, ILogger<MobileHub> logger)
     {
         _laraClient = laraClient;
-        _tokenHandler = checker;
         _logger = logger;
     }
     
     private readonly LaravelRequestHandler _laraClient;
     private readonly ILogger _logger;
-    private readonly JwtTokenHandler _tokenHandler;
     
     private string UserIdentity => $"{Context.ConnectionId} {Context.UserIdentifier} {Context.User?.Identity?.Name}";
 
@@ -44,6 +39,18 @@ public class MobileHub : Microsoft.AspNetCore.SignalR.Hub
     public async Task<Response> GetShippings() =>
         await Get<IEnumerable<Shipping>>("api/shipping/");
 
+    public async Task<Response> SendMessage(Message message)
+    {
+        var sentMessage = await Post<Message>($"api/chat/{message.ChatId}/messages", message);
+
+        if ((int)sentMessage.StatusCode < 400)
+        {
+            
+        }
+
+        return sentMessage;
+    }
+    
     
 
     private async Task<Response> Get<T>(string url) where T : notnull
@@ -101,5 +108,13 @@ public class MobileHub : Microsoft.AspNetCore.SignalR.Hub
             StatusCode = statusCode,
             Message = message
         };
+    }
+
+
+    public override Task OnConnectedAsync()
+    {
+        //this.Context.ConnectionId;
+        
+        return base.OnConnectedAsync();
     }
 }
