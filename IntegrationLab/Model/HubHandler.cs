@@ -64,7 +64,7 @@ public class HubHandler
         return _hub.State == HubConnectionState.Connected;
     }
 
-    private HubConnection CreateConnection(string connectionString = GlobalOptions.HUB_URI,
+    private HubConnection CreateConnection(string connectionString = GlobalOptions.HUB_URI + "/hub",
         string? bearerToken = null)
     {
         var connection = new HubConnectionBuilder().WithAutomaticReconnect().WithUrl(connectionString, options =>

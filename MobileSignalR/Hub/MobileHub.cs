@@ -44,22 +44,19 @@ public class MobileHub : Microsoft.AspNetCore.SignalR.Hub
     public async Task<Response> GetShippings() =>
         await Get<IEnumerable<Shipping>>("api/shipping/");
 
-    [AllowAnonymous]
-    public async Task<Response> Authorize(string login, string password)
-    {
-        var result = await _laraClient.Post<UserAuth>("api/login", new { login, password });
-        if (string.IsNullOrEmpty(result?.Token))
-            return ToBadResponse("Неверная пара логин-пароль", HttpStatusCode.Unauthorized);
-        var token = _tokenHandler.GenerateToken(DateTime.UtcNow.AddMinutes(30));
-        _tokenHandler.AddTokenPair(token, result!.Token);
-        result.Token = token;
-        return ToResponseWithData(result, "Успешная авторизация!");
-    }
+    
 
     private async Task<Response> Get<T>(string url) where T : notnull
     {
         var token = GetAuthToken();
         var model = await _laraClient.Get<T>(url, token);
+        return ToResponseWithData(model);
+    }
+
+    private async Task<Response> Post<T>(string url, object parameter) where T: notnull
+    {
+        var token = GetAuthToken();
+        var model = await _laraClient.Post<T>(url, parameter, token);
         return ToResponseWithData(model);
     }
 

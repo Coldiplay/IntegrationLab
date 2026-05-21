@@ -1,3 +1,5 @@
+using System;
+using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -105,6 +107,14 @@ public partial class App : Application
 
         services.AddSingleton<HubData>();
         services.AddSingleton<HubHandler>();
+        services.AddSingleton<HttpClient>(_ =>
+        {
+            var client = new HttpClient()
+            {
+                BaseAddress = new Uri(GlobalOptions.HUB_URI + "/hub")
+            };
+            return client;
+        });
 
         Services = services.BuildServiceProvider();
 

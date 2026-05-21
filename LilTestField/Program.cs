@@ -19,7 +19,7 @@ internal class Program
     };
 
     private static HubConnection _hub = new HubConnectionBuilder()
-        .WithUrl(GlobalOptions.HUB_URI)
+        .WithUrl(GlobalOptions.HUB_URI + "/hub")
         .WithAutomaticReconnect()
         .Build();
     
@@ -132,7 +132,7 @@ internal class Program
                 Console.WriteLine(
                     $"login {authUser.User.Login}\nrole {Enum.GetName(authUser.User.Role)}\ntoken {authUser.Token}");
                 _hub = new HubConnectionBuilder()
-                    .WithUrl(GlobalOptions.HUB_URI,
+                    .WithUrl(GlobalOptions.HUB_URI + "/hub",
                         options => { options.Headers.Add("Authorization", "Bearer " + authUser.Token); })
                     .WithAutomaticReconnect()
                     .Build();
@@ -166,7 +166,7 @@ internal class Program
                     Console.WriteLine(
                         $"login {authUser.User.Login}\nrole {Enum.GetName(authUser.User.Role)}\ntoken {authUser.Token}");
                     _hub = new HubConnectionBuilder()
-                        .WithUrl(GlobalOptions.HUB_URI,
+                        .WithUrl(GlobalOptions.HUB_URI + "/hub",
                             options => { options.Headers.Add("Authorization", "Bearer " + authUser.Token); })
                         .WithAutomaticReconnect()
                         .Build();
