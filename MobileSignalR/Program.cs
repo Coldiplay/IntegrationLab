@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Reflection;
 using BaseLibrary.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -6,7 +7,9 @@ using Microsoft.OpenApi;
 using MobileSignalR.Auth;
 using MobileSignalR.Hub;
 using MobileSignalR.MiddleWares;
+using MobileSignalR.NotificationHandlers;
 using MobileSignalR.Tools;
+using RabbitMQ.Client;
 
 namespace MobileSignalR;
 
@@ -78,8 +81,18 @@ public class Program
 
         builder.Services.AddSingleton<LaravelRequestHandler>();
         builder.Services.AddSingleton<JwtTokenHandler>();
+        builder.Services.AddSingleton<ConnectionsHandler>();
+        builder.Services.AddSingleton<IConnection>(new ConnectionFactory() {
+            HostName = Options.RabbitMQHostName,
+            UserName = Options.RabbitMQUserName,
+            Password = Options.RabbitMQPassword,
+            VirtualHost = Options.RabbitMQVirtualHost,
+        }.CreateConnectionAsync().Result);
+        
         builder.Services.AddHostedService(provider => provider.GetRequiredService<JwtTokenHandler>());
 
+        RegisterNotificationHandlers(builder.Services);
+        
         var app = builder.Build();
         app.UseHttpsRedirection();
 
@@ -98,5 +111,11 @@ public class Program
 
         app.UseMiddleware<GlobalExceptionMiddleWare>();
         app.Run();
+    }
+
+
+    private static void RegisterNotificationHandlers(IServiceCollection services)
+    {
+        services.AddHostedService<MessageNotificationHandler>();
     }
 }

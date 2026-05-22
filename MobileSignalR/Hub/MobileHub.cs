@@ -12,7 +12,7 @@ namespace MobileSignalR.Hub;
 public class MobileHub : Microsoft.AspNetCore.SignalR.Hub
 {
     // Мобилка <-> SignalR <<-> API (Laravel) <->> Сайт (Laravel)
-    public MobileHub(LaravelRequestHandler laraClient, ILogger<MobileHub> logger)
+    public MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler connections, ILogger<MobileHub> logger)
     {
         _laraClient = laraClient;
         _logger = logger;
@@ -111,10 +111,11 @@ public class MobileHub : Microsoft.AspNetCore.SignalR.Hub
     }
 
 
-    public override Task OnConnectedAsync()
+    public override async Task OnConnectedAsync()
     {
-        //this.Context.ConnectionId;
+        if ()
+        //var connectionId = Context.ConnectionId;
         
-        return base.OnConnectedAsync();
+        await base.OnConnectedAsync();
     }
 }
