@@ -16,6 +16,7 @@
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design"/>
         <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql"/>
+        <PackageReference Include="RabbitMQ.Client" />
         <PackageReference Include="SignalRSwaggerGen"/>
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen"/>
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI"/>
