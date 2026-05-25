@@ -269,60 +269,39 @@ public class HubHandler
     //TODO: Подумать над входом нормальным и убрать default значения
     public async Task<UserAuth?> Authorize(string login = "admin", string password = "password")
     {
-        var response = await _httpClient.GetFromJsonAsync<Response>($"api/Auth/Authorize?login={login}&password={password}");
+        var userAuth = await _httpClient.GetFromJsonAsync<UserAuth>($"api/Auth/Authorize?login={login}&password={password}");
 
-        if (response?.StatusCode != System.Net.HttpStatusCode.OK)
+        if (userAuth is null)
         {
-            //TODO: Поменять потом на response message
-            await MessageBoxManager.GetMessageBoxStandard("Ошибка авторизации",  JsonSerializer.Serialize(response))//response.Message)
+            await MessageBoxManager.GetMessageBoxStandard("Ошибка авторизации",  $"При авторизации произошла ошибка и сервер вернул: {JsonSerializer.Serialize(userAuth)}")
                 .ShowAsync();
             return null;
         }
-        var authUser = await HandleResponse<UserAuth>(response);
 
-        _hub = CreateConnection(bearerToken: authUser!.Token);
+        _hub = CreateConnection(bearerToken: userAuth.Token);
         await StartConnection();
         
-        return authUser;
+        return userAuth;
     }
 
 
     private async Task<T?> GetSomething<T>(string methodName, params object?[]? parameters)
     {
-        var response = await (parameters?.Length switch
+        var model = await (parameters?.Length switch
         {
-            1 => _hub.InvokeAsync<Response>(methodName, parameters[0]),
-            2 => _hub.InvokeAsync<Response>(methodName, parameters[0], parameters[1]),
-            3 => _hub.InvokeAsync<Response>(methodName, parameters[0], parameters[1], parameters[2]),
-            _ => _hub.InvokeAsync<Response>(methodName)
+            1 => _hub.InvokeAsync<T>(methodName, parameters[0]),
+            2 => _hub.InvokeAsync<T>(methodName, parameters[0], parameters[1]),
+            3 => _hub.InvokeAsync<T>(methodName, parameters[0], parameters[1], parameters[2]),
+            _ => _hub.InvokeAsync<T>(methodName)
         });
-        var smth = await HandleResponse<T>(response);
-        return smth ?? default;
-    }
 
-
-    private static async Task<T?> HandleResponse<T>(Response response)
-    {
-        if ((int)response.StatusCode < 400)
+        if (model is null)
         {
-            Debug.WriteLine("Trying deserialize...");
-            try
-            {
-                return JsonConvert.DeserializeObject<T>(response.Data?.ToString(), Options);
-            }
-            catch (Exception exception)
-            {
-                Debug.WriteLine(exception);
-                await MessageBoxManager.GetMessageBoxStandard("Ошибка сериализации данных",  exception.Message)
-                    .ShowAsync();
-                return default;
-            }
+            await MessageBoxManager.GetMessageBoxStandard("Ошибка получения данных с сервера",  $"При вызове {methodName} произошла ошибка и сервер вернул: {JsonSerializer.Serialize(model)}")
+                .ShowAsync();
         }
-        
-        //TODO: Поменять потом на response message
-        await MessageBoxManager.GetMessageBoxStandard("Ошибка получения данных с сервера",  JsonSerializer.Serialize(response))//response.Message)
-            .ShowAsync();
-        return default;
+
+        return model;
     }
 
     private async Task AwaitForConnection()

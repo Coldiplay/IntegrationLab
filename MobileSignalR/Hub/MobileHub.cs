@@ -4,7 +4,6 @@ using BaseLibrary.Tools;
 using Microsoft.AspNetCore.SignalR;
 using MobileSignalR.MiddleWares;
 using MobileSignalR.Tools;
-using Newtonsoft.Json;
 using SignalRSwaggerGen.Attributes;
 
 namespace MobileSignalR.Hub;
