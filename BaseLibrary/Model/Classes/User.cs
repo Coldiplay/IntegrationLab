@@ -7,7 +7,7 @@ namespace BaseLibrary.Model.Classes;
 [PrimaryKey(nameof(Id))]
 public partial class User : ObservableObject
 {
-    public ulong Id { get; set; }
+    public Guid Id { get; set; }
 
     [ObservableProperty] public partial string Login { get; set; } = null!;
 

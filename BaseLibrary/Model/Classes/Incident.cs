@@ -13,7 +13,7 @@ public partial class Incident : ObservableValidator
 
     [ObservableProperty, ForeignKey(nameof(Shipping))] public partial ulong ShippingId { get; set; }
 
-    [ObservableProperty, ForeignKey(nameof(Driver))] public partial ulong DriverId { get; set; }
+    [ObservableProperty, ForeignKey(nameof(Driver))] public partial Guid DriverId { get; set; }
 
     [ObservableProperty, Required, MaxLength(500), MinLength(8)] 
     public partial string Description { get; set; } = null!;

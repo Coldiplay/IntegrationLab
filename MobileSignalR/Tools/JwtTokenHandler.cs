@@ -13,21 +13,18 @@ public class JwtTokenHandler(ILogger<JwtTokenHandler> logger) : BackgroundServic
 {
     private readonly ConcurrentDictionary<string, string> _jwtToLaravel = [];
     private readonly SecurityKey _publicKey = KeyHelper.BuildRsaSigningKey(Options.RSA);
-
-    private readonly HttpClient _httpClient = new()
-    {
+    private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
+    private readonly HttpClient _httpClient = new() {
         BaseAddress = new Uri(GlobalOptions.API_URI)
     };
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-
         while (!stoppingToken.IsCancellationRequested)
         {
             foreach (var jwtString in _jwtToLaravel.Keys)
             {
-                var jwt = tokenHandler.ReadJwtToken(jwtString);
+                var jwt = _tokenHandler.ReadJwtToken(jwtString);
                 if (new DateTimeOffset(jwt.ValidTo) < DateTimeOffset.UtcNow)
                 {
                     logger.LogInformation(
@@ -64,18 +61,17 @@ public class JwtTokenHandler(ILogger<JwtTokenHandler> logger) : BackgroundServic
             : null;
     }
 
-internal bool AddTokenPair(string token, string laravelToken)
+    internal bool AddTokenPair(string token, string laravelToken)
     {
         return _jwtToLaravel.TryAdd(token, laravelToken);
     }
     
-    internal string GenerateToken(DateTime expiry)
+    internal string GenerateToken(DateTime expiry, Guid userId)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
         var identity = new ClaimsIdentity([
-            new Claim("ID", Guid.NewGuid().ToString())
+            new Claim("ID", userId.ToString())
         ]);
-
+        
         var token = new JwtSecurityToken
         (
             Options.Issuer,
@@ -86,7 +82,7 @@ internal bool AddTokenPair(string token, string laravelToken)
             new SigningCredentials(_publicKey, SecurityAlgorithms.RsaSha256,
                 SecurityAlgorithms.Sha256Digest)
         );
-        var tokenString = tokenHandler.WriteToken(token);
+        var tokenString = _tokenHandler.WriteToken(token);
         return tokenString;
     }
 }

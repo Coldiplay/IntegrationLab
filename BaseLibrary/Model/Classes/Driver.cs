@@ -8,7 +8,7 @@ namespace BaseLibrary.Model.Classes;
 [PrimaryKey(nameof(UserId))]
 public partial class Driver : ObservableObject
 {
-    [ForeignKey(nameof(User))] public ulong UserId { get; set; }
+    [ForeignKey(nameof(User))] public Guid UserId { get; set; }
 
     public Rights Rights { get; set; }
 

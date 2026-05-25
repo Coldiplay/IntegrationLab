@@ -4,75 +4,33 @@ namespace MobileSignalR.Tools;
 
 public class ConnectionsHandler
 {
-    private readonly ConcurrentDictionary<ulong, string> _users = [];
+    //UserId (1) - (m) connectionID
+    private ConcurrentDictionary<Guid, List<string>> _users = [];
 
-    public void AddConnection(ulong userId, string connectionId)
+    public void AddConnection(Guid userId, string connectionId)
     {
-        if (_users.ContainsKey(userId))
-        {
-            _users[userId] = connectionId;
-        }
-        else
-        {
-            _users.TryAdd(userId, connectionId);
-        }
+        _ = _users.AddOrUpdate(userId, [connectionId], (guid, list) => {
+            if (!list.Contains(connectionId))
+                list.Add(connectionId);
+            return list;
+        });
     }
 
-    public void RemoveConnection(ulong userId) => _users.TryRemove(userId, out _);
-    
-    public void RemoveConnection(string connectionId)
+    public bool RemoveConnection(Guid userId, string connectionId)
     {
-        var pair = _users.FirstOrDefault(x => x.Value == connectionId);
-        if (pair.Value == null) return;
-        _users.TryRemove(pair.Key, out _);
-    }
-
-    public string? GetConnection(ulong userId)
-    {
-        _users.TryGetValue(userId, out var connection);
-        return connection;
-    }
-
-    public ulong? GetUserId(string connectionId) => 
-        _users.FirstOrDefault(x => x.Value == connectionId).Key;
-
-    
-    /*
-    private readonly ConcurrentDictionary<ulong, List<string>> _users;
-
-    public void AddConnection(ulong userId, string connectionId)
-    {
-        if (_users.TryGetValue(userId, out var connections))
-        {
-            connections.Add(connectionId);
-        }
-        else
-        {
-            _users.TryAdd(userId, [connectionId]);
-        }
-    }
-
-    public void RemoveConnection(ulong userId, string connectionId)
-    {
-        if (!_users.TryGetValue(userId, out var connections)) return;
+        if (!_users.TryGetValue(userId, out var list)) return false;
         
-        connections.Remove(connectionId);
-        if (connections.Count == 0)
+        list.Remove(connectionId);
+        if (list.Count == 0)
             _users.TryRemove(userId, out _);
+        return true;
     }
 
-    public List<string>? GetConnections(ulong userId)
+    public Guid? GetUserId(string connectionId) =>
+        _users.FirstOrDefault(u => u.Value.Contains(connectionId)).Key;
+    public List<string>? GetConnections(Guid userId)
     {
-        _users.TryGetValue(userId, out var connections);
-        return connections;
+        _users.TryGetValue(userId, out var list);
+        return list;
     }
-
-    public ulong? GetUserId(string connectionId)
-    {
-        _users.
-        
-    }
-    */
-
-
 }

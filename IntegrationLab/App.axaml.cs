@@ -17,7 +17,7 @@ public partial class App : Application
 {
     public static ServiceProvider Services { get; private set; }
     public static ViewModelBase CurrentView { get; private set; }
-    public static ulong CurrentDriverId => CurrentDriver.User.Id;
+    public static Guid CurrentDriverId => CurrentDriver.User.Id;
     public static Driver CurrentDriver { get; set; }
 
     private static bool _isAppWithSingleView = true;
@@ -78,7 +78,7 @@ public partial class App : Application
         var lName = faker.Name.LastName();
         var user = new User
         {
-            Id = 1,
+            Id = Guid.CreateVersion7(),
             FirstName = fName,
             LastName = lName,
             Phone = faker.Phone.PhoneNumber(),

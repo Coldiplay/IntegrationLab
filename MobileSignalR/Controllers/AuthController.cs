@@ -18,7 +18,7 @@ namespace MobileSignalR.Controllers
             var result = await laraClient.Post<UserAuth>("api/login", new { login, password });
             if (string.IsNullOrEmpty(result?.Token))
                 return ToBadResponse("Неверная пара логин-пароль", HttpStatusCode.Unauthorized);
-            var token = tokenHandler.GenerateToken(DateTime.UtcNow.AddMinutes(30));
+            var token = tokenHandler.GenerateToken(DateTime.UtcNow.AddMinutes(30), result.User.Id);
             tokenHandler.AddTokenPair(token, result.Token);
             result.Token = token;
             return ToResponseWithData(result, "Успешная авторизация!");

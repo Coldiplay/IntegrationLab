@@ -325,13 +325,6 @@ public class HubHandler
         return default;
     }
 
-
-    private static ulong CheckUserId(ulong? userId)
-    {
-        return userId is null or < 1 ? (ulong)App.CurrentDriverId : userId.Value;
-    }
-
-
     private async Task AwaitForConnection()
     {
         while (_hub?.State != HubConnectionState.Connected)

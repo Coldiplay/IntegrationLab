@@ -12,7 +12,7 @@ public partial class DriversShift : ObservableValidator
 
     [ObservableProperty] public partial DateTime? End { get; set; }
 
-    [ForeignKey(nameof(Driver))] public ulong DriverId { get; set; }
+    [ForeignKey(nameof(Driver))] public Guid DriverId { get; set; }
 
     public virtual Driver Driver { get; set; } = null!;
 

@@ -66,22 +66,9 @@ internal class Program
         ;
         */
         //await TestConnection();
-        
-        var collection = new BlockingCollection<object>();
 
-        Task.Factory.StartNew(() =>
-        {
-            for (int i = 0; i < 50; i++)
-            {
-                collection.Add(i);
-            }
-        });
-        
-        Task.Factory.StartNew(() =>
-        {
-           // if (collection.)
-        });
-        
+        Console.WriteLine(Guid.CreateVersion7().ToString());
+        Thread.Sleep(5000);
         ;
     }
 

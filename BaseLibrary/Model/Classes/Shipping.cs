@@ -24,7 +24,7 @@ public partial class Shipping : ObservableObject
 
     [ObservableProperty, ForeignKey(nameof(Vehicle))] public partial ulong VehicleId { get; set; }
 
-    [ForeignKey(nameof(DesignatedDriver))] public ulong DesignatedDriverId { get; set; }
+    [ForeignKey(nameof(DesignatedDriver))] public Guid DesignatedDriverId { get; set; }
 
     [ObservableProperty, NotifyPropertyChangedFor(nameof(CargoWeight))] 
     public virtual partial ICollection<Cargo> Cargos { get; set; } = new List<Cargo>();

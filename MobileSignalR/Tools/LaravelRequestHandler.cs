@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using BaseLibrary.Tools;
 using Newtonsoft.Json;
@@ -13,6 +14,14 @@ public class LaravelRequestHandler(
     HttpClient apiClient,
     JwtTokenHandler tokenHandler)
 {
+    private readonly JsonSerializerSettings _options = new()
+    {
+        ContractResolver = new DefaultContractResolver()
+        {
+            NamingStrategy = new SnakeCaseNamingStrategy()
+        },
+    };
+    
     public async Task<TResult?> Get<TResult>(string url, string? token = null)
     {
         SwitchTokenToCurrentUser(token);
@@ -25,8 +34,11 @@ public class LaravelRequestHandler(
     public async Task<TResult?> Post<TResult>(string url, object parameter, string? token = null)
     {
         SwitchTokenToCurrentUser(token);
+
+        var jsonPayload = JsonConvert.SerializeObject(parameter, _options);
+        using var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
         
-        var response = await apiClient.PostAsJsonAsync(url, parameter);
+        var response = await apiClient.PostAsync(url, content);
         var responseString = await response.Content.ReadAsStringAsync();
         return ParseResponse<TResult>(responseString);
     }
@@ -38,13 +50,6 @@ public class LaravelRequestHandler(
         apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", laraToken);
     }
     
-    private readonly JsonSerializerSettings _options = new()
-    {
-        ContractResolver = new DefaultContractResolver()
-        {
-            NamingStrategy = new SnakeCaseNamingStrategy()
-        },
-    };
 
     private T? ParseResponse<T>(string json)
     {

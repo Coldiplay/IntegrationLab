@@ -13,7 +13,7 @@ public partial class Message : ObservableValidator
     [ObservableProperty, Required, MaxLength(300), MinLength(1)] 
     public partial string Content { get; set; } = null!;
 
-    [ForeignKey(nameof(Sender))] public ulong SenderId { get; set; }
+    [ForeignKey(nameof(Sender))] public Guid SenderId { get; set; }
 
     [ForeignKey(nameof(Chat))] public ulong ChatId { get; set; }
 
