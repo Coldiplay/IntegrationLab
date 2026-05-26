@@ -1,6 +1,4 @@
-using System.Net;
 using BaseLibrary.Model.Classes;
-using BaseLibrary.Tools;
 using Microsoft.AspNetCore.SignalR;
 using MobileSignalR.MiddleWares;
 using MobileSignalR.Tools;
@@ -33,6 +31,10 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
     public async Task<IEnumerable<Shipping>?> GetShippings() =>
         await Get<IEnumerable<Shipping>>("api/shipping/");
 
+    public async Task<IEnumerable<DriversShift>?> GetDriversShifts() =>
+        await Get<IEnumerable<DriversShift>>("api/shift/");
+    
+
     public async Task<Message?> SendMessage(Message message)
     {
         var sentMessage = await Post<Message>($"api/chat/{message.ChatId}/messages", message);
@@ -50,9 +52,59 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
 
         if (newIncident is null) return newIncident;
         
-        await AddUserToGroup(GetCurrentUserId()!.Value, "Incident" + newIncident.Id);
+        await AddUserToGroup(GetCurrentUserId()!.Value, "Incident " + newIncident.Id);
 
         return newIncident;
+    }
+
+    public async Task<Chat?> CreateChat(Chat chat)
+    {
+        var newChat = await Post<Chat>("api/chat/", chat);
+        if (newChat is null) return newChat;
+        await AddUserToGroup(GetCurrentUserId()!.Value, "Chat" + newChat.Id);
+        return newChat;
+    }
+    public async Task<User?> AddChatMember(ulong chatId, User user)
+    {
+        var newUser = await Post<User>($"api/chat/{chatId}/members", user);
+        if (newUser is null) return newUser;
+        
+        await AddUserToGroup(newUser.Id, "Chat " + chatId);
+        
+        return newUser;
+    }
+
+    public async Task<DriversShift?> StartShift(Shipping shipping)
+    {
+        var shift = await Post<DriversShift>($"api/shift/{shipping.Id}/start", new DriversShift()
+        {
+            DriverId = GetCurrentUserId()!.Value,
+            Start = DateTime.UtcNow
+        });
+        
+        return shift;
+    }
+    public async Task<DriversShift?> EndShift(DriversShift shift)
+    {
+        shift.End = DateTime.UtcNow;
+        var newShift = await Post<DriversShift>($"api/shift/{shift.Id}", shift);
+        return newShift;
+    }
+
+    public async Task<ShiftBreak?> StartBreak(DriversShift shift)
+    {
+        var shiftBreak = await Post<ShiftBreak>("api/shift-break", new  ShiftBreak()
+        {
+            Start = DateTime.UtcNow,
+            ShiftId = shift.Id
+        });
+        return shiftBreak;
+    }
+    public async Task<ShiftBreak?> EndBreak(ShiftBreak shiftBreak)
+    {
+        shiftBreak.End = DateTime.UtcNow;
+        var newShiftBreak = await Post<ShiftBreak>($"api/shift-break/{shiftBreak.Id}", shiftBreak);
+        return newShiftBreak;
     }
     
     
@@ -62,7 +114,6 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
         var model = await laraClient.Get<T>(url, token);
         return model;
     }
-
     private async Task<T?> Post<T>(string url, object parameter) where T: notnull
     {
         var token = GetAuthToken();
@@ -78,36 +129,6 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
         return token;
     }
     
-
-    private Response ToBadResponse(string message, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
-    {
-        return new Response
-        {
-            StatusCode = statusCode,
-            Message = message
-        };
-    }
-
-    public override async Task OnConnectedAsync()
-    {
-        var userId = GetCurrentUserId();
-        if (userId.HasValue)
-        {
-            connections.AddConnection(userId.Value, Context.ConnectionId);
-            AddConnectionToChatGroups(userId.Value, Context.ConnectionId);
-        }
-        
-        await base.OnConnectedAsync();
-    }
-
-    public override Task OnDisconnectedAsync(Exception? exception)
-    {
-        var userId = GetCurrentUserId();
-        if (userId.HasValue) connections.RemoveConnection(userId.Value, Context.ConnectionId);
-        
-        return base.OnDisconnectedAsync(exception);
-    }
-
     private async void AddConnectionToChatGroups(Guid userId, string connectionId)
     {
         while (true)
@@ -136,7 +157,6 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
             }
         }
     }
-
     private async Task AddUserToGroup(Guid userId, string groupName)
     {
         var connectionsList = connections.GetConnections(userId);
@@ -147,11 +167,29 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
             await Groups.AddToGroupAsync(connection, groupName);
         }
     }
-
     private Guid? GetCurrentUserId()
     {
         return Guid.TryParse(Context.User?.Claims.FirstOrDefault(c => c.Type == "ID")?.Value, out var id)
             ? id
             : null;
+    }
+    
+    public override async Task OnConnectedAsync()
+    {
+        var userId = GetCurrentUserId();
+        if (userId.HasValue)
+        {
+            connections.AddConnection(userId.Value, Context.ConnectionId);
+            AddConnectionToChatGroups(userId.Value, Context.ConnectionId);
+        }
+        
+        await base.OnConnectedAsync();
+    }
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        var userId = GetCurrentUserId();
+        if (userId.HasValue) connections.RemoveConnection(userId.Value, Context.ConnectionId);
+        
+        return base.OnDisconnectedAsync(exception);
     }
 }

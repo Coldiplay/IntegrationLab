@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -22,12 +21,6 @@ public class HubHandler
     private HubConnection _hub;
     private readonly HubData _hubData;
     private readonly HttpClient _httpClient;
-    private static readonly JsonSerializerSettings Options = new() {
-        ContractResolver = new DefaultContractResolver()
-        {
-            NamingStrategy = new CamelCaseNamingStrategy()
-        }
-    };
 
     public HubHandler(HubData hubData, HttpClient httpClient)
     {
@@ -129,6 +122,7 @@ public class HubHandler
         _hubData.Incidents = [.. await GetIncidents()];
         foreach (var chat in await GetChats())
             _hubData.Chats.TryAdd(chat, ([.. await GetChatMembers(chat.Id)], [.. await GetChatMessages(chat.Id)]));
+        _hubData.Shifts = [.. await GetDriversShifts()];
     }
 
     public async Task<IEnumerable<User>?> GetChatMembers(ulong chatId)
@@ -176,6 +170,14 @@ public class HubHandler
         }
         
         return shippings;
+    }
+    public async Task<IEnumerable<DriversShift>?> GetDriversShifts()
+    {
+        var shifts = (await GetSomething<IEnumerable<DriversShift>>("GetDriversShifts"))?.ToArray();
+        if (shifts is null) return shifts;
+        
+        _hubData.Shifts =  [..shifts];
+        return shifts;
     }
 
     

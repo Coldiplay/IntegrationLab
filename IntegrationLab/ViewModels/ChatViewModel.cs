@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IntegrationLab.Model;
 using IntegrationLab.Views;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationLab.ViewModels;
 
