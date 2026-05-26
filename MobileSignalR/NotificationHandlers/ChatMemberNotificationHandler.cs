@@ -14,7 +14,7 @@ public class ChatMemberNotificationHandler(IConnection connection, IHubContext<M
     {
         await using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        await channel.QueueDeclareAsync(queue: "chatmembers-update-queue", durable: true, exclusive: false,
+        await channel.QueueDeclareAsync(queue: "chatMembers-updates-queue", durable: true, exclusive: false,
             autoDelete: false, cancellationToken: stoppingToken);
         
         await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, stoppingToken);
@@ -28,7 +28,7 @@ public class ChatMemberNotificationHandler(IConnection connection, IHubContext<M
             {
                 var model = JsonConvert.DeserializeObject<User>(message);
 
-                await hubContext.Clients.User(model.Id.ToString()).SendAsync("chatmembersChange", model);
+                await hubContext.Clients.User(model.Id.ToString()).SendAsync("ChatMembersChange", model);
                 
                 // Убираем из очереди
                 await channel.BasicAckAsync(ea.DeliveryTag, false, stoppingToken);
@@ -41,7 +41,7 @@ public class ChatMemberNotificationHandler(IConnection connection, IHubContext<M
             }
         };
 
-        await channel.BasicConsumeAsync(queue: "product-updates-queue", autoAck: false, consumer: consumer, cancellationToken: stoppingToken);
+        await channel.BasicConsumeAsync(queue: "chatMembers-updates-queue", autoAck: false, consumer: consumer, cancellationToken: stoppingToken);
         await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 }

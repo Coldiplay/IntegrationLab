@@ -14,7 +14,7 @@ public class MessageNotificationHandler(IConnection connection, IHubContext<Mobi
     {
         await using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        await channel.QueueDeclareAsync(queue: "message-update-queue", durable: true, exclusive: false,
+        await channel.QueueDeclareAsync(queue: "messages-updates-queue", durable: true, exclusive: false,
             autoDelete: false, cancellationToken: stoppingToken);
         
         await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, stoppingToken);
@@ -41,7 +41,7 @@ public class MessageNotificationHandler(IConnection connection, IHubContext<Mobi
             }
         };
 
-        await channel.BasicConsumeAsync(queue: "product-updates-queue", autoAck: false, consumer: consumer, cancellationToken: stoppingToken);
+        await channel.BasicConsumeAsync(queue: "messages-updates-queue", autoAck: false, consumer: consumer, cancellationToken: stoppingToken);
         await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 }
