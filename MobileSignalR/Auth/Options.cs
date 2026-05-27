@@ -27,9 +27,4 @@ internal static class Options
     internal static readonly string RSA;
     internal static readonly string Issuer;
     internal static readonly string Audience;
-    
-    internal static readonly string RabbitMQHostName = "gerbil-01.rmq.cloudamqp.com";
-    internal static readonly string RabbitMQUserName = "jqusbezj";
-    internal static readonly string RabbitMQPassword = "Qso5el71BSq39Kc3L8uAv5HikHHMNLHy";
-    internal static readonly string RabbitMQVirtualHost = "jqusbezj";
 }

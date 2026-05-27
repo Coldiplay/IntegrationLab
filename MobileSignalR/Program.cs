@@ -9,7 +9,6 @@ using MobileSignalR.MiddleWares;
 using MobileSignalR.NotificationHandlers.Events;
 using MobileSignalR.Tools;
 using RabbitMQ.Client;
-using MessageNotificationHandler = MobileSignalR.NotificationHandlers.MessageNotificationHandler;
 
 namespace MobileSignalR;
 
@@ -18,6 +17,8 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddMemoryCache(); //TODO: Потом поставить size limit
 
         builder.Services.AddControllers();
         builder.Services.AddSignalR();
@@ -84,7 +85,6 @@ public class Program
         builder.Services.AddSingleton<ConnectionsHandler>();
         builder.Services.AddSingleton<IConnection>(new ConnectionFactory() {
             HostName = RabbitMqConsumerOptions.HostName,
-            Port = RabbitMqConsumerOptions.Port,
             VirtualHost = RabbitMqConsumerOptions.VirtualHost,
             UserName = RabbitMqConsumerOptions.UserName,
             Password = RabbitMqConsumerOptions.Password,

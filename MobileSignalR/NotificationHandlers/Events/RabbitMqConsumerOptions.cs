@@ -2,11 +2,10 @@ namespace MobileSignalR.NotificationHandlers.Events;
 
 public static class RabbitMqConsumerOptions
 {
-    public static string HostName { get; set; } = "localhost";
-    public static int Port { get; set; } = 5672;
-    public static string VirtualHost { get; set; } = "/";
-    public static string UserName { get; set; } = "guest";
-    public static string Password { get; set; } = "guest";
+    public static string HostName { get; set; } = "gerbil-01.rmq.cloudamqp.com";
+    public static string VirtualHost { get; set; } = "jqusbezj";
+    public static string UserName { get; set; } = "jqusbezj";
+    public static string Password { get; set; } = "Qso5el71BSq39Kc3L8uAv5HikHHMNLHy";
 
     // Очередь, из которой читаем SignalR-нотификации
     public static string QueueName { get; set; } = "notifications.signalr";

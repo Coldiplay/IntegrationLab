@@ -8,7 +8,7 @@ using RabbitMQ.Client.Events;
 
 namespace MobileSignalR.NotificationHandlers;
 
-public class ChatMemberNotificationHandler(IConnection connection, IHubContext<MobileHub> hubContext, ILogger<MessageNotificationHandler> logger) : BackgroundService
+public class ChatMemberNotificationHandler(IConnection connection, IHubContext<MobileHub> hubContext, ILogger<ChatMemberNotificationHandler> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
