@@ -6,9 +6,10 @@ using Microsoft.OpenApi;
 using MobileSignalR.Auth;
 using MobileSignalR.Hub;
 using MobileSignalR.MiddleWares;
-using MobileSignalR.NotificationHandlers;
+using MobileSignalR.NotificationHandlers.Events;
 using MobileSignalR.Tools;
 using RabbitMQ.Client;
+using MessageNotificationHandler = MobileSignalR.NotificationHandlers.MessageNotificationHandler;
 
 namespace MobileSignalR;
 
@@ -82,10 +83,14 @@ public class Program
         builder.Services.AddSingleton<JwtTokenHandler>();
         builder.Services.AddSingleton<ConnectionsHandler>();
         builder.Services.AddSingleton<IConnection>(new ConnectionFactory() {
-            HostName = Options.RabbitMQHostName,
-            UserName = Options.RabbitMQUserName,
-            Password = Options.RabbitMQPassword,
-            VirtualHost = Options.RabbitMQVirtualHost,
+            HostName = RabbitMqConsumerOptions.HostName,
+            Port = RabbitMqConsumerOptions.Port,
+            VirtualHost = RabbitMqConsumerOptions.VirtualHost,
+            UserName = RabbitMqConsumerOptions.UserName,
+            Password = RabbitMqConsumerOptions.Password,
+            AutomaticRecoveryEnabled = true,         // авто-переподключение
+            NetworkRecoveryInterval = TimeSpan.FromSeconds(5),
+            TopologyRecoveryEnabled = RabbitMqConsumerOptions.DeclareTopology // если true — попытается восстановить биндинги
         }.CreateConnectionAsync().Result);
         
         builder.Services.AddHostedService(provider => provider.GetRequiredService<JwtTokenHandler>());

@@ -52,7 +52,7 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
 
         if (newIncident is null) return newIncident;
         
-        await AddUserToGroup(GetCurrentUserId()!.Value, "Incident " + newIncident.Id);
+        await AddUserToGroup(GetCurrentUserId(), "Incident " + newIncident.Id);
 
         return newIncident;
     }
@@ -61,7 +61,7 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
     {
         var newChat = await Post<Chat>("api/chat/", chat);
         if (newChat is null) return newChat;
-        await AddUserToGroup(GetCurrentUserId()!.Value, "Chat" + newChat.Id);
+        await AddUserToGroup(GetCurrentUserId(), "Chat" + newChat.Id);
         return newChat;
     }
     public async Task<User?> AddChatMember(ulong chatId, User user)
@@ -78,7 +78,7 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
     {
         var shift = await Post<DriversShift>($"api/shift/{shipping.Id}/start", new DriversShift()
         {
-            DriverId = GetCurrentUserId()!.Value,
+            DriverId = GetCurrentUserId(),
             Start = DateTime.UtcNow
         });
         
@@ -129,7 +129,7 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
         return token;
     }
     
-    private async void AddConnectionToChatGroups(Guid userId, string connectionId)
+    private async Task AddConnectionToChatGroups(Guid userId, string connectionId)
     {
         while (true)
         {
@@ -137,22 +137,30 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
             {
                 var chats = (await GetChats())?.ToList();
                 if (chats is null)
-                    throw new CustomException() {
+                    throw new CustomException()
+                    {
                         ErrorMessage = "Response from api was null",
                         ErrorCode = 500
                     };
-                
+
                 foreach (var chat in chats)
                 {
                     await Groups.AddToGroupAsync(connectionId, "Chat " + chat.Id);
                 }
+
                 logger.LogInformation("User {userId} was successfully added to all their chat groups", userId);
 
                 return;
             }
+            catch (ObjectDisposedException e)
+            {
+                logger.LogError(e, "While adding user to group the object {object} was disposed, so adding was stopped.", e.ObjectName);
+                return;
+            }
             catch (Exception e)
             {
-                logger.LogError("Adding user {userId} to chat groups failed. Error message: {message}", userId, e.Message);
+                logger.LogError("Adding user {userId} to chat groups failed. Error message: {message}", userId,
+                    e.Message);
                 await Task.Delay(15000);
             }
         }
@@ -167,28 +175,23 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
             await Groups.AddToGroupAsync(connection, groupName);
         }
     }
-    private Guid? GetCurrentUserId()
+    private Guid GetCurrentUserId()
     {
-        return Guid.TryParse(Context.User?.Claims.FirstOrDefault(c => c.Type == "ID")?.Value, out var id)
-            ? id
-            : null;
+        return Guid.Parse(Context.User?.Claims.FirstOrDefault(c => c.Type == "ID")?.Value!);
     }
     
     public override async Task OnConnectedAsync()
     {
         var userId = GetCurrentUserId();
-        if (userId.HasValue)
-        {
-            connections.AddConnection(userId.Value, Context.ConnectionId);
-            AddConnectionToChatGroups(userId.Value, Context.ConnectionId);
-        }
+        connections.AddConnection(userId, Context.ConnectionId);
+        await AddConnectionToChatGroups(userId, Context.ConnectionId);
         
         await base.OnConnectedAsync();
     }
     public override Task OnDisconnectedAsync(Exception? exception)
     {
         var userId = GetCurrentUserId();
-        if (userId.HasValue) connections.RemoveConnection(userId.Value, Context.ConnectionId);
+        connections.RemoveConnection(userId, Context.ConnectionId);
         
         return base.OnDisconnectedAsync(exception);
     }

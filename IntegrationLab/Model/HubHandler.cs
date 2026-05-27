@@ -11,7 +11,6 @@ using IntegrationLab.Tools;
 using Microsoft.AspNetCore.SignalR.Client;
 using MsBox.Avalonia;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace IntegrationLab.Model;
@@ -271,8 +270,10 @@ public class HubHandler
     //TODO: Подумать над входом нормальным и убрать default значения
     public async Task<UserAuth?> Authorize(string login = "admin", string password = "password")
     {
-        var userAuth = await _httpClient.GetFromJsonAsync<UserAuth>($"api/Auth/Authorize?login={login}&password={password}");
+        var response = await _httpClient.GetFromJsonAsync<Response>($"api/Auth/Authorize?login={login}&password={password}");
 
+        var userAuth = JsonConvert.DeserializeObject<UserAuth>(response!.Data!.ToString()!);
+        
         if (userAuth is null)
         {
             await MessageBoxManager.GetMessageBoxStandard("Ошибка авторизации",  $"При авторизации произошла ошибка и сервер вернул: {JsonSerializer.Serialize(userAuth)}")
