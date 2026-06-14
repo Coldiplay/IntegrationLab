@@ -1,8 +1,9 @@
 using System.Text.Json.Serialization;
+using BaseLibrary.Model.Classes;
 
-namespace MobileSignalR.NotificationHandlers.Events;
+namespace MobileSignalR.Notifications.Payloads;
 
-internal sealed class MessagePayload
+public sealed class MessagePayload : IEventPayload
 {
     [JsonPropertyName("id")] public string Id { get; set; } = null!;
     [JsonPropertyName("chat_id")] public string ChatId { get; set; } = null!;

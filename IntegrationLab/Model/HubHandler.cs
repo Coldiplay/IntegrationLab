@@ -35,6 +35,7 @@ public class HubHandler
         await Load();
     }
 
+    
     private async Task<bool> StartConnection()
     {
         if (_hub.State == HubConnectionState.Connected) return true;

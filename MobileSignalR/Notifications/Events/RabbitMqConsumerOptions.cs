@@ -1,7 +1,18 @@
-namespace MobileSignalR.NotificationHandlers.Events;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
+namespace MobileSignalR.Notifications.Events;
 
 public static class RabbitMqConsumerOptions
 {
+    public static JsonSerializerSettings JsonSettings { get; set; } = new()
+    {
+        ContractResolver = new DefaultContractResolver()
+        {
+            NamingStrategy = new SnakeCaseNamingStrategy()
+        }
+    };
+    
     public static string HostName { get; set; } = "gerbil-01.rmq.cloudamqp.com";
     public static string VirtualHost { get; set; } = "jqusbezj";
     public static string UserName { get; set; } = "jqusbezj";
@@ -18,4 +29,8 @@ public static class RabbitMqConsumerOptions
 
     // TTL для кэша идемпотентности (по eventId)
     public static int IdempotencyTtlSeconds { get; set; } = 600;
+
+    public static string[] ExchangeNames { get; set; } = ["notifications.messages"];
+
+    public static string[] Patterns { get; set; } = ["*.*"];
 }

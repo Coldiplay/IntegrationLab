@@ -11,7 +11,7 @@ public static class Extensions
             return dictionary.Contains(key) ? (T?)dictionary[key] : defaultValue;
         }
 
-        public bool TryGetValue<T>(string key, out T value)
+        public bool TryGetValue<T>(string key, out T? value)
             where T : notnull
         {
             try

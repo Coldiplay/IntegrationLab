@@ -5,7 +5,7 @@ namespace MobileSignalR.Tools;
 public class ConnectionsHandler
 {
     //UserId (1) - (m) connectionID
-    private ConcurrentDictionary<Guid, List<string>> _users = [];
+    private readonly ConcurrentDictionary<Guid, List<string>> _users = [];
 
     public void AddConnection(Guid userId, string connectionId)
     {
@@ -31,6 +31,6 @@ public class ConnectionsHandler
     public List<string>? GetConnections(Guid userId)
     {
         _users.TryGetValue(userId, out var list);
-        return list;
+        return list?.ToList();
     }
 }

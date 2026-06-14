@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -14,13 +16,20 @@ public class LaravelRequestHandler(
     HttpClient apiClient,
     JwtTokenHandler tokenHandler)
 {
-    private readonly JsonSerializerSettings _options = new()
-    {
+    private readonly JsonSerializerSettings _options = new() {
         ContractResolver = new DefaultContractResolver()
         {
             NamingStrategy = new SnakeCaseNamingStrategy()
         },
     };
+    
+    private readonly Type[] Types = AppDomain.CurrentDomain.GetAssemblies()
+        .First(a => a.GetName().Name == "BaseLibrary")
+        .GetTypes().Where(t => t.FullName!.Contains("BaseLibrary.Model")).ToArray();
+
+    private readonly ConcurrentDictionary<string, Type> KnownTypes = [];
+    private readonly Type _iEnumerableType =  typeof(IEnumerable);
+    private readonly Type _enumerableType =  typeof(Enumerable);
     
     public async Task<TResult?> Get<TResult>(string url, string? token = null)
     {
@@ -42,6 +51,104 @@ public class LaravelRequestHandler(
         var responseString = await response.Content.ReadAsStringAsync();
         return ParseResponse<TResult>(responseString);
     }
+    
+    private T? ParseResponse<T>(string json)
+    {
+        var laravelResponse = JsonConvert.DeserializeObject<LaravelJsonResponse>(json, _options)!;
+
+        if ((laravelResponse.Status != HttpStatusCode.OK 
+             && laravelResponse.Status != HttpStatusCode.Created) 
+            || laravelResponse.Data is null) 
+            return default;
+        
+        try
+        {
+            var strData = laravelResponse.Data.ToString()!;
+
+            if (laravelResponse.ContainerType!.Equals("object"))
+            {
+                var model = JsonConvert.DeserializeObject<T>(strData, _options);
+                return model;
+            }
+                
+            try
+            {
+                var rootObjType = FindType(laravelResponse.ClassType!);
+                var returnList = new ArrayList();
+                var elements = JArray.Parse(strData);
+                
+                foreach (var element in elements)
+                {
+                    var returnElement = JsonConvert.DeserializeObject(element.ToString(), rootObjType, _options);
+                            
+                    FillRelationships(returnElement!, element, rootObjType!);
+                            
+                    returnList.Add(returnElement);
+                }
+                
+                
+                var returnType = typeof(T);
+
+                if (!_iEnumerableType.IsAssignableFrom(returnType))
+                    return returnList.Count > 0
+                        ? (T)returnList[0]!
+                        : default;
+                        
+                var u = returnType.GetGenericArguments()[0];
+                var cast = _enumerableType
+                    .GetMethod(nameof(Enumerable.Cast))!
+                    .MakeGenericMethod(u);
+                var result = (IEnumerable)cast.Invoke(null, [returnList]);
+                //var test = result.Cast<object>().ToList();
+                //var test2 = returnList.Cast<object>().ToList();
+                //return (T)returnList.Cast<object>(); //Желательно так сделать, но cast озвращает чутьчуть не IEnumerable...
+                return (T?)result;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
+                return default;
+            }
+        }
+        catch (Exception e)
+        {
+            var typeName = laravelResponse.ClassType?.Remove(0, laravelResponse.ClassType.LastIndexOf('\\') + 1).Replace("Resource", "").Replace("Collection", "");
+            var type = FindType(typeName!);
+            if (type == typeof(T))
+            {
+                var element = JToken.Parse(laravelResponse.Data.ToString()!);
+                var model = element.ToObject<T>()!;
+                FillRelationships(model, element, type);
+                //FillWithRelations((model, type), JsonElement.Parse(test.Relationships?.ToString()!));
+                return model;
+            }
+
+            logger.LogError(e, "{error}", e.Message);
+        }
+
+        return default;
+    }
+
+    private void FillRelationships(object model, JToken modelJObj, Type modelType)
+    {
+        var elemObj = modelJObj.ToObject<JObject>();
+        
+        if (!elemObj!.ContainsKey("relationships")) return;
+        
+        var relations = elemObj["relationships"]!.ToObject<JObject>()!;
+        foreach (var relationProp in relations.Properties())
+        {
+            var prop = modelType?.GetProperties()
+                .FirstOrDefault(p =>
+                    p.Name.Equals(relationProp.Name.ToPascalCase(),
+                        StringComparison.OrdinalIgnoreCase));
+
+            if (prop is null) continue;
+
+            var propValue = JsonConvert.DeserializeObject(relationProp.Value.ToString(), prop.PropertyType, _options);
+            prop.SetValue(model, propValue);
+        }
+    }
 
     private void SwitchTokenToCurrentUser(string? token)
     {
@@ -49,101 +156,6 @@ public class LaravelRequestHandler(
         var laraToken = tokenHandler.GetAuthToken(token);
         apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", laraToken);
     }
-    
-
-    private T? ParseResponse<T>(string json)
-    {
-        var laravelResponse = JsonConvert.DeserializeObject<LaravelJsonResponse>(json, _options);
-        
-        if (((int)laravelResponse!.Status == 200 || (int)laravelResponse.Status == 201) && laravelResponse?.Data is not null)
-            try
-            {
-                var strData = (laravelResponse.Data.ToString())!;
-                if (laravelResponse.ContainerType!.Equals("array"))
-                {
-                    try
-                    {
-                        var rootObjType = FindType(laravelResponse.ClassType!);
-                        var returnList = new ArrayList();
-                        var elements = JArray.Parse(strData);
-                        foreach (var element in elements)
-                        {
-                            var returnElement = JsonConvert.DeserializeObject(element.ToString(), rootObjType, _options);
-                            var elemObj = element.ToObject<JObject>();
-                            if (elemObj!.ContainsKey("relationships"))
-                            {
-                                var relations = elemObj["relationships"]!.ToObject<JObject>()!;
-                                foreach (var relationProp in relations.Properties())
-                                {
-                                    var prop = rootObjType?.GetProperties()
-                                        .FirstOrDefault(p =>
-                                            p.Name.Equals(relationProp.Name.ToPascalCase(),
-                                                StringComparison.OrdinalIgnoreCase));
-
-                                    if (prop is null) continue;
-
-                                    var propValue =
-                                        JsonConvert.DeserializeObject(relationProp.Value.ToString(), prop.PropertyType, _options);
-                                    //var propValue = relationProp.Value.ToObject(prop.PropertyType);
-                                    prop.SetValue(returnElement, propValue);
-                                }
-                            }
-                            returnList.Add(returnElement);
-                        }
-                        
-                        var tType = typeof(T);
-
-                        if (!_iEnumerableType.IsAssignableFrom(tType))
-                            return returnList.Count > 0
-                                ? (T)returnList[0]!
-                                : default;
-                        
-                        var u = tType.GetGenericArguments()[0];
-                        var cast = _enumerableType
-                            .GetMethod(nameof(Enumerable.Cast))!
-                            .MakeGenericMethod(u);
-                        var result = (IEnumerable)cast.Invoke(null, [returnList]);
-                        //var test = result.Cast<object>().ToList();
-                        //var test2 = returnList.Cast<object>().ToList();
-                        //return (T)returnList.Cast<object>(); //Желательно так сделать, но cast озвращает чутьчуть не IEnumerable...
-                        return (T?)result;
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError(e, e.Message);
-                        return default;
-                    }
-                }
-                
-                var model = JsonConvert.DeserializeObject<T>(strData!, _options);
-                return model;
-            }
-            catch (Exception e)
-            {
-                var typeName = laravelResponse.ClassType?.Remove(0, laravelResponse.ClassType.LastIndexOf('\\') + 1).Replace("Resource", "");
-                var type = FindType(typeName!);
-                if (type is null) throw new Exception();
-                if (type == typeof(T))
-                {
-                    var element = JsonElement.Parse(laravelResponse.Data.ToString()!);
-                    var model = element.Deserialize<T>();
-                    //FillWithRelations((model, type), JsonElement.Parse(test.Relationships?.ToString()!));
-                    return model;
-                }
-            }
-
-        ;
-        return default;
-    }
-
-    private readonly Type[] Types = AppDomain.CurrentDomain.GetAssemblies()
-        .First(a => a.GetName().Name == "BaseLibrary")
-        .GetTypes().Where(t => t.FullName!.Contains("BaseLibrary.Model")).ToArray();
-
-    private readonly Dictionary<string, Type> KnownTypes = [];
-    private readonly Type _iEnumerableType =  typeof(IEnumerable);
-    private readonly Type _enumerableType =  typeof(Enumerable);
-
     private Type? FindType(string typeName)
     {
         if (KnownTypes.TryGetValue(typeName, out var foundType)) return foundType;
@@ -158,7 +170,8 @@ public class LaravelRequestHandler(
             break;
         }
 
-        if (returnType is not null) KnownTypes.Add(typeName, returnType);
+        if (returnType is not null) 
+            _ = KnownTypes.GetOrAdd(typeName, returnType);
 
         return returnType;
     }

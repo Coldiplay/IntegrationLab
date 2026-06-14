@@ -6,7 +6,8 @@ using Microsoft.OpenApi;
 using MobileSignalR.Auth;
 using MobileSignalR.Hub;
 using MobileSignalR.MiddleWares;
-using MobileSignalR.NotificationHandlers.Events;
+using MobileSignalR.Notifications.Events;
+using MobileSignalR.Notifications.Handlers;
 using MobileSignalR.Tools;
 using RabbitMQ.Client;
 
@@ -97,6 +98,9 @@ public class Program
 
         RegisterNotificationHandlers(builder.Services);
         
+        builder.Services.AddSingleton<EventDispatcher>();
+        builder.Services.AddHostedService<RabbitMqEventConsumer>();
+        
         var app = builder.Build();
         app.UseHttpsRedirection();
 
@@ -120,6 +124,6 @@ public class Program
 
     private static void RegisterNotificationHandlers(IServiceCollection services)
     {
-        services.AddHostedService<MessageNotificationHandler>();
+        services.AddTransient<IEventHandler, MessageEventHandler>();
     }
 }

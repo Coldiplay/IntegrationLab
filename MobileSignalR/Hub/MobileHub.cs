@@ -39,9 +39,10 @@ public class MobileHub(LaravelRequestHandler laraClient, ConnectionsHandler conn
     {
         var sentMessage = await Post<Message>($"api/chat/{message.ChatId}/messages", message);
 
-        if (sentMessage is null) return sentMessage;
+        //if (sentMessage is null) return sentMessage;
         
-        await Clients.OthersInGroup("Chat " + message.ChatId).SendAsync("ReceiveMessage", sentMessage);
+        //Obsolete ?
+        //await Clients.OthersInGroup("Chat " + message.ChatId).SendAsync("ReceiveMessage", sentMessage);
 
         return sentMessage;
     }

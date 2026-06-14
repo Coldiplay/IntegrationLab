@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace MobileSignalR.NotificationHandlers.Events;
+namespace MobileSignalR.Notifications.Events;
 
-internal sealed class Envelope
+public sealed class EventEnvelope
 {
     [JsonPropertyName("type")] public string Type { get; set; } = null!;
     [JsonPropertyName("version")] public string Version { get; set; } = "v1";
@@ -10,4 +10,4 @@ internal sealed class Envelope
     [JsonPropertyName("occurredAt")] public DateTimeOffset OccurredAt { get; set; }
     [JsonPropertyName("correlationId")] public string? CorrelationId { get; set; }
     [JsonPropertyName("producer")] public string? Producer { get; set; }
-}
+}   
