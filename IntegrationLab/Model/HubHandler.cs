@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -31,7 +32,7 @@ public class HubHandler
     {
         var userAuth = Authorize();
         await StartConnection();
-        await Initialize(_hub);
+        Initialize(_hub);
         await Load();
     }
 
@@ -58,7 +59,7 @@ public class HubHandler
         return _hub.State == HubConnectionState.Connected;
     }
 
-    private HubConnection CreateConnection(string bearerToken, string connectionString = GlobalOptions.HUB_URI + "/hub")
+    private static HubConnection CreateConnection(string bearerToken, string connectionString = GlobalOptions.HUB_URI + "/hub")
     {
         var connection = new HubConnectionBuilder().WithAutomaticReconnect().WithUrl(connectionString, options =>
         {
@@ -72,12 +73,16 @@ public class HubHandler
     }
     
 
-    private async Task<HubConnection> Initialize(HubConnection connection)
+    private HubConnection Initialize(HubConnection connection)
     {
-        connection.On("ReceiveMessage", async (Message newMessage) =>
-        {
+        connection.On("ReceiveMessage", async (Message newMessage) => {
             if (_hubData.Chats.TryGetValue(newMessage.Chat, out var tuple))
                 tuple.messages.Add(newMessage);
+            else if (newMessage.ChatId != 0)
+            {
+                var messages = _hubData.Chats.FirstOrDefault(c => c.Key.Id == newMessage.ChatId).Value.messages;
+                messages?.Add(newMessage);
+            }
             else
                 _hubData.Chats.TryAdd(newMessage.Chat,
                     (
@@ -85,9 +90,12 @@ public class HubHandler
                         [.. await GetChatMessages(newMessage.ChatId)]
                     ));
         });
+        connection.On("RemoveMessage", (ulong messageId) => {
+            var messages = _hubData.Chats.FirstOrDefault(c => c.Key.Id == messageId).Value.messages;
+            messages?.Remove(messages.FirstOrDefault(m => m.Id == messageId)!);
+        });
 
-        connection.On("ReceiveShipping", async (Shipping newShipping) =>
-        {
+        connection.On("ReceiveShipping", async (Shipping newShipping) => {
             await Task.Run(() =>
             {
                 var oldShipping = _hubData.Shippings.FirstOrDefault(s => s.Id == newShipping.Id);
@@ -97,9 +105,11 @@ public class HubHandler
                     _hubData.Shippings.Add(newShipping);
             });
         });
+        connection.On("RemoveShipping", (ulong shippingId) => {
+            _hubData.Shippings.Remove(_hubData.Shippings.FirstOrDefault(s => s.Id == shippingId)!);
+        });
 
-        connection.On("ReceiveIncident", async (Incident newIncident) =>
-        {
+        connection.On("ReceiveIncident", async (Incident newIncident) => {
             await Task.Run(() =>
             {
                 var oldIncident = _hubData.Incidents.FirstOrDefault(s => s.Id == newIncident.Id);
@@ -109,6 +119,18 @@ public class HubHandler
                     //Это вообще как должно случится?
                     throw new Exception("Как так-то");
             });
+        });
+        
+        connection.On("ReceiveChatMember", (ulong chatId, User chatMember) => {
+            _hubData.Chats.GetChatData(chatId)?.members.Add(chatMember);
+        });
+        connection.On("RemoveChatMember", (ulong chatId, Guid chatMemberId) => {
+            var members = _hubData.Chats.GetChatData(chatId)?.members;
+            members?.Remove(members.FirstOrDefault(m => m.Id == chatMemberId)!);
+        });
+        
+        connection.On("RemoveChat", (ulong chatId) => {
+            _hubData.Chats.RemoveChat(chatId);
         });
         
         return connection;

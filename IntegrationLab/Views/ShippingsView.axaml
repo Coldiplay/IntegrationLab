@@ -7,98 +7,121 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="IntegrationLab.Views.ShippingsView"
              x:DataType="vm:ShippingsViewModel">
+    
     <UserControl.DataTemplates>
         <DataTemplate DataType="model:Shipping">
-            <Border MinWidth="300" HorizontalAlignment="Stretch" DoubleTapped="OnDoubleTapped" CornerRadius="20">
-                <Grid Background="Transparent"
-                      HorizontalAlignment="Stretch"
-                      ColumnDefinitions="* *"
-                      RowDefinitions="Auto Auto">
-                    <Grid.Styles>
-                        <Style Selector="Label">
-                            <Setter Property="FontSize" Value="11" />
-                        </Style>
-                        <Style Selector="Label.Status">
-                            <Setter Property="FontSize" Value="8" />
-                        </Style>
-                    </Grid.Styles>
-                    <!-- <Label -->
-                    <!-- Content="{Binding Id, StringFormat={}Рейс №{0}}" -->
-                    <!-- HorizontalAlignment="Left"/> -->
-                    <Label>Рейс №111</Label>
+            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" Margin="0,6,0,6" DoubleTapped="OnDoubleTapped">
+                <Grid.Styles>
+                    <Style Selector="Label">
+                        <Setter Property="FontSize" Value="12" />
+                        <Setter Property="Foreground" Value="#404040" />
+                    </Style>
+                </Grid.Styles>
 
-                    <Label Grid.Row="1" Grid.Column="0"
-                           Content="{Binding ShippedDate, StringFormat={}Отпр. dd.MM.yyyy}"
-                           HorizontalAlignment="Left" />
+                <!-- Верхняя левая: Название рейса -->
+                <Label Grid.Row="0" Grid.Column="0" 
+                       Content="{Binding Id, StringFormat={}Рейс №{0}}" 
+                       FontWeight="Bold" />
 
-                    <Border Grid.Row="0" Grid.Column="1"
-                            BorderBrush="DarkGray" BorderThickness="0.5"
-                            HorizontalAlignment="Right">
-                        <Label Classes="Status" Content="{Binding ConfirmedStatus}" />
-                    </Border>
+                <!-- Верхняя правая: Статус -->
+                <Border Name="StatusBadge" 
+                        Grid.Row="0" Grid.Column="1" 
+                        CornerRadius="10" 
+                        Padding="8,2" 
+                        HorizontalAlignment="Right">
+                    <Label Content="{Binding ConfirmedStatus}" 
+                           FontSize="10" 
+                           FontWeight="Bold" 
+                           Foreground="White" />
+                </Border>
 
-                    <!-- <Label Grid.Row="1" Grid.Column="1" Content="{Binding Cargos.Count, StringFormat={}Груз: {0} шт.}"/> -->
-                    <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                        <StackPanel.Styles>
-                            <Style Selector="Label">
-                                <Setter Property="FontSize" Value="11" />
-                            </Style>
-                        </StackPanel.Styles>
-                        <Label Content="{Binding CargoCount, StringFormat={}Груз: {0} шт.}" />
-                        <Label Content="{Binding CargoWeight, StringFormat={}{0:F1} т}" />
-                    </StackPanel>
-                </Grid>
-            </Border>
+                <!-- Средняя левая: Дата отправления -->
+                <Label Grid.Row="1" Grid.Column="0" 
+                       Content="{Binding ShippedDate, StringFormat={}Отпр. dd.MM.yyyy}" 
+                       Foreground="#707070" />
+
+                <!-- Нижняя правая: Груз (Количество и Вес) -->
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="{Binding CargoCount, StringFormat={}Груз: {0} шт. }" Foreground="#808080" />
+                    <Label Content="{Binding CargoWeight, StringFormat={}{0:F1} т}" Foreground="#808080" />
+                </StackPanel>
+            </Grid>
         </DataTemplate>
     </UserControl.DataTemplates>
+
     <UserControl.Styles>
+        <!-- Стиль для ListBox: убираем дефолтные рамки и делаем фон прозрачным -->
         <Style Selector="ListBox">
-            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
             <Setter Property="SelectedItem" Value="{Binding SelectedShipping}" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-        <Style Selector="Grid.BlockSP">
-            <Setter Property="MaxHeight" Value="300" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0 10 0 35" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
         </Style>
 
+        <!-- Стиль для элемента списка: убираем дефолтные границы -->
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <!-- Стиль для контейнера-блока. Именно он отвечает за серый фон -->
         <Style Selector="Border.BlockBorder">
-            <Setter Property="CornerRadius" Value="25" />
-            <!-- <Setter Property="Background" Value="Gray"/> -->
-            <!-- <Setter Property="MinWidth" Value="300"/> -->
+            <Setter Property="Background" Value="#F2F3F5" />
+            <Setter Property="CornerRadius" Value="15" />
+            <Setter Property="Padding" Value="15,10" />
+            <Setter Property="Margin" Value="0,0,0,20" />
+        </Style>
+
+        <Style Selector="Grid.BlockSP">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="0,0,0,15" />
         </Style>
     </UserControl.Styles>
+
     <Design.DataContext>
         <vm:ShippingsViewModel />
     </Design.DataContext>
 
-    <Grid>
-        <Grid HorizontalAlignment="Center" Margin="20 10 20 5" RowDefinitions="Auto Auto">
-            <Grid RowDefinitions="Auto *" Classes="BlockSP">
-                <Label>ТЕКУЩИЙ И ПРЕДСТОЯЩИЕ</Label>
-                <Border Classes="BlockBorder" Grid.Row="1">
-                    <ScrollViewer MinWidth="300">
-                        <ListBox ItemsSource="{Binding CurrentShippings}">
-                            <ListBox.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Подтвердить"
-                                              Command="{Binding ConfirmShippingCommand}"
-                                              CommandParameter="{Binding SelectedShipping}" />
-                                </ContextMenu>
-                            </ListBox.ContextMenu>
-                        </ListBox>
-                    </ScrollViewer>
-                </Border>
-            </Grid>
+    <Grid Margin="20,10,20,5" RowDefinitions="Auto, Auto">
+        
+        <!-- Секция "ТЕКУЩИЙ И ПРЕДСТОЯЩИЕ" -->
+        <Grid Grid.Row="0" RowDefinitions="Auto, *" Classes="BlockSP">
+            <Label Content="ТЕКУЩИЙ И ПРЕДСТОЯЩИЕ" 
+                   FontWeight="Bold" 
+                   FontSize="13" 
+                   Foreground="#606060" 
+                   Margin="0,0,0,8" />
+            
+            <Border Grid.Row="1" Classes="BlockBorder">
+                <ScrollViewer>
+                    <ListBox ItemsSource="{Binding CurrentShippings}">
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Подтвердить"
+                                          Command="{Binding ConfirmShippingCommand}"
+                                          CommandParameter="{Binding SelectedShipping}" />
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
+                    </ListBox>
+                </ScrollViewer>
+            </Border>
+        </Grid>
 
-            <Grid Classes="BlockSP" RowDefinitions="Auto *" Grid.Row="1">
-                <Label>ЗАВЕРШЁННЫЕ</Label>
-                <ScrollViewer Grid.Row="1" HorizontalAlignment="Center">
+        <!-- Секция "ЗАВЕРШЁННЫЕ" -->
+        <Grid Grid.Row="1" RowDefinitions="Auto, *" Classes="BlockSP">
+            <Label Content="ЗАВЕРШЁННЫЕ" 
+                   FontWeight="Bold" 
+                   FontSize="13" 
+                   Foreground="#606060" 
+                   Margin="0,0,0,8" />
+            
+            <Border Grid.Row="1" Classes="BlockBorder">
+                <ScrollViewer>
                     <ListBox ItemsSource="{Binding PastShippings}" />
                 </ScrollViewer>
-            </Grid>
-
+            </Border>
         </Grid>
+
     </Grid>
 </UserControl>
