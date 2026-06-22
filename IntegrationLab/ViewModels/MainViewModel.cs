@@ -10,7 +10,7 @@ public partial class MainViewModel : ViewModelControlBase<MainView>
 {
     public MainViewModel()
     {
-        var test = App.Services.GetRequiredService<HubHandler>();
+        var test = App.Services.GetRequiredService<IHubHandler>();
         test.Start();
         //Thread.Sleep(5000);
     }

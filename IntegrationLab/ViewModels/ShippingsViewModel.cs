@@ -40,7 +40,7 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     public ShippingsViewModel()
     {
         _hubData = App.Services.GetRequiredService<HubData>();
-        _hub =  App.Services.GetRequiredService<HubHandler>();
+        _hub =  App.Services.GetRequiredService<IHubHandler>();
         LoadShippings();
     }
     
@@ -56,7 +56,7 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
         }
     }
     
-    private HubHandler _hub;
+    private IHubHandler _hub;
 
     private bool CanConfirmShipping()
     {

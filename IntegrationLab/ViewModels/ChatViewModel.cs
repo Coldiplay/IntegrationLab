@@ -11,7 +11,7 @@ namespace IntegrationLab.ViewModels;
 
 public partial class ChatViewModel : ViewModelControlBase<ChatView>
 {
-    public ChatViewModel(ChatView view, HubHandler hub, HubData hubData) : base(view)
+    public ChatViewModel(ChatView view, IHubHandler hub, HubData hubData) : base(view)
     {
         _hubData = hubData;
         _hubHandler = hub;
@@ -33,7 +33,7 @@ public partial class ChatViewModel : ViewModelControlBase<ChatView>
     }
 
     private readonly HubData _hubData;
-    private readonly HubHandler _hubHandler;
+    private readonly IHubHandler _hubHandler;
 
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(SendMessageCommand))] 
     public partial string MessageText { get; set; } = string.Empty;

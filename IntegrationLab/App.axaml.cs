@@ -106,7 +106,7 @@ public partial class App : Application
         }
 
         services.AddSingleton<HubData>();
-        services.AddSingleton<HubHandler>();
+        services.AddSingleton<IHubHandler, HubHandler>();
         services.AddSingleton<HttpClient>(_ =>
         {
             var client = new HttpClient()

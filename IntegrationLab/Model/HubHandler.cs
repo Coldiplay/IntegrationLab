@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -16,17 +15,9 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace IntegrationLab.Model;
 
-public class HubHandler
+public class HubHandler(HubData hubData, HttpClient httpClient) : IHubHandler
 {
     private HubConnection _hub;
-    private readonly HubData _hubData;
-    private readonly HttpClient _httpClient;
-
-    public HubHandler(HubData hubData, HttpClient httpClient)
-    {
-        _hubData = hubData;
-        _httpClient = httpClient;
-    }
 
     public async Task Start()
     {
@@ -76,43 +67,43 @@ public class HubHandler
     private HubConnection Initialize(HubConnection connection)
     {
         connection.On("ReceiveMessage", async (Message newMessage) => {
-            if (_hubData.Chats.TryGetValue(newMessage.Chat, out var tuple))
+            if (hubData.Chats.TryGetValue(newMessage.Chat, out var tuple))
                 tuple.messages.Add(newMessage);
             else if (newMessage.ChatId != 0)
             {
-                var messages = _hubData.Chats.FirstOrDefault(c => c.Key.Id == newMessage.ChatId).Value.messages;
+                var messages = hubData.Chats.FirstOrDefault(c => c.Key.Id == newMessage.ChatId).Value.messages;
                 messages?.Add(newMessage);
             }
             else
-                _hubData.Chats.TryAdd(newMessage.Chat,
+                hubData.Chats.TryAdd(newMessage.Chat,
                     (
                         [.. await GetChatMembers(newMessage.ChatId)],
                         [.. await GetChatMessages(newMessage.ChatId)]
                     ));
         });
         connection.On("RemoveMessage", (ulong messageId) => {
-            var messages = _hubData.Chats.FirstOrDefault(c => c.Key.Id == messageId).Value.messages;
+            var messages = hubData.Chats.FirstOrDefault(c => c.Key.Id == messageId).Value.messages;
             messages?.Remove(messages.FirstOrDefault(m => m.Id == messageId)!);
         });
 
         connection.On("ReceiveShipping", async (Shipping newShipping) => {
             await Task.Run(() =>
             {
-                var oldShipping = _hubData.Shippings.FirstOrDefault(s => s.Id == newShipping.Id);
+                var oldShipping = hubData.Shippings.FirstOrDefault(s => s.Id == newShipping.Id);
                 if (oldShipping is not null)
-                    _hubData.Shippings.InsertInsteadOf(oldShipping, newShipping);
+                    hubData.Shippings.InsertInsteadOf(oldShipping, newShipping);
                 else
-                    _hubData.Shippings.Add(newShipping);
+                    hubData.Shippings.Add(newShipping);
             });
         });
         connection.On("RemoveShipping", (ulong shippingId) => {
-            _hubData.Shippings.Remove(_hubData.Shippings.FirstOrDefault(s => s.Id == shippingId)!);
+            hubData.Shippings.Remove(hubData.Shippings.FirstOrDefault(s => s.Id == shippingId)!);
         });
 
         connection.On("ReceiveIncident", async (Incident newIncident) => {
             await Task.Run(() =>
             {
-                var oldIncident = _hubData.Incidents.FirstOrDefault(s => s.Id == newIncident.Id);
+                var oldIncident = hubData.Incidents.FirstOrDefault(s => s.Id == newIncident.Id);
                 if (oldIncident is not null)
                     Helper.ChangeAllProperties(oldIncident, newIncident);
                 else
@@ -122,15 +113,15 @@ public class HubHandler
         });
         
         connection.On("ReceiveChatMember", (ulong chatId, User chatMember) => {
-            _hubData.Chats.GetChatData(chatId)?.members.Add(chatMember);
+            hubData.Chats.GetChatData(chatId)?.members.Add(chatMember);
         });
         connection.On("RemoveChatMember", (ulong chatId, Guid chatMemberId) => {
-            var members = _hubData.Chats.GetChatData(chatId)?.members;
+            var members = hubData.Chats.GetChatData(chatId)?.members;
             members?.Remove(members.FirstOrDefault(m => m.Id == chatMemberId)!);
         });
         
         connection.On("RemoveChat", (ulong chatId) => {
-            _hubData.Chats.RemoveChat(chatId);
+            hubData.Chats.RemoveChat(chatId);
         });
         
         return connection;
@@ -140,11 +131,11 @@ public class HubHandler
     {
         await AwaitForConnection();
         var shippings = await GetShippings();
-        _hubData.Shippings = [..shippings];
-        _hubData.Incidents = [.. await GetIncidents()];
+        hubData.Shippings = [..shippings];
+        hubData.Incidents = [.. await GetIncidents()];
         foreach (var chat in await GetChats())
-            _hubData.Chats.TryAdd(chat, ([.. await GetChatMembers(chat.Id)], [.. await GetChatMessages(chat.Id)]));
-        _hubData.Shifts = [.. await GetDriversShifts()];
+            hubData.Chats.TryAdd(chat, ([.. await GetChatMembers(chat.Id)], [.. await GetChatMessages(chat.Id)]));
+        hubData.Shifts = [.. await GetDriversShifts()];
     }
 
     public async Task<IEnumerable<User>?> GetChatMembers(ulong chatId)
@@ -154,7 +145,7 @@ public class HubHandler
         
         if (enumerable is not null)
         {
-            var chat = _hubData.Chats.FirstOrDefault(c => c.Key.Id == chatId).Value;
+            var chat = hubData.Chats.FirstOrDefault(c => c.Key.Id == chatId).Value;
             chat.members = [.. enumerable];
         }
 
@@ -167,7 +158,7 @@ public class HubHandler
         var messages = (await GetSomething<IEnumerable<Message>>("GetChatMessages", chatId))?.ToArray();
         if (messages is not null)
         {
-             var chatInfo = _hubData.Chats.FirstOrDefault(c => c.Key.Id == chatId).Value;
+             var chatInfo = hubData.Chats.FirstOrDefault(c => c.Key.Id == chatId).Value;
              chatInfo.messages = [.. messages];
         }
 
@@ -178,7 +169,7 @@ public class HubHandler
         var incidents = (await GetSomething<IEnumerable<Incident>>("GetIncidents"))?.ToArray();
         if (incidents is not null)
         {
-            _hubData.Incidents = [.. incidents];
+            hubData.Incidents = [.. incidents];
         }
 
         return incidents;
@@ -188,7 +179,7 @@ public class HubHandler
         var shippings = (await GetSomething<IEnumerable<Shipping>>("GetShippings"))?.ToArray();
         if (shippings is not null)
         {
-            _hubData.Shippings = [.. shippings];
+            hubData.Shippings = [.. shippings];
         }
         
         return shippings;
@@ -198,7 +189,7 @@ public class HubHandler
         var shifts = (await GetSomething<IEnumerable<DriversShift>>("GetDriversShifts"))?.ToArray();
         if (shifts is null) return shifts;
         
-        _hubData.Shifts =  [..shifts];
+        hubData.Shifts =  [..shifts];
         return shifts;
     }
 
@@ -208,7 +199,7 @@ public class HubHandler
         incident = await GetSomething<Incident>("CreateIncident", incident);
         if (incident is not null)
         {
-            _hubData.Incidents.Add(incident);
+            hubData.Incidents.Add(incident);
         }
 
         return incident;
@@ -216,7 +207,7 @@ public class HubHandler
     public async Task<User?> AddChatMember(Chat? chat, User? user)
     {
         user = await GetSomething<User>("AddChatMember", chat, user);
-        if (user is not null && _hubData.Chats.TryGetValue(chat!, out var chatInfo))
+        if (user is not null && hubData.Chats.TryGetValue(chat!, out var chatInfo))
         {
             chatInfo.members.Add(user);
         }
@@ -228,7 +219,7 @@ public class HubHandler
         chat = await GetSomething<Chat>("CreateChat", chat);
         if (chat is not null)
         {
-            _hubData.Chats.TryAdd(chat, ([App.CurrentDriver.User], []));
+            hubData.Chats.TryAdd(chat, ([App.CurrentDriver.User], []));
         }
 
         return chat;
@@ -239,7 +230,7 @@ public class HubHandler
         
         if (message is null) return message;
         
-        var chatInfo = _hubData.Chats.FirstOrDefault(c => c.Key.Id == message.ChatId).Value;
+        var chatInfo = hubData.Chats.FirstOrDefault(c => c.Key.Id == message.ChatId).Value;
         var oldMessage = chatInfo.messages.FirstOrDefault(m => m.Id == message.Id);
         
         if (oldMessage is null)
@@ -256,7 +247,7 @@ public class HubHandler
         var shift = await GetSomething<DriversShift>("StartShift");
         if (shift is not null)
         {
-            _hubData.Shifts.Add(shift);
+            hubData.Shifts.Add(shift);
         }
         return shift;
     }
@@ -265,7 +256,7 @@ public class HubHandler
         var newShift = await GetSomething<DriversShift>("EndShift", shift);
         if (newShift is not null)
         {
-            _hubData.Shifts.InsertInsteadOf(shift!, newShift);
+            hubData.Shifts.InsertInsteadOf(shift!, newShift);
         }
         return newShift;
     }
@@ -293,7 +284,7 @@ public class HubHandler
     //TODO: Подумать над входом нормальным и убрать default значения
     public async Task<UserAuth?> Authorize(string login = "admin", string password = "password")
     {
-        var response = await _httpClient.GetFromJsonAsync<Response>($"api/Auth/Authorize?login={login}&password={password}");
+        var response = await httpClient.GetFromJsonAsync<Response>($"api/Auth/Authorize?login={login}&password={password}");
 
         var userAuth = JsonConvert.DeserializeObject<UserAuth>(response!.Data!.ToString()!);
         

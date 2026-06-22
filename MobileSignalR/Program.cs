@@ -124,6 +124,9 @@ public class Program
 
     private static void RegisterNotificationHandlers(IServiceCollection services)
     {
-        services.AddTransient<IEventHandler, MessageEventHandler>();
+        services.AddSingleton<IEventHandler, MessageEventHandler>();
+        services.AddSingleton<IEventHandler, ChatEventHandler>();
+        services.AddSingleton<IEventHandler, IncidentEventHandler>();
+        services.AddSingleton<IEventHandler, ShippingEventHandler>();
     }
 }

@@ -25,7 +25,7 @@ public partial class CreateIncidentViewModel : ViewModelControlBase<CreateIncide
     private async Task CreateIncident()
     {
         CreateBlock = true;
-        var hub = App.Services.GetRequiredService<HubHandler>();
+        var hub = App.Services.GetRequiredService<IHubHandler>();
         var incident = await hub.CreateIncident(new Incident()
         {
             Description = Description!,
