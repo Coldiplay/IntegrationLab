@@ -76,6 +76,12 @@
                 <Border Background="{StaticResource CardBackground}"
                         CornerRadius="24"
                         Padding="16">
+                    <Border.Styles>
+                        <Style Selector="ListBox">
+                            <Setter Property="ItemTemplate">
+                            </Setter>
+                        </Style>
+                    </Border.Styles>
                     <ListBox ItemsSource="{Binding Chats}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>

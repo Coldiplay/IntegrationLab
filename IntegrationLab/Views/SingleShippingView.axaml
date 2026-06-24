@@ -56,6 +56,26 @@
             <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
             <Setter Property="Foreground" Value="White" />
         </Style>
+        
+        <Style Selector="Border[Tag=InProcessing]">
+            <Setter Property="Background" Value="Yellow"/>
+        </Style>
+        
+        <Style Selector="Border[Tag=ReadyToShip]">
+            <Setter Property="Background" Value="YellowGreen"/>
+        </Style>
+        
+        <Style Selector="Border[Tag=Shipping]">
+            <Setter Property="Background" Value="LightBlue"/>
+        </Style>
+        
+        <Style Selector="Border[Tag=Delivered]">
+            <Setter Property="Background" Value="Green"/>
+        </Style>
+        <Style Selector="Border[Tag=Incident]">
+            <Setter Property="Background" Value="IndianRed"/>
+        </Style>
+        
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto * Auto" Background="{StaticResource PageBackground}">
@@ -113,9 +133,9 @@
 
                             <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Статус рейса" />
                             <Border Grid.Row="4" Grid.Column="1"
-                                    Background="{StaticResource ChipBackground}"
                                     Padding="10,4"
                                     CornerRadius="12"
+                                    Tag="{Binding Shipping.ShippingStatus}"
                                     HorizontalAlignment="Right">
                                 <TextBlock Text="{Binding Shipping.ShippingStatus}" FontSize="13" />
                             </Border>

@@ -10,7 +10,11 @@
     
     <UserControl.DataTemplates>
         <DataTemplate DataType="model:Shipping">
-            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" Margin="0,6,0,6" DoubleTapped="OnDoubleTapped">
+            <Grid ColumnDefinitions="*, Auto" 
+                  RowDefinitions="Auto, Auto, Auto" 
+                  
+                  Background="Transparent"
+                  DoubleTapped="OnDoubleTapped">
                 <Grid.Styles>
                     <Style Selector="Label">
                         <Setter Property="FontSize" Value="12" />
@@ -24,15 +28,20 @@
                        FontWeight="Bold" />
 
                 <!-- Верхняя правая: Статус -->
+                
                 <Border Name="StatusBadge" 
                         Grid.Row="0" Grid.Column="1" 
                         CornerRadius="10" 
                         Padding="8,2" 
                         HorizontalAlignment="Right">
-                    <Label Content="{Binding ConfirmedStatus}" 
-                           FontSize="10" 
-                           FontWeight="Bold" 
-                           Foreground="White" />
+                    <StackPanel>
+                        <Label Tag="{Binding ShippingStatus}"
+                               Content="{Binding ShippingStatus, Converter={StaticResource ShippingStatusConverter}}"/>
+                        <Label Content="{Binding ConfirmedStatus}" 
+                               FontSize="10" 
+                               FontWeight="Bold" 
+                               Foreground="White" />
+                    </StackPanel>
                 </Border>
 
                 <!-- Средняя левая: Дата отправления -->
@@ -77,13 +86,34 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Margin" Value="0,0,0,15" />
         </Style>
+        
+        <Style Selector="Label[Tag=InProcessing]">
+            <Setter Property="Background" Value="Yellow"/>
+        </Style>
+        
+        <Style Selector="Label[Tag=ReadyToShip]">
+            <Setter Property="Background" Value="YellowGreen"/>
+        </Style>
+        
+        <Style Selector="Label[Tag=Shipping]">
+            <Setter Property="Background" Value="LightBlue"/>
+        </Style>
+        
+        <Style Selector="Label[Tag=Delivered]">
+            <Setter Property="Background" Value="Green"/>
+        </Style>
+        <Style Selector="Label[Tag=Incident]">
+            <Setter Property="Background" Value="IndianRed"/>
+        </Style>
+        
+        
     </UserControl.Styles>
 
     <Design.DataContext>
         <vm:ShippingsViewModel />
     </Design.DataContext>
 
-    <Grid Margin="20,10,20,5" RowDefinitions="Auto, Auto">
+    <Grid Margin="20,10,20,5" RowDefinitions="0.5*, 0.5*">
         
         <!-- Секция "ТЕКУЩИЙ И ПРЕДСТОЯЩИЕ" -->
         <Grid Grid.Row="0" RowDefinitions="Auto, *" Classes="BlockSP">

@@ -21,7 +21,8 @@ public class HubHandler(HubData hubData, HttpClient httpClient) : IHubHandler
 
     public async Task Start()
     {
-        var userAuth = Authorize();
+        //var userAuth =
+        await Authorize();
         await StartConnection();
         Initialize(_hub);
         await Load();

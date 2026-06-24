@@ -18,7 +18,15 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     private readonly HubData _hubData;
     public ObservableCollection<Shipping> Shippings
     {
-        get => _hubData.Shippings;
+        get
+        {
+            var shipps = _hubData.Shippings.OrderBy(s => s.ShippingStatus).ToArray();
+            return
+            [
+                .. shipps.Where(s => s.ShippingStatus == ShippingStatus.Shipping)
+                    .Concat(shipps.Where(s => s.ShippingStatus != ShippingStatus.Shipping))
+            ];
+        }
         set
         {
             if (Equals(value, _hubData.Shippings)) return;
@@ -30,12 +38,10 @@ public partial class ShippingsViewModel : ViewModelControlBase<ShippingsView>
     }
 
     public List<Shipping> CurrentShippings =>
-        Shippings.Where(s => s.ShippingStatus is ShippingStatus.ReadyToShip
-            or ShippingStatus.Shipping).ToList();
+        Shippings.Where(s => s.ShippingStatus is not ShippingStatus.Delivered).ToList();
 
     public List<Shipping> PastShippings =>
-        Shippings.Where(s => s.ShippingStatus == ShippingStatus.Delivered)
-            .ToList();
+        Shippings.Where(s => s.ShippingStatus == ShippingStatus.Delivered).ToList();
 
     public ShippingsViewModel()
     {

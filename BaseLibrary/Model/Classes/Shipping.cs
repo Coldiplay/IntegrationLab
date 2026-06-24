@@ -16,7 +16,8 @@ public partial class Shipping : ObservableObject
 
     [ObservableProperty] public partial DateTime? DeliveryDate { get; set; }
 
-    [ObservableProperty] public partial ShippingStatus ShippingStatus { get; set; }
+    [ObservableProperty] 
+    public partial ShippingStatus ShippingStatus { get; set; }
 
     [ObservableProperty] public partial DateOnly ShippingDate { get; set; }
 
@@ -40,5 +41,7 @@ public partial class Shipping : ObservableObject
     [NotMapped, ObservableProperty] public partial string ConfirmedStatus { get; set; } = "Не подтверждён";
     
     [NotMapped, ObservableProperty] public partial ushort CargoCount { get; set; }
-    [NotMapped, ObservableProperty] public partial double CargoWeight { get; set; } 
+    [NotMapped, ObservableProperty] public partial double CargoWeight { get; set; }
+    
+    //[NotMapped] public string ItemClass => ShippingStatus.ToString().ToLower();
 }
